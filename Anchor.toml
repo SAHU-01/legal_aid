@@ -6,7 +6,7 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
-legal_aid = "HFg8TFxt2LU1pXqVmKYqJHsHDnc7wne1bHH4V1S3EDUe"
+legal_aid = "3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV"
 
 [registry]
 url = "https://api.apr.dev"
