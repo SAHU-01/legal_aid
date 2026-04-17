@@ -1,0 +1,17 @@
+{
+  "schemaAddress": "7uKMGSgup1UZ26MnptCCMCac6rqpe6vBNXET338cDeid",
+  "credentialAddress": "4chJRmgzUcbDCgmcToYmNZdMjdNgEK3jktZMo1SUdy9o",
+  "schemaName": "legal-aid-eligibility",
+  "fieldNames": [
+    "jurisdiction",
+    "eligibility_tier",
+    "expiry_date"
+  ],
+  "layout": [
+    12,
+    12,
+    8
+  ],
+  "txSignature": "5r796H6xz4niX7FZp59zGFzGuL2a6ng6WShqiJer6DrwYz174J5S11gF8BT6LVLpreLnQyLYdXGrH4U8hhugeyR6",
+  "createdAt": "2026-04-17T06:17:58.506Z"
+}
