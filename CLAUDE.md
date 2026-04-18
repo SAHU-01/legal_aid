@@ -33,6 +33,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Anchor.toml is configured for devnet cluster and npm package manager
 - Root `package.json` uses npm workspaces with `app` as the only workspace
 
+## Light Protocol / Helius RPC
+- Light Protocol requires Helius RPC — standard devnet RPC won't work for compressed accounts
+- Set `HELIUS_RPC_URL` in `.env` (e.g. `https://devnet.helius-rpc.com/?api-key=...`)
+- Photon indexer is built into the Helius endpoint (no separate service needed)
+- Shared connection helper: `scripts/lib/connection.ts`
+
 ## Dependency Pinning (Solana SBF Toolchain)
 The Solana SBF compiler ships Cargo 1.84 which does not support Rust edition 2024.
 When `anchor build` fails on `edition2024` errors, pin the offending crate:

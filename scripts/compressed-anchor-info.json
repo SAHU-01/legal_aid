@@ -1,0 +1,16 @@
+{
+  "case_id": "CASE-001",
+  "document_hash": "ef4c2270dc6a0141b85330d81e9a6a1df44ce347a49f2fa8e76155c04f8c68df",
+  "lawyer": "4yBhvDyqkDunownSxVzZkZZmGgV2rASGgxgHr1rsjYvk",
+  "timestamp": 1776515945,
+  "status": "ANCHORED",
+  "compression": {
+    "compress_tx_signature": "udE5yfHTQnhhxivSuJL31qaQY9Ay4KuzSsynVepYVmMzsSBn1fuiPG3985QEGcdpYrPFntLEcivSba1Fwxe5krK",
+    "memo_tx_signature": "ndWyDhpBfEpcWXmhitJNK985bWjZL8W8iZ9zkvAVVYE3bQYjQqa7wHnTcTix7AcrQvCVBD7nRQLCKoBq6BcDVaL",
+    "compressed_account_hash": "2430e4361e317f3bbccc9da0d620ae302bfbf9721efaa8158ca7a594fe4eb979",
+    "compressed_account_lamports": "10000",
+    "total_compressed_accounts": 1
+  },
+  "network": "devnet",
+  "rpc_endpoint": "https://devnet.helius-rpc.com/?api-key=***"
+}
