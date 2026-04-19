@@ -1,0 +1,45 @@
+{
+  "caseId": "X402-749420",
+  "payer": "C35KAMuYGrkCf1nw5c4qQ1137pJT1zQnkbrCzrpm7wkU",
+  "lawyer": "7d5LqY7PGmFSXmFDb4kyBtp7Ro2s2ra9DMZssJ4pSP4e",
+  "mockUsdcMint": "uuidMw6w3y5SNFp2kS38jefEGYa99NUdZcF95gJdNH6",
+  "mintTx": "3RrBXV8gMWnCE2W1UGSsCw3PQktiYnteRgXc3oKmG8booSr3DS5aT58GKqhvXizFYsK6rZp2US8JHGtYhkG5yn3R",
+  "paymentRequirements": {
+    "x402Version": 2,
+    "resource": {
+      "url": "/api/claim-payment",
+      "description": "Legal aid case disbursement",
+      "mimeType": "application/json"
+    },
+    "accepts": [
+      {
+        "scheme": "exact",
+        "network": "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
+        "amount": "50000000",
+        "asset": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+        "payTo": "C35KAMuYGrkCf1nw5c4qQ1137pJT1zQnkbrCzrpm7wkU",
+        "maxTimeoutSeconds": 300,
+        "extra": {
+          "description": "Legal aid case disbursement",
+          "mimeType": "application/json"
+        }
+      }
+    ],
+    "error": "Payment required"
+  },
+  "transferTx": "4sfWKA3xhwwAyRS7hiGr9uyjV6E8YFjecZcJfCdTbMhqRZaq6UwxGuSj3Zchn9GvDZ4jzUorCgTTq5XN7cd7Sozd",
+  "verificationResponse": {
+    "status": "paid",
+    "txSignature": "4sfWKA3xhwwAyRS7hiGr9uyjV6E8YFjecZcJfCdTbMhqRZaq6UwxGuSj3Zchn9GvDZ4jzUorCgTTq5XN7cd7Sozd",
+    "caseId": "X402-749420",
+    "network": "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
+    "recipient": "C35KAMuYGrkCf1nw5c4qQ1137pJT1zQnkbrCzrpm7wkU",
+    "amount": "50",
+    "asset": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"
+  },
+  "finalBalances": {
+    "payer": 950,
+    "recipient": 50,
+    "balanceCorrect": true
+  }
+}
