@@ -1,0 +1,67 @@
+
+═══════════════════════════════════════════════════════
+   LEGAL AID PROTOCOL — END-TO-END DEMO REPORT
+   Network: Solana Devnet
+   Timestamp: 2026-05-01T07:45:27.790Z
+═══════════════════════════════════════════════════════
+
+PROGRAM
+  Program ID: 3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV
+  Explorer:   https://explorer.solana.com/address/3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV?cluster=devnet
+
+IDENTITIES
+  Court Authority: C35KAMuYGrkCf1nw5c4qQ1137pJT1zQnkbrCzrpm7wkU
+  Lawyer:          GjenRw6mmA2CBQDp7MK2AzgsvSYXYd2bH9rBMEjggdrb
+  Citizen:         8sxvBzncu2RSWa16Cw34pfXtQNbSwgWwSmHWtwqcPQYr
+
+PIPELINE EXECUTION
+  [1] SAS Credential Issued
+      Tx:      2H7xT3gZLTHBXNjkRJnV6ER2ao4m29vSC3RKERAoVXshKofHdMFti3pbZEuP1kv34WbnZ5pPftxFkRtKejuPFm4K
+      PDA:     32jyDcUmM6DfLqgTbWUeDmgChqdqVawFAC6VNJvLkvoZ
+      Link:    https://explorer.solana.com/tx/2H7xT3gZLTHBXNjkRJnV6ER2ao4m29vSC3RKERAoVXshKofHdMFti3pbZEuP1kv34WbnZ5pPftxFkRtKejuPFm4K?cluster=devnet
+
+  [2] Case Opened
+      Case ID: E2E-DEMO-1777621490709
+      Tx:      zewgAtvVWWTT9wNVVMDrPuih8uxvSP6b4fhzPS6gAXLqoRUyu67w9TKkPrmWNxTgmLr37UpcGHUH2EWkkfMw44y
+      PDA:     ESoYz641Ax7toq4yTeht1ALmn74vQ1Znjyy4GtyFhAcT
+      Link:    https://explorer.solana.com/tx/zewgAtvVWWTT9wNVVMDrPuih8uxvSP6b4fhzPS6gAXLqoRUyu67w9TKkPrmWNxTgmLr37UpcGHUH2EWkkfMw44y?cluster=devnet
+
+  [3] Document Anchored
+      Hash:    f61dc9f589a9156b4e6f6eaa67e70ae5bedd09a513f4b3aa213ef137cfafdbd2
+      Tx:      4PpzgmhfvrTZPp69pJsAJ5sfzPuRwiENm4Q3dAUwJrdDkjuCTyAhocpzGCLP8H4LttyPEGHpP4aKuBB8N5bua7TY
+      Link:    https://explorer.solana.com/tx/4PpzgmhfvrTZPp69pJsAJ5sfzPuRwiENm4Q3dAUwJrdDkjuCTyAhocpzGCLP8H4LttyPEGHpP4aKuBB8N5bua7TY?cluster=devnet
+
+  [4] Compressed Log Created
+      Tx:      39e3iM3otrNGzp69RFHGxv9JuHAbJJiX592iiZRYNdqzYJraQW5YU3UHnSMdv16yL1zFhBRjjFjF2pkoY8Hkf44B
+      Link:    https://explorer.solana.com/tx/39e3iM3otrNGzp69RFHGxv9JuHAbJJiX592iiZRYNdqzYJraQW5YU3UHnSMdv16yL1zFhBRjjFjF2pkoY8Hkf44B?cluster=devnet
+      Cost:    25003 lamports (~$0.0038)
+
+  [5] Case Closed
+      Tx:      5LGJiYxtD3fNaZr1FS2tRAAcgG2aT2UPU1iVDzj9yUAvYVbqijwkeuZu1B63Vorhjg6f2UqFxrnBg12Jix5sxYd8
+      Link:    https://explorer.solana.com/tx/5LGJiYxtD3fNaZr1FS2tRAAcgG2aT2UPU1iVDzj9yUAvYVbqijwkeuZu1B63Vorhjg6f2UqFxrnBg12Jix5sxYd8?cluster=devnet
+
+  [6] Payment Disbursed
+      Amount:  50.00 USDC
+      Tx:      2Gq9mwhcq6zV2HeNHtHVGANcCtxR9q97Mb6xCfni6EAnddSZ7LDu93uW6vYnyiYDM37PLnpgPm7Rbux3DqCktYAK
+      Link:    https://explorer.solana.com/tx/2Gq9mwhcq6zV2HeNHtHVGANcCtxR9q97Mb6xCfni6EAnddSZ7LDu93uW6vYnyiYDM37PLnpgPm7Rbux3DqCktYAK?cluster=devnet
+
+  [7] Case Marked Paid
+      Tx:      2gy6oMJc76bUZwiJuf7ukvYsPFAmKAnRWR38GhUBReE58GtjEWpFXcxYPMMfZcUaBSY9EZUd7gsnPuJ8F5wKepWr
+      Link:    https://explorer.solana.com/tx/2gy6oMJc76bUZwiJuf7ukvYsPFAmKAnRWR38GhUBReE58GtjEWpFXcxYPMMfZcUaBSY9EZUd7gsnPuJ8F5wKepWr?cluster=devnet
+
+VERIFICATION
+  ✓ On-chain status: Paid
+  ✓ SAS credential: Active, expires 2027-05-01
+  ✓ Compressed log: Found via Photon indexer
+  ✓ USDC balance: 50.00 received
+  ✓ Document hash: Matches on-chain
+
+COST ANALYSIS (per case)
+  Standard PDA storage:  1997520 lamports (~$0.2996)
+  Compressed storage:    25003 lamports (~$0.0038)
+  Savings:               98.7%
+  At 100,000 cases/year: ~$29587.75 saved
+
+═══════════════════════════════════════════════════════
+   ALL CHECKS PASSED — MVP VERIFIED ON DEVNET
+═══════════════════════════════════════════════════════

@@ -1,0 +1,72 @@
+{
+  "timestamp": "2026-05-01T07:45:27.791Z",
+  "network": "solana:devnet",
+  "programId": "3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV",
+  "caseId": "E2E-DEMO-1777621490709",
+  "identities": {
+    "authority": "C35KAMuYGrkCf1nw5c4qQ1137pJT1zQnkbrCzrpm7wkU",
+    "lawyer": "GjenRw6mmA2CBQDp7MK2AzgsvSYXYd2bH9rBMEjggdrb",
+    "citizen": "8sxvBzncu2RSWa16Cw34pfXtQNbSwgWwSmHWtwqcPQYr"
+  },
+  "pipeline": {
+    "sasCredential": {
+      "tx": "2H7xT3gZLTHBXNjkRJnV6ER2ao4m29vSC3RKERAoVXshKofHdMFti3pbZEuP1kv34WbnZ5pPftxFkRtKejuPFm4K",
+      "pda": "32jyDcUmM6DfLqgTbWUeDmgChqdqVawFAC6VNJvLkvoZ",
+      "expiryDate": 1809157504,
+      "expiryISO": "2027-05-01T07:45:04.000Z"
+    },
+    "openCase": {
+      "tx": "zewgAtvVWWTT9wNVVMDrPuih8uxvSP6b4fhzPS6gAXLqoRUyu67w9TKkPrmWNxTgmLr37UpcGHUH2EWkkfMw44y",
+      "caseId": "E2E-DEMO-1777621490709",
+      "pda": "ESoYz641Ax7toq4yTeht1ALmn74vQ1Znjyy4GtyFhAcT"
+    },
+    "anchorDocument": {
+      "tx": "4PpzgmhfvrTZPp69pJsAJ5sfzPuRwiENm4Q3dAUwJrdDkjuCTyAhocpzGCLP8H4LttyPEGHpP4aKuBB8N5bua7TY",
+      "hash": "f61dc9f589a9156b4e6f6eaa67e70ae5bedd09a513f4b3aa213ef137cfafdbd2"
+    },
+    "compressedLog": {
+      "tx": "39e3iM3otrNGzp69RFHGxv9JuHAbJJiX592iiZRYNdqzYJraQW5YU3UHnSMdv16yL1zFhBRjjFjF2pkoY8Hkf44B",
+      "costLamports": 25003
+    },
+    "closeCase": {
+      "tx": "5LGJiYxtD3fNaZr1FS2tRAAcgG2aT2UPU1iVDzj9yUAvYVbqijwkeuZu1B63Vorhjg6f2UqFxrnBg12Jix5sxYd8"
+    },
+    "payment": {
+      "tx": "2Gq9mwhcq6zV2HeNHtHVGANcCtxR9q97Mb6xCfni6EAnddSZ7LDu93uW6vYnyiYDM37PLnpgPm7Rbux3DqCktYAK",
+      "amount": 50,
+      "asset": "USDC",
+      "mint": "9jn29fnaej1Fo7s4A39bBnSZY2g5CjHGMLZardSKYcGc"
+    },
+    "markPaid": {
+      "tx": "2gy6oMJc76bUZwiJuf7ukvYsPFAmKAnRWR38GhUBReE58GtjEWpFXcxYPMMfZcUaBSY9EZUd7gsnPuJ8F5wKepWr"
+    }
+  },
+  "verification": {
+    "onChainStatus": "paid",
+    "sasCredentialActive": true,
+    "sasCredentialExpiry": "2027-05-01",
+    "compressedLogFound": true,
+    "usdcBalanceReceived": 50,
+    "documentHashMatches": true,
+    "allPassed": true
+  },
+  "costAnalysis": {
+    "standardPdaLamports": 1997520,
+    "standardPdaUsd": 0.2996,
+    "compressedLamports": 25003,
+    "compressedUsd": 0.0038,
+    "savingsPercent": 98.7,
+    "annualSavings100kCases": 29587.75,
+    "solPriceEstimate": 150
+  },
+  "explorerLinks": {
+    "program": "https://explorer.solana.com/address/3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV?cluster=devnet",
+    "sasCredential": "https://explorer.solana.com/tx/2H7xT3gZLTHBXNjkRJnV6ER2ao4m29vSC3RKERAoVXshKofHdMFti3pbZEuP1kv34WbnZ5pPftxFkRtKejuPFm4K?cluster=devnet",
+    "openCase": "https://explorer.solana.com/tx/zewgAtvVWWTT9wNVVMDrPuih8uxvSP6b4fhzPS6gAXLqoRUyu67w9TKkPrmWNxTgmLr37UpcGHUH2EWkkfMw44y?cluster=devnet",
+    "anchorDocument": "https://explorer.solana.com/tx/4PpzgmhfvrTZPp69pJsAJ5sfzPuRwiENm4Q3dAUwJrdDkjuCTyAhocpzGCLP8H4LttyPEGHpP4aKuBB8N5bua7TY?cluster=devnet",
+    "compressedLog": "https://explorer.solana.com/tx/39e3iM3otrNGzp69RFHGxv9JuHAbJJiX592iiZRYNdqzYJraQW5YU3UHnSMdv16yL1zFhBRjjFjF2pkoY8Hkf44B?cluster=devnet",
+    "closeCase": "https://explorer.solana.com/tx/5LGJiYxtD3fNaZr1FS2tRAAcgG2aT2UPU1iVDzj9yUAvYVbqijwkeuZu1B63Vorhjg6f2UqFxrnBg12Jix5sxYd8?cluster=devnet",
+    "payment": "https://explorer.solana.com/tx/2Gq9mwhcq6zV2HeNHtHVGANcCtxR9q97Mb6xCfni6EAnddSZ7LDu93uW6vYnyiYDM37PLnpgPm7Rbux3DqCktYAK?cluster=devnet",
+    "markPaid": "https://explorer.solana.com/tx/2gy6oMJc76bUZwiJuf7ukvYsPFAmKAnRWR38GhUBReE58GtjEWpFXcxYPMMfZcUaBSY9EZUd7gsnPuJ8F5wKepWr?cluster=devnet"
+  }
+}

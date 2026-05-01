@@ -54,6 +54,7 @@ export default function CaseList({ refreshKey = 0 }: { refreshKey?: number }) {
   const wallet = useAnchorWallet();
   const [cases, setCases] = useState<CaseAccount[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const program = useMemo(() => {
@@ -67,9 +68,8 @@ export default function CaseList({ refreshKey = 0 }: { refreshKey?: number }) {
   const fetchCases = useCallback(async () => {
     if (!program || !wallet) return;
     setLoading(true);
+    setError(null);
     try {
-      // Fetch all CaseFile accounts — lawyer field is at a variable
-      // offset (after a string), so we filter client-side.
       const all = await (program.account as any).caseFile.all();
       const mine = all
         .filter((a: any) =>
@@ -87,8 +87,11 @@ export default function CaseList({ refreshKey = 0 }: { refreshKey?: number }) {
         }))
         .sort((a: CaseAccount, b: CaseAccount) => b.createdAt - a.createdAt);
       setCases(mine);
-    } catch (err) {
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error ? err.message : "Failed to fetch cases";
       console.error("Failed to fetch cases:", err);
+      setError(msg);
       setCases([]);
     } finally {
       setLoading(false);
@@ -103,7 +106,21 @@ export default function CaseList({ refreshKey = 0 }: { refreshKey?: number }) {
     return (
       <div className="flex items-center gap-2 text-sm text-zinc-400">
         <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-zinc-600 border-t-zinc-300" />
-        Loading cases...
+        Loading cases&hellip;
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-2">
+        <p className="text-sm text-red-400">{error}</p>
+        <button
+          onClick={fetchCases}
+          className="rounded border border-zinc-700 px-3 py-1 text-xs text-zinc-400 hover:border-zinc-600 hover:text-zinc-300"
+        >
+          Retry
+        </button>
       </div>
     );
   }
@@ -124,59 +141,50 @@ export default function CaseList({ refreshKey = 0 }: { refreshKey?: number }) {
       </div>
 
       {cases.length === 0 ? (
-        <p className="py-6 text-center text-sm text-zinc-500">
-          No cases assigned to your wallet
-        </p>
+        <div className="py-8 text-center">
+          <p className="text-sm text-zinc-500">
+            No cases assigned to your wallet.
+          </p>
+          <p className="mt-1 text-xs text-zinc-600">
+            Cases will appear here once a court authority opens one for you.
+          </p>
+        </div>
       ) : (
         <div className="space-y-px">
-          {/* Column headers — hidden on mobile */}
-          <div className="hidden grid-cols-[1fr_auto_1fr_auto] gap-4 px-3 pb-2 text-xs font-medium uppercase tracking-wide text-zinc-500 sm:grid">
+          {/* Column headers -- hidden on mobile */}
+          <div className="hidden grid-cols-[1fr_auto_1fr_auto_auto] gap-4 px-3 pb-2 text-xs font-medium uppercase tracking-wide text-zinc-500 sm:grid">
             <span>Case ID</span>
             <span>Status</span>
             <span>Document Hash</span>
             <span>Date</span>
+            <span></span>
           </div>
 
           {cases.map((c) => {
             const hex = hashToHex(c.documentHash);
             const empty = isEmptyHash(c.documentHash);
             const expanded = expandedId === c.caseId;
+            const explorerUrl = `${EXPLORER}/address/${c.publicKey.toBase58()}?cluster=devnet`;
 
             return (
               <div key={c.caseId}>
                 {/* Row */}
-                <button
-                  type="button"
-                  onClick={() =>
-                    setExpandedId(expanded ? null : c.caseId)
-                  }
-                  className={`w-full rounded text-left text-sm transition-colors ${
+                <div
+                  className={`flex w-full items-center rounded text-left text-sm transition-colors ${
                     expanded
                       ? "bg-zinc-800"
                       : "bg-zinc-800/40 hover:bg-zinc-800/70"
                   }`}
                 >
-                  {/* Desktop grid */}
-                  <div className="hidden grid-cols-[1fr_auto_1fr_auto] items-center gap-4 px-3 py-2.5 sm:grid">
-                    <span className="font-mono text-zinc-200">
-                      {c.caseId}
-                    </span>
-                    <span
-                      className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${STATUS_STYLE[c.status] ?? ""}`}
-                    >
-                      {c.status}
-                    </span>
-                    <span className="font-mono text-zinc-400">
-                      {empty ? "(none)" : truncate(hex, 6, 6)}
-                    </span>
-                    <span className="text-zinc-500">
-                      {formatDate(c.createdAt)}
-                    </span>
-                  </div>
-
-                  {/* Mobile stack */}
-                  <div className="flex flex-col gap-1.5 px-3 py-2.5 sm:hidden">
-                    <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExpandedId(expanded ? null : c.caseId)
+                    }
+                    className="min-w-0 flex-1"
+                  >
+                    {/* Desktop grid */}
+                    <div className="hidden grid-cols-[1fr_auto_1fr_auto] items-center gap-4 px-3 py-2.5 sm:grid">
                       <span className="font-mono text-zinc-200">
                         {c.caseId}
                       </span>
@@ -185,8 +193,6 @@ export default function CaseList({ refreshKey = 0 }: { refreshKey?: number }) {
                       >
                         {c.status}
                       </span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs">
                       <span className="font-mono text-zinc-400">
                         {empty ? "(none)" : truncate(hex, 6, 6)}
                       </span>
@@ -194,8 +200,53 @@ export default function CaseList({ refreshKey = 0 }: { refreshKey?: number }) {
                         {formatDate(c.createdAt)}
                       </span>
                     </div>
-                  </div>
-                </button>
+
+                    {/* Mobile stack */}
+                    <div className="flex flex-col gap-1.5 px-3 py-2.5 sm:hidden">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-zinc-200">
+                          {c.caseId}
+                        </span>
+                        <span
+                          className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${STATUS_STYLE[c.status] ?? ""}`}
+                        >
+                          {c.status}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-mono text-zinc-400">
+                          {empty ? "(none)" : truncate(hex, 6, 6)}
+                        </span>
+                        <span className="text-zinc-500">
+                          {formatDate(c.createdAt)}
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* Explorer link on row */}
+                  <a
+                    href={explorerUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="View on Solana Explorer"
+                    className="mr-3 hidden shrink-0 rounded p-1 text-zinc-600 hover:bg-zinc-700 hover:text-blue-400 sm:block"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="h-3.5 w-3.5"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-4a.75.75 0 011.5 0v4A2.25 2.25 0 0112.75 17h-8.5A2.25 2.25 0 012 14.75v-8.5A2.25 2.25 0 014.25 4h5a.75.75 0 010 1.5h-5zm7.25-.75a.75.75 0 01.75-.75h3.5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0V6.31l-5.22 5.22a.75.75 0 11-1.06-1.06l5.22-5.22H12.25a.75.75 0 01-.75-.75z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </a>
+                </div>
 
                 {/* Expanded detail panel */}
                 {expanded && (
@@ -206,26 +257,31 @@ export default function CaseList({ refreshKey = 0 }: { refreshKey?: number }) {
                         {empty ? "(none)" : hex}
                       </dd>
                       <dt className="text-zinc-500">PDA Address</dt>
-                      <dd className="font-mono">
-                        {c.publicKey.toBase58()}
+                      <dd>
+                        <a
+                          href={explorerUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-mono text-blue-400 hover:underline"
+                        >
+                          {c.publicKey.toBase58()}
+                          <span className="ml-1 text-zinc-600">&nearr;</span>
+                        </a>
                       </dd>
                       <dt className="text-zinc-500">Issuer</dt>
-                      <dd className="font-mono">
-                        {c.issuer.toBase58()}
+                      <dd>
+                        <a
+                          href={`${EXPLORER}/address/${c.issuer.toBase58()}?cluster=devnet`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-mono text-blue-400 hover:underline"
+                        >
+                          {c.issuer.toBase58()}
+                          <span className="ml-1 text-zinc-600">&nearr;</span>
+                        </a>
                       </dd>
                       <dt className="text-zinc-500">Updated</dt>
                       <dd>{formatDate(c.updatedAt)}</dd>
-                      <dt className="text-zinc-500">Explorer</dt>
-                      <dd>
-                        <a
-                          href={`${EXPLORER}/address/${c.publicKey.toBase58()}?cluster=devnet`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-400 hover:underline"
-                        >
-                          View on Solana Explorer
-                        </a>
-                      </dd>
                     </dl>
                   </div>
                 )}

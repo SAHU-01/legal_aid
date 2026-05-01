@@ -28,6 +28,7 @@ interface ClaimRecord {
 interface Toast {
   type: "success" | "error";
   message: string;
+  detail?: string;
   txSignature?: string;
 }
 
@@ -58,6 +59,7 @@ export default function ClaimPayment({
   const [closedCases, setClosedCases] = useState<CaseAccount[]>([]);
   const [paidCases, setPaidCases] = useState<CaseAccount[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [confirmCaseId, setConfirmCaseId] = useState<string | null>(null);
   const [claiming, setClaiming] = useState(false);
@@ -75,6 +77,7 @@ export default function ClaimPayment({
   const fetchCases = useCallback(async () => {
     if (!program || !wallet) return;
     setLoading(true);
+    setError(null);
     try {
       const all = await (program.account as any).caseFile.all();
       const mine = all
@@ -99,8 +102,11 @@ export default function ClaimPayment({
           .filter((c: CaseAccount) => c.status === "Paid")
           .sort((a: CaseAccount, b: CaseAccount) => b.updatedAt - a.updatedAt),
       );
-    } catch (err) {
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error ? err.message : "Failed to load payment data";
       console.error("Failed to fetch cases:", err);
+      setError(msg);
       setClosedCases([]);
       setPaidCases([]);
     } finally {
@@ -157,17 +163,28 @@ export default function ClaimPayment({
         setToast({
           type: "error",
           message: "Credential verification failed",
+          detail:
+            data.detail ??
+            "Your wallet does not have a valid SAS credential. Contact your court authority.",
+        });
+      } else if (res.status === 400) {
+        setToast({
+          type: "error",
+          message: "Invalid request",
+          detail: data.error,
         });
       } else {
         setToast({
           type: "error",
           message: data.error || `Request failed (${res.status})`,
+          detail: data.detail,
         });
       }
-    } catch (err: any) {
+    } catch {
       setToast({
         type: "error",
-        message: err.message || "Network error",
+        message: "Could not reach the payment server",
+        detail: "Make sure the dev server is running (npm run dev).",
       });
     } finally {
       setClaiming(false);
@@ -178,7 +195,21 @@ export default function ClaimPayment({
     return (
       <div className="flex items-center gap-2 text-sm text-zinc-400">
         <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-zinc-600 border-t-zinc-300" />
-        Loading payment data...
+        Loading payment data&hellip;
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-2">
+        <p className="text-sm text-red-400">{error}</p>
+        <button
+          onClick={fetchCases}
+          className="rounded border border-zinc-700 px-3 py-1 text-xs text-zinc-400 hover:border-zinc-600 hover:text-zinc-300"
+        >
+          Retry
+        </button>
       </div>
     );
   }
@@ -197,6 +228,9 @@ export default function ClaimPayment({
           <div className="flex items-start justify-between gap-3">
             <div>
               <p>{toast.message}</p>
+              {toast.detail && (
+                <p className="mt-0.5 text-xs opacity-80">{toast.detail}</p>
+              )}
               {toast.txSignature && (
                 <a
                   href={`${EXPLORER}/tx/${toast.txSignature}?cluster=devnet`}
@@ -204,15 +238,16 @@ export default function ClaimPayment({
                   rel="noopener noreferrer"
                   className="mt-1 inline-block text-xs text-blue-400 hover:underline"
                 >
-                  View transaction on Explorer
+                  View transaction on Explorer &nearr;
                 </a>
               )}
             </div>
             <button
               onClick={() => setToast(null)}
               className="text-zinc-500 hover:text-zinc-300"
+              aria-label="Dismiss"
             >
-              x
+              &times;
             </button>
           </div>
         </div>
@@ -224,9 +259,14 @@ export default function ClaimPayment({
           Claimable
         </h3>
         {closedCases.length === 0 ? (
-          <p className="py-4 text-center text-sm text-zinc-500">
-            No cases ready for payment claim
-          </p>
+          <div className="py-4 text-center">
+            <p className="text-sm text-zinc-500">
+              No cases ready for payment claim.
+            </p>
+            <p className="mt-0.5 text-xs text-zinc-600">
+              Cases appear here once closed by the court authority.
+            </p>
+          </div>
         ) : (
           <div className="space-y-2">
             {closedCases.map((c) => (
@@ -245,7 +285,7 @@ export default function ClaimPayment({
                   disabled={claiming}
                   className="rounded bg-emerald-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-600 disabled:opacity-50"
                 >
-                  {claiming ? "Processing..." : "Claim Payment"}
+                  {claiming ? "Processing\u2026" : "Claim Payment"}
                 </button>
               </div>
             ))}
@@ -277,10 +317,16 @@ export default function ClaimPayment({
                     {formatDate(cl.claimedAt)}
                     {cl.txSignature && (
                       <>
-                        {" "}&middot; tx{" "}
-                        <span className="font-mono">
-                          {truncate(cl.txSignature, 4, 4)}
-                        </span>
+                        {" "}&middot;{" "}
+                        <a
+                          href={`${EXPLORER}/tx/${cl.txSignature}?cluster=devnet`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-mono text-blue-400 hover:underline"
+                        >
+                          tx {truncate(cl.txSignature, 4, 4)}
+                          <span className="ml-0.5 text-zinc-600">&nearr;</span>
+                        </a>
                       </>
                     )}
                   </p>
@@ -292,7 +338,7 @@ export default function ClaimPayment({
                     rel="noopener noreferrer"
                     className="text-xs text-blue-400 hover:underline"
                   >
-                    Explorer
+                    Explorer &nearr;
                   </a>
                 )}
               </div>
@@ -317,9 +363,18 @@ export default function ClaimPayment({
                     </p>
                     <p className="text-xs text-zinc-500">
                       {formatDate(c.updatedAt)}
+                      {" "}&middot;{" "}
+                      <a
+                        href={`${EXPLORER}/address/${c.publicKey.toBase58()}?cluster=devnet`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-400 hover:underline"
+                      >
+                        View case &nearr;
+                      </a>
                     </p>
                   </div>
-                  <span className="inline-block rounded bg-emerald-950 px-2 py-0.5 text-xs text-emerald-300 border border-emerald-900">
+                  <span className="inline-block rounded border border-emerald-900 bg-emerald-950 px-2 py-0.5 text-xs text-emerald-300">
                     Paid
                   </span>
                 </div>
@@ -336,7 +391,7 @@ export default function ClaimPayment({
               Claim {AMOUNT_USDC} USDC for {confirmCaseId}?
             </h3>
             <p className="mt-2 text-sm text-zinc-400">
-              This will verify your SAS credential and process payment.
+              This will verify your SAS credential and process the payment to your wallet.
             </p>
             <div className="mt-5 flex justify-end gap-3">
               <button

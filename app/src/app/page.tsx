@@ -8,8 +8,15 @@ import CredentialStatus from "../components/CredentialStatus";
 import CaseList from "../components/CaseList";
 import ClaimPayment from "../components/ClaimPayment";
 
+const PROGRAM_ID = "3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV";
+const EXPLORER = "https://explorer.solana.com";
+
 function truncateAddress(address: string): string {
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
+}
+
+function truncateProgramId(id: string): string {
+  return `${id.slice(0, 4)}...${id.slice(-5)}`;
 }
 
 export default function Home() {
@@ -34,25 +41,54 @@ export default function Home() {
   }, [publicKey, connection]);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100">
+    <div className="flex min-h-screen flex-col bg-zinc-950 text-zinc-100">
+      {/* Demo Mode Banner */}
+      <div className="border-b border-amber-900/50 bg-amber-950/40 px-4 py-2 text-center text-xs text-amber-300/90">
+        <span className="mr-1.5 inline-block rounded bg-amber-400/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-400">
+          Demo
+        </span>
+        This is a live Devnet prototype. All transactions are real and verifiable on Solana Explorer.
+      </div>
+
       {/* Header */}
       <header className="border-b border-zinc-800 px-4 py-4 sm:px-6">
         <div className="mx-auto flex max-w-5xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-lg font-semibold tracking-tight text-zinc-50">
               Legal Aid Protocol
-              <span className="font-normal text-zinc-400"> — Lawyer Portal</span>
+              <span className="font-normal text-zinc-400"> &mdash; Lawyer Portal</span>
             </h1>
-            <p className="text-xs text-zinc-500">Solana Devnet</p>
+            <p className="mt-0.5 text-xs text-zinc-500">
+              Program:{" "}
+              <a
+                href={`${EXPLORER}/address/${PROGRAM_ID}?cluster=devnet`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-zinc-400 hover:text-blue-400"
+              >
+                {truncateProgramId(PROGRAM_ID)}
+              </a>
+              <span className="mx-1.5 text-zinc-700">&middot;</span>
+              <span className="inline-block rounded bg-zinc-800 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-400">
+                Devnet
+              </span>
+            </p>
           </div>
           <div className="flex items-center gap-3">
             {connected && publicKey && (
               <div className="text-right text-xs text-zinc-400">
-                <p className="font-mono">{truncateAddress(publicKey.toBase58())}</p>
+                <a
+                  href={`${EXPLORER}/address/${publicKey.toBase58()}?cluster=devnet`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono hover:text-blue-400"
+                >
+                  {truncateAddress(publicKey.toBase58())}
+                </a>
                 <p>
                   {balance !== null
                     ? `${balance.toFixed(4)} SOL`
-                    : "Loading…"}
+                    : "Loading\u2026"}
                 </p>
               </div>
             )}
@@ -62,16 +98,22 @@ export default function Home() {
       </header>
 
       {/* Main */}
-      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
         {!connected ? (
           /* ---------- Disconnected state ---------- */
           <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 text-center">
-            <div>
-              <p className="text-zinc-300">
-                Connect your Phantom or Solflare wallet to access your cases
+            <div className="space-y-2">
+              <h2 className="text-xl font-medium text-zinc-200">
+                Welcome to the Legal Aid Portal
+              </h2>
+              <p className="max-w-md text-sm text-zinc-400">
+                Connect your Phantom or Solflare wallet to view your SAS credential, manage cases, and claim payments.
               </p>
             </div>
             <WalletMultiButton />
+            <p className="text-xs text-zinc-600">
+              Ensure your wallet is set to Solana Devnet
+            </p>
           </div>
         ) : (
           /* ---------- Connected state ---------- */
@@ -104,6 +146,30 @@ export default function Home() {
           </div>
         )}
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-zinc-800/60 px-4 py-5">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-2 text-xs text-zinc-600 sm:flex-row sm:justify-between">
+          <p>
+            Legal Aid Protocol &middot; Built on{" "}
+            <a
+              href="https://solana.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-500 hover:text-zinc-300"
+            >
+              Solana
+            </a>
+          </p>
+          <div className="flex items-center gap-3">
+            <span>SAS</span>
+            <span className="text-zinc-800">&middot;</span>
+            <span>Light Protocol</span>
+            <span className="text-zinc-800">&middot;</span>
+            <span>x402</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
