@@ -1,0 +1,64 @@
+{
+  "createdAt": "2026-05-01T06:29:15.699Z",
+  "suffix": "930902",
+  "jurisdiction": "DE",
+  "configPda": "5NfHuVrEb1d2GuGCpo8zHwLNpVUz3tBAbh8TnVu7JtaV",
+  "initializeTx": null,
+  "usdcMint": "BByxyHd8P4JEkVAfW4qS6X9Vi3VKyHgpfVHhCxdYQaMk",
+  "lawyers": {
+    "lawyer1": {
+      "publicKey": "ECBrnS4T3egQU7aScVvUEeXfVxC6mQYFFoWX7Z6gZfj4",
+      "keypairPath": "/Users/ankitasahu/Developer/Hackathon/colosseum/legal-aid-plugin/scripts/data/lawyer1-930902.json",
+      "attestationAddress": "Dcigsa62LqTvcX6w8VkLjX31SoJW4bjgbTLdpmLiyaRb",
+      "credentialTx": "3p2ZSuSAN9nzyho5ivHJTZjyFCQPVofrQkHsyKjAKFP8XB2SUUahR2iQUHwsMsTqjj6QuWzK5pCfkRgzxjpJopX6"
+    },
+    "lawyer2": {
+      "publicKey": "GBc2Vu1u6DQ4SHCz4kb7xLn9oav5nppYBXWkrd7NLSR8",
+      "keypairPath": "/Users/ankitasahu/Developer/Hackathon/colosseum/legal-aid-plugin/scripts/data/lawyer2-930902.json",
+      "attestationAddress": "Bsa6mzioiRzjxDuJTG5bb5eipMK6xHtarcDpxPhLFJWj",
+      "credentialTx": "5AhQV8D1dgwUjpL5miVti92bmQU5QFGFds3Nogb3wKdhJJVScprSAph8SJwJ3LWx5wbZCbxvreSz7XQNFDGUUVDP"
+    }
+  },
+  "cases": {
+    "caseA": {
+      "caseId": "AGENT-TEST-A-930902",
+      "lawyer": "ECBrnS4T3egQU7aScVvUEeXfVxC6mQYFFoWX7Z6gZfj4",
+      "documentHash": "8cbff5ef36110436198039fa135463857c291f5f4ef32b78c0d92c3e93605f36",
+      "status": "Closed",
+      "agentShouldProcess": true,
+      "txSigs": {
+        "openCase": "2mZ4vKUzeoSQ9fGcFokYRq2q6ugkT5Qzx3o9wgARdzx8dfWhqLHzm3TX2fWGLei4SJFvYoJSzo16jPAG62g2uXGL",
+        "anchorDoc": "5quurrgi6acg8cAv3hdh8Ra5439XXsMtbbExhEisQEKyauN5fvweDxJMxDvKF8d5AyUGoD6Qu7f92jnErRArgsjq",
+        "closeCase": "2K9xZT7NQ4G8UpKoVcWTsdeb4YFwxoaXF6uyYEEgaXEjj57XTKBYvijJts1t45vD8v4qcw69THV6VL6BgaxnAgdF"
+      }
+    },
+    "caseB": {
+      "caseId": "AGENT-TEST-B-930902",
+      "lawyer": "GBc2Vu1u6DQ4SHCz4kb7xLn9oav5nppYBXWkrd7NLSR8",
+      "documentHash": "ddc3b7bc5860bfafdeadce25d040f0de64a8aac1ca406dd7ddd73d75c97a347a",
+      "status": "Closed",
+      "agentShouldProcess": true,
+      "txSigs": {
+        "openCase": "2S2jkZLqMTXWPN7KYsDRagYTYWmDHBRdMxZB13WsyZAxSfi2DbmQmuzwa2U1YQqe5hXop7aU2cxJuh9saRkai1Yj",
+        "anchorDoc": "2YmDWi8BgRTVpTmGDrN9sPYWRkAfwAWmMraUkUw9RecbXfbDrkVTVV3E6uM4wusBEDwNY9mL4qQ59FdQgq5KigcS",
+        "closeCase": "2Z4eNJDEyELCfmgSM64AFehNNGDo7q2VNtChxjSwFitPxev6cgCqS2JrukQn6k4cMXidybgbFogfsRL3ChcLWaQQ"
+      }
+    },
+    "caseC": {
+      "caseId": "AGENT-TEST-C-930902",
+      "lawyer": "ECBrnS4T3egQU7aScVvUEeXfVxC6mQYFFoWX7Z6gZfj4",
+      "documentHash": "383b3f3ae69f4c84c77096f99138a0e92610ae10e5145682bcd314dd121600e2",
+      "status": "InProgress",
+      "agentShouldProcess": false,
+      "txSigs": {
+        "openCase": "cjBtrVGFn3RxncCErik16CESxVXaKZ2zTBZRXQUJ6UqzsWdzJPY4FPUjwEDPT9aGCQv7CWSD7c36fHccKArEMaC",
+        "anchorDoc": "5KERWptFewGCapvgrVt1WEpFsq2MLgfU9jWC2i2CtqAtezoa1B8HFHBcVPBMCG5zsnHbbLNFT2LYB5ajgACpGCRf"
+      }
+    }
+  },
+  "sasSchema": {
+    "schemaAddress": "7uKMGSgup1UZ26MnptCCMCac6rqpe6vBNXET338cDeid",
+    "credentialAddress": "4chJRmgzUcbDCgmcToYmNZdMjdNgEK3jktZMo1SUdy9o"
+  },
+  "expected": "Agent processes cases A and B (Closed), skips case C (InProgress)"
+}
