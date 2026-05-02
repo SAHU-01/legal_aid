@@ -36,12 +36,29 @@ function truncateAddress(addr: string): string {
 
 export default function CredentialStatus({
   walletAddress,
+  demoMode = false,
 }: {
   walletAddress: string;
+  demoMode?: boolean;
 }) {
   const [state, setState] = useState<CredentialState>({ status: "loading" });
 
   useEffect(() => {
+    if (demoMode) {
+      setState({
+        status: "verified",
+        jurisdiction: "Berlin-Brandenburg",
+        tier: "Tier 1 — Criminal Defense",
+        expires: "2026-12-31",
+        issuer: "9xQe...7bFd",
+        attestationPda: "7uKMGSgup1UZ26MnptCCMCac6rqpe6vBNXET338cDeid",
+      });
+      return;
+    }
+  }, [demoMode]);
+
+  useEffect(() => {
+    if (demoMode) return;
     let cancelled = false;
     setState({ status: "loading" });
 

@@ -136,5 +136,7 @@ Using Light Protocol's ZK compression, document storage costs drop from ~1,566,9
 | `verify-agent-run.ts` | Verifies the automation agent processed cases correctly |
 
 ## License
-
-MIT
+This project is source-available under a proprietary non-commercial
+license. You may view, fork, and use the code for personal and
+educational purposes. Commercial use requires written permission
+from the author. See [LICENSE](./LICENSE) for details.

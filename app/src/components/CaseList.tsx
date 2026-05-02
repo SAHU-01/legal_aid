@@ -16,6 +16,7 @@ interface CaseAccount {
   status: string;
   createdAt: number;
   updatedAt: number;
+  jurisdiction?: string;
 }
 
 function getStatusName(status: Record<string, unknown>): string {
@@ -31,25 +32,116 @@ function isEmptyHash(hash: number[]): boolean {
   return hash.every((b) => b === 0);
 }
 
-function truncate(s: string, head = 4, tail = 4): string {
-  if (s.length <= head + tail + 3) return s;
-  return `${s.slice(0, head)}...${s.slice(-tail)}`;
-}
-
 function formatDate(timestamp: number): string {
   return new Date(timestamp * 1000).toLocaleDateString("en-CA");
 }
 
 const STATUS_STYLE: Record<string, string> = {
-  Open: "bg-blue-950 text-blue-300 border border-blue-900",
-  InProgress: "bg-yellow-950 text-yellow-300 border border-yellow-900",
-  Closed: "bg-orange-950 text-orange-300 border border-orange-900",
-  Paid: "bg-emerald-950 text-emerald-300 border border-emerald-900",
+  Open: "bg-red-500/15 text-red-400",
+  InProgress: "bg-blue-500/15 text-blue-400",
+  Closed: "bg-yellow-500/15 text-yellow-400",
+  Paid: "bg-emerald-500/15 text-emerald-400",
 };
 
 const EXPLORER = "https://explorer.solana.com";
 
-export default function CaseList({ refreshKey = 0 }: { refreshKey?: number }) {
+const DEMO_CASES: CaseAccount[] = [
+  {
+    publicKey: {
+      toBase58: () => "DemoCase1111111111111111111111111111111111111",
+    } as unknown as PublicKey,
+    caseId: "E2E-DEMO-1748",
+    documentHash: [
+      0xa3, 0xb2, 0xc1, 0xd4, 0x3a, 0xf2, 0x8b, 0x01, 0xcc, 0x44, 0x91,
+      0xde, 0x7f, 0xa3, 0x12, 0x5e, 0xb8, 0x90, 0x3c, 0xd7, 0x1a, 0x4f,
+      0x66, 0x2b, 0x9d, 0x05, 0xe8, 0x73, 0xca, 0x1b, 0x40, 0xf9,
+    ],
+    lawyer: {
+      toBase58: () => "DemoLawyer1111111111111111111111111111111111",
+    } as unknown as PublicKey,
+    issuer: {
+      toBase58: () => "DemoCourt11111111111111111111111111111111111",
+    } as unknown as PublicKey,
+    status: "Paid",
+    createdAt: Math.floor(new Date("2025-05-01").getTime() / 1000),
+    updatedAt: Math.floor(new Date("2025-05-01").getTime() / 1000),
+    jurisdiction: "DE",
+  },
+  {
+    publicKey: {
+      toBase58: () => "DemoCase2222222222222222222222222222222222222",
+    } as unknown as PublicKey,
+    caseId: "CASE-DE-2847",
+    documentHash: [
+      0xf7, 0xe8, 0xd9, 0xc0, 0xb3, 0x88, 0xf4, 0x62, 0x15, 0xcd, 0x9a,
+      0x37, 0x4b, 0x0e, 0xd6, 0x81, 0xf5, 0x29, 0x73, 0xae, 0x04, 0xbc,
+      0x68, 0x1f, 0x93, 0x47, 0xda, 0x50, 0x2c, 0xe6, 0x8b, 0x19,
+    ],
+    lawyer: {
+      toBase58: () => "DemoLawyer1111111111111111111111111111111111",
+    } as unknown as PublicKey,
+    issuer: {
+      toBase58: () => "DemoCourt11111111111111111111111111111111111",
+    } as unknown as PublicKey,
+    status: "Closed",
+    createdAt: Math.floor(new Date("2025-04-28").getTime() / 1000),
+    updatedAt: Math.floor(new Date("2025-04-28").getTime() / 1000),
+    jurisdiction: "DE",
+  },
+  {
+    publicKey: {
+      toBase58: () => "DemoCase4444444444444444444444444444444444444",
+    } as unknown as PublicKey,
+    caseId: "CASE-FR-9103",
+    documentHash: [
+      0xb1, 0xc2, 0xd3, 0xe4, 0x08, 0xd1, 0x6a, 0xf3, 0x4c, 0x85, 0xbe,
+      0x23, 0x76, 0x59, 0xa0, 0x1d, 0xe4, 0x3f, 0x8c, 0xb7, 0x60, 0x12,
+      0xd9, 0x45, 0xab, 0x7e, 0x01, 0xc8, 0x53, 0xf6, 0x34, 0x9a,
+    ],
+    lawyer: {
+      toBase58: () => "DemoLawyer1111111111111111111111111111111111",
+    } as unknown as PublicKey,
+    issuer: {
+      toBase58: () => "DemoCourt22222222222222222222222222222222222",
+    } as unknown as PublicKey,
+    status: "InProgress",
+    createdAt: Math.floor(new Date("2025-04-25").getTime() / 1000),
+    updatedAt: Math.floor(new Date("2025-04-25").getTime() / 1000),
+    jurisdiction: "FR",
+  },
+  {
+    publicKey: {
+      toBase58: () => "DemoCase3333333333333333333333333333333333333",
+    } as unknown as PublicKey,
+    caseId: "CASE-BR-4521",
+    documentHash: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    lawyer: {
+      toBase58: () => "DemoLawyer1111111111111111111111111111111111",
+    } as unknown as PublicKey,
+    issuer: {
+      toBase58: () => "DemoCourt33333333333333333333333333333333333",
+    } as unknown as PublicKey,
+    status: "Open",
+    createdAt: Math.floor(new Date("2025-04-22").getTime() / 1000),
+    updatedAt: Math.floor(new Date("2025-04-22").getTime() / 1000),
+    jurisdiction: "BR",
+  },
+];
+
+function inferJurisdiction(caseId: string): string {
+  const match = caseId.match(/^(?:CASE|E2E)-([A-Z]{2})/);
+  if (match) return match[1];
+  if (caseId.startsWith("E2E-DEMO")) return "DE";
+  return "\u2014";
+}
+
+export default function CaseList({
+  refreshKey = 0,
+  demoMode = false,
+}: {
+  refreshKey?: number;
+  demoMode?: boolean;
+}) {
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
   const [cases, setCases] = useState<CaseAccount[]>([]);
@@ -99,8 +191,13 @@ export default function CaseList({ refreshKey = 0 }: { refreshKey?: number }) {
   }, [program, wallet]);
 
   useEffect(() => {
+    if (demoMode) {
+      setCases(DEMO_CASES);
+      setLoading(false);
+      return;
+    }
     fetchCases();
-  }, [fetchCases, refreshKey]);
+  }, [fetchCases, refreshKey, demoMode]);
 
   if (loading) {
     return (
@@ -125,171 +222,86 @@ export default function CaseList({ refreshKey = 0 }: { refreshKey?: number }) {
     );
   }
 
+  if (cases.length === 0) {
+    return (
+      <div className="py-12 text-center">
+        <p className="text-sm text-zinc-500">
+          No cases assigned to your wallet.
+        </p>
+        <p className="mt-1 text-xs text-zinc-600">
+          Cases will appear here once a court authority opens one for you.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div>
-      {/* Header row with refresh */}
-      <div className="mb-3 flex items-center justify-between">
-        <p className="text-xs text-zinc-500">
-          {cases.length} {cases.length === 1 ? "case" : "cases"} found
-        </p>
-        <button
-          onClick={fetchCases}
-          className="rounded border border-zinc-700 px-2.5 py-1 text-xs text-zinc-400 hover:border-zinc-600 hover:text-zinc-300"
-        >
-          Refresh
-        </button>
-      </div>
-
-      {cases.length === 0 ? (
-        <div className="py-8 text-center">
-          <p className="text-sm text-zinc-500">
-            No cases assigned to your wallet.
-          </p>
-          <p className="mt-1 text-xs text-zinc-600">
-            Cases will appear here once a court authority opens one for you.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-px">
-          {/* Column headers -- hidden on mobile */}
-          <div className="hidden grid-cols-[1fr_auto_1fr_auto_auto] gap-4 px-3 pb-2 text-xs font-medium uppercase tracking-wide text-zinc-500 sm:grid">
-            <span>Case ID</span>
-            <span>Status</span>
-            <span>Document Hash</span>
-            <span>Date</span>
-            <span></span>
-          </div>
-
+      {/* Table */}
+      <table className="w-full">
+        {/* Header */}
+        <thead>
+          <tr className="border-b border-zinc-800 text-left text-[11px] font-medium uppercase tracking-widest text-zinc-500">
+            <th className="pb-3 pr-4 font-medium">Case ID</th>
+            <th className="pb-3 pr-4 font-medium">Status</th>
+            <th className="hidden pb-3 pr-4 font-medium md:table-cell">
+              Jurisdiction
+            </th>
+            <th className="hidden pb-3 pr-4 font-medium sm:table-cell">
+              Document Hash
+            </th>
+            <th className="pb-3 font-medium">Date</th>
+          </tr>
+        </thead>
+        <tbody>
           {cases.map((c) => {
             const hex = hashToHex(c.documentHash);
             const empty = isEmptyHash(c.documentHash);
             const expanded = expandedId === c.caseId;
             const explorerUrl = `${EXPLORER}/address/${c.publicKey.toBase58()}?cluster=devnet`;
+            const jurisdiction =
+              c.jurisdiction ?? inferJurisdiction(c.caseId);
 
             return (
-              <div key={c.caseId}>
-                {/* Row */}
-                <div
-                  className={`flex w-full items-center rounded text-left text-sm transition-colors ${
-                    expanded
-                      ? "bg-zinc-800"
-                      : "bg-zinc-800/40 hover:bg-zinc-800/70"
-                  }`}
-                >
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setExpandedId(expanded ? null : c.caseId)
-                    }
-                    className="min-w-0 flex-1"
-                  >
-                    {/* Desktop grid */}
-                    <div className="hidden grid-cols-[1fr_auto_1fr_auto] items-center gap-4 px-3 py-2.5 sm:grid">
-                      <span className="font-mono text-zinc-200">
-                        {c.caseId}
-                      </span>
-                      <span
-                        className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${STATUS_STYLE[c.status] ?? ""}`}
-                      >
-                        {c.status}
-                      </span>
-                      <span className="font-mono text-zinc-400">
-                        {empty ? "(none)" : truncate(hex, 6, 6)}
-                      </span>
-                      <span className="text-zinc-500">
-                        {formatDate(c.createdAt)}
-                      </span>
-                    </div>
-
-                    {/* Mobile stack */}
-                    <div className="flex flex-col gap-1.5 px-3 py-2.5 sm:hidden">
-                      <div className="flex items-center justify-between">
-                        <span className="font-mono text-zinc-200">
-                          {c.caseId}
-                        </span>
-                        <span
-                          className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${STATUS_STYLE[c.status] ?? ""}`}
-                        >
-                          {c.status}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-mono text-zinc-400">
-                          {empty ? "(none)" : truncate(hex, 6, 6)}
-                        </span>
-                        <span className="text-zinc-500">
-                          {formatDate(c.createdAt)}
-                        </span>
-                      </div>
-                    </div>
-                  </button>
-
-                  {/* Explorer link on row */}
+              <tr
+                key={c.caseId}
+                onClick={() =>
+                  setExpandedId(expanded ? null : c.caseId)
+                }
+                className="cursor-pointer border-b border-zinc-800/50 transition-colors hover:bg-zinc-800/30"
+              >
+                <td className="py-4 pr-4">
                   <a
                     href={explorerUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    title="View on Solana Explorer"
-                    className="mr-3 hidden shrink-0 rounded p-1 text-zinc-600 hover:bg-zinc-700 hover:text-blue-400 sm:block"
+                    className="font-mono text-sm text-zinc-200 hover:text-blue-400"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="h-3.5 w-3.5"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-4a.75.75 0 011.5 0v4A2.25 2.25 0 0112.75 17h-8.5A2.25 2.25 0 012 14.75v-8.5A2.25 2.25 0 014.25 4h5a.75.75 0 010 1.5h-5zm7.25-.75a.75.75 0 01.75-.75h3.5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0V6.31l-5.22 5.22a.75.75 0 11-1.06-1.06l5.22-5.22H12.25a.75.75 0 01-.75-.75z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    {c.caseId}
                   </a>
-                </div>
-
-                {/* Expanded detail panel */}
-                {expanded && (
-                  <div className="rounded-b border-t border-zinc-700 bg-zinc-800 px-4 py-3 text-xs">
-                    <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-zinc-300">
-                      <dt className="text-zinc-500">Document Hash</dt>
-                      <dd className="break-all font-mono">
-                        {empty ? "(none)" : hex}
-                      </dd>
-                      <dt className="text-zinc-500">PDA Address</dt>
-                      <dd>
-                        <a
-                          href={explorerUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-mono text-blue-400 hover:underline"
-                        >
-                          {c.publicKey.toBase58()}
-                          <span className="ml-1 text-zinc-600">&nearr;</span>
-                        </a>
-                      </dd>
-                      <dt className="text-zinc-500">Issuer</dt>
-                      <dd>
-                        <a
-                          href={`${EXPLORER}/address/${c.issuer.toBase58()}?cluster=devnet`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-mono text-blue-400 hover:underline"
-                        >
-                          {c.issuer.toBase58()}
-                          <span className="ml-1 text-zinc-600">&nearr;</span>
-                        </a>
-                      </dd>
-                      <dt className="text-zinc-500">Updated</dt>
-                      <dd>{formatDate(c.updatedAt)}</dd>
-                    </dl>
-                  </div>
-                )}
-              </div>
+                </td>
+                <td className="py-4 pr-4">
+                  <span
+                    className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${STATUS_STYLE[c.status] ?? ""}`}
+                  >
+                    {c.status === "InProgress" ? "In Progress" : c.status}
+                  </span>
+                </td>
+                <td className="hidden py-4 pr-4 text-sm text-zinc-400 md:table-cell">
+                  {jurisdiction}
+                </td>
+                <td className="hidden py-4 pr-4 font-mono text-xs text-zinc-500 sm:table-cell">
+                  {empty ? "\u2014" : `${hex.slice(0, 8)}\u2026`}
+                </td>
+                <td className="py-4 text-sm text-zinc-400">
+                  {formatDate(c.createdAt)}
+                </td>
+              </tr>
             );
           })}
-        </div>
-      )}
+        </tbody>
+      </table>
     </div>
   );
 }

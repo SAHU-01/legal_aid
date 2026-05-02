@@ -1,172 +1,796 @@
-"use client";
+import Link from "next/link";
+import "./landing.css";
 
-import { useCallback, useEffect, useState } from "react";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
-import CredentialStatus from "../components/CredentialStatus";
-import CaseList from "../components/CaseList";
-import ClaimPayment from "../components/ClaimPayment";
+const GITHUB_URL = "https://github.com/SAHU-01/legal_aid";
+const EXPLORER_URL =
+  "https://explorer.solana.com/address/3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV?cluster=devnet";
 
-const PROGRAM_ID = "3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV";
-const EXPLORER = "https://explorer.solana.com";
-
-function truncateAddress(address: string): string {
-  return `${address.slice(0, 4)}...${address.slice(-4)}`;
-}
-
-function truncateProgramId(id: string): string {
-  return `${id.slice(0, 4)}...${id.slice(-5)}`;
-}
-
-export default function Home() {
-  const { connection } = useConnection();
-  const { publicKey, connected } = useWallet();
-  const [balance, setBalance] = useState<number | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
-  const onClaimed = useCallback(() => setRefreshKey((k) => k + 1), []);
-
-  useEffect(() => {
-    if (!publicKey) {
-      setBalance(null);
-      return;
-    }
-    let cancelled = false;
-    connection.getBalance(publicKey).then((lamports) => {
-      if (!cancelled) setBalance(lamports / LAMPORTS_PER_SOL);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [publicKey, connection]);
-
+function GitHubIcon({ size = 16 }: { size?: number }) {
   return (
-    <div className="flex min-h-screen flex-col bg-zinc-950 text-zinc-100">
-      {/* Demo Mode Banner */}
-      <div className="border-b border-amber-900/50 bg-amber-950/40 px-4 py-2 text-center text-xs text-amber-300/90">
-        <span className="mr-1.5 inline-block rounded bg-amber-400/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-400">
-          Demo
-        </span>
-        This is a live Devnet prototype. All transactions are real and verifiable on Solana Explorer.
-      </div>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      style={{ verticalAlign: "-3px", marginRight: 4 }}
+    >
+      <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+    </svg>
+  );
+}
 
-      {/* Header */}
-      <header className="border-b border-zinc-800 px-4 py-4 sm:px-6">
-        <div className="mx-auto flex max-w-5xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-lg font-semibold tracking-tight text-zinc-50">
-              Legal Aid Protocol
-              <span className="font-normal text-zinc-400"> &mdash; Lawyer Portal</span>
-            </h1>
-            <p className="mt-0.5 text-xs text-zinc-500">
-              Program:{" "}
-              <a
-                href={`${EXPLORER}/address/${PROGRAM_ID}?cluster=devnet`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono text-zinc-400 hover:text-blue-400"
-              >
-                {truncateProgramId(PROGRAM_ID)}
-              </a>
-              <span className="mx-1.5 text-zinc-700">&middot;</span>
-              <span className="inline-block rounded bg-zinc-800 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-400">
-                Devnet
-              </span>
-            </p>
+function StarIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 .587l3.668 7.431 8.332 1.21-6.03 5.874 1.424 8.305L12 19.187l-7.394 3.889 1.424-8.305L0 8.228l8.332-1.21z" />
+    </svg>
+  );
+}
+
+function NavLogo() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path d="M12 2L2 7l10 5 10-5-10-5z" />
+      <path d="M2 17l10 5 10-5" />
+      <path d="M2 12l10 5 10-5" />
+    </svg>
+  );
+}
+
+/*
+const TESTIMONIALS = [
+  {
+    initials: "RK",
+    name: "Rechtsanwalt K.",
+    role: "Legal Aid Lawyer, Berlin",
+    text: "Payment in 400 milliseconds instead of 6 months. This is what legal aid infrastructure should have been from the start.",
+  },
+  {
+    initials: "SM",
+    name: "Sarah M.",
+    role: "NGO Director, Access to Justice EU",
+    text: "The credential verification is the killer feature. Courts issue, lawyers verify, citizens never expose their data. Exactly how it should work.",
+  },
+  {
+    initials: "JP",
+    name: "Jean-Pierre D.",
+    role: "Public Defender, Paris",
+    text: "I stopped taking legal aid cases because payment took a year. With this, I would start again. Instant settlement changes the economics entirely.",
+  },
+  {
+    initials: "AN",
+    name: "Anika N.",
+    role: "Legal Tech Researcher, UNDP",
+    text: "The cost comparison alone sells it. $0.004 per document anchor vs $0.30. At government scale, we\u2019re talking millions saved on infrastructure.",
+  },
+  {
+    initials: "DT",
+    name: "Dr. Thomas W.",
+    role: "Ministry of Justice, Advisor",
+    text: "It\u2019s a plug-in, not a replacement. Our SAP stays. Our processes stay. The blockchain just handles trust and payment. That\u2019s the right approach.",
+  },
+  {
+    initials: "MR",
+    name: "Maria R.",
+    role: "Pro Bono Coordinator, S\u00e3o Paulo",
+    text: "In Brazil, legal aid lawyers wait months. Some never get paid. Blockchain-verified instant payment would transform pro bono work here.",
+  },
+  {
+    initials: "KO",
+    name: "Kofi O.",
+    role: "Legal Aid Board, Accra",
+    text: "Every transaction on the block explorer. Every credential verifiable. This is the transparency and accountability we need in legal aid systems.",
+  },
+  {
+    initials: "LH",
+    name: "Lisa H.",
+    role: "Barrister, London",
+    text: "ZK compression means the state doesn\u2019t have to choose between cost and immutability. They get both. That removes every procurement objection.",
+  },
+];
+*/
+
+const CERTIFICATE_SYSTEMS = [
+  { flag: "\ud83c\udde9\ud83c\uddea", country: "Germany", cert: "Berechtigungsschein" },
+  { flag: "\ud83c\uddf3\ud83c\uddf1", country: "Netherlands", cert: "Toevoeging" },
+  { flag: "\ud83c\uddeb\ud83c\uddf7", country: "France", cert: "Aide Juridictionnelle" },
+  { flag: "\ud83c\uddee\ud83c\uddf9", country: "Italy", cert: "Patrocinio a spese dello Stato" },
+  { flag: "\ud83c\uddea\ud83c\uddf8", country: "Spain", cert: "Asistencia Jur\u00eddica Gratuita" },
+  { flag: "\ud83c\udde6\ud83c\uddf9", country: "Austria", cert: "Verfahrenshilfe" },
+  { flag: "\ud83c\uddf5\ud83c\uddf9", country: "Portugal", cert: "Apoio Judici\u00e1rio" },
+  { flag: "\ud83c\udde8\ud83c\udde6", country: "Canada", cert: "Legal Aid Certificate" },
+  { flag: "\ud83c\uddee\ud83c\uddea", country: "Ireland", cert: "Legal Aid Certificate" },
+];
+
+const PRO_BONO_SURVEY_URL =
+  "https://www.lw.com/admin/Upload/Documents/Global%20Pro%20Bono%20Survey/A-Survey-of-Pro-Bono-Practices-and-Opportunities.pdf";
+
+export default function LandingPage() {
+  return (
+    <div className="landing">
+      {/* NAV */}
+      <nav>
+        <div className="nav-pill">
+          <div className="nav-col nav-col-left">
+            <span className="nav-disabled">Blog</span>
+            <span className="nav-disabled">Docs</span>
+            <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
+              <GitHubIcon size={14} />
+              GitHub
+            </a>
           </div>
-          <div className="flex items-center gap-3">
-            {connected && publicKey && (
-              <div className="text-right text-xs text-zinc-400">
-                <a
-                  href={`${EXPLORER}/address/${publicKey.toBase58()}?cluster=devnet`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-mono hover:text-blue-400"
-                >
-                  {truncateAddress(publicKey.toBase58())}
-                </a>
-                <p>
-                  {balance !== null
-                    ? `${balance.toFixed(4)} SOL`
-                    : "Loading\u2026"}
-                </p>
-              </div>
-            )}
-            <WalletMultiButton />
-          </div>
-        </div>
-      </header>
-
-      {/* Main */}
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
-        {!connected ? (
-          /* ---------- Disconnected state ---------- */
-          <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 text-center">
-            <div className="space-y-2">
-              <h2 className="text-xl font-medium text-zinc-200">
-                Welcome to the Legal Aid Portal
-              </h2>
-              <p className="max-w-md text-sm text-zinc-400">
-                Connect your Phantom or Solflare wallet to view your SAS credential, manage cases, and claim payments.
-              </p>
-            </div>
-            <WalletMultiButton />
-            <p className="text-xs text-zinc-600">
-              Ensure your wallet is set to Solana Devnet
-            </p>
-          </div>
-        ) : (
-          /* ---------- Connected state ---------- */
-          <div className="space-y-6">
-            {/* Section A: Credential */}
-            <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-5">
-              <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-zinc-400">
-                Your Credential
-              </h2>
-              {publicKey && (
-                <CredentialStatus walletAddress={publicKey.toBase58()} />
-              )}
-            </section>
-
-            {/* Section B: Cases */}
-            <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-5">
-              <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-zinc-400">
-                Your Cases
-              </h2>
-              <CaseList refreshKey={refreshKey} />
-            </section>
-
-            {/* Section C: Claim Payment */}
-            <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-5">
-              <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-zinc-400">
-                Claim Payment
-              </h2>
-              <ClaimPayment refreshKey={refreshKey} onClaimed={onClaimed} />
-            </section>
-          </div>
-        )}
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-zinc-800/60 px-4 py-5">
-        <div className="mx-auto flex max-w-5xl flex-col items-center gap-2 text-xs text-zinc-600 sm:flex-row sm:justify-between">
-          <p>
-            Legal Aid Protocol &middot; Built on{" "}
+          <a href="#" className="nav-brand">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/adduce_logo.png" alt="Adduce" className="nav-logo-img" />
+            Adduce
+          </a>
+          <div className="nav-col nav-col-right">
+            <span className="nav-disabled">Our Story</span>
             <a
-              href="https://solana.com"
+              href={GITHUB_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-zinc-500 hover:text-zinc-300"
+              className="nav-star"
             >
-              Solana
+              <StarIcon />
+              Star
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      {/* HERO */}
+      <section className="hero">
+        <div className="hero-image-container">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/hero-img.png" alt="Adduce" />
+          <div className="hero-image-overlay" />
+        </div>
+        <div className="hero-content">
+          <h1>
+            Adduce
+            <br />
+            Justice, <em>verified</em>
+            <br />
+            on-chain.
+          </h1>
+          <p className="hero-sub">
+            Instant legal aid payments. Tamper-proof credentials. Government-grade
+            infrastructure at a fraction of the cost. Your court system stays the
+            same. Everything else gets faster.
+          </p>
+          <div className="hero-buttons">
+            <Link href="/dashboard" className="btn-primary">
+              Launch App
+            </Link>
+            <a
+              href={GITHUB_URL}
+              className="btn-secondary"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <GitHubIcon />
+              GitHub
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* QUICKSTART */}
+      <section className="quickstart">
+        <div>
+          <h2>Quickstart</h2>
+          <p>
+            Clone, configure, deploy. The legal aid plug-in connects to your
+            existing court system with zero changes to legacy infrastructure. All
+            you need is a Solana wallet and a Helius API key.
+          </p>
+          <div className="quickstart-links">
+            <a
+              href={GITHUB_URL}
+              className="btn-primary"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontSize: "0.85rem", padding: "0.6rem 1.5rem" }}
+            >
+              <GitHubIcon />
+              Star on GitHub
+            </a>
+            <a
+              href={`${GITHUB_URL}#quick-start`}
+              className="btn-secondary"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontSize: "0.85rem", padding: "0.6rem 1.5rem" }}
+            >
+              Read the docs &rarr;
+            </a>
+          </div>
+        </div>
+        <div>
+          <div className="terminal-box">
+            <div className="terminal-bar">
+              <div className="terminal-dots">
+                <span />
+                <span />
+                <span />
+              </div>
+              <div className="terminal-tabs">
+                <span className="terminal-tab active">clone</span>
+                <span className="terminal-tab">devnet</span>
+              </div>
+            </div>
+            <div className="terminal-body">
+              <span className="prompt">$</span>
+              git clone https://github.com/SAHU-01/legal_aid.git
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* THE PROBLEM */}
+      <section className="social-proof">
+        <div className="social-proof-label">The problem</div>
+        <h2>Justice delayed is justice denied.</h2>
+        <div className="problem-grid">
+          <div className="problem-card">
+            <div className="problem-number">6&ndash;12 months</div>
+            <div className="problem-label">
+              Average legal aid payment delay in the EU
+            </div>
+            <p className="problem-detail">
+              Lawyers routinely wait half a year or more for reimbursement,
+              creating cash-flow crises that force them to stop taking cases.
+            </p>
+            <div className="problem-source">
+              <a href="https://commission.europa.eu/strategy-and-policy/policies/justice-and-fundamental-rights/upholding-rule-law/eu-justice-scoreboard_en" target="_blank" rel="noopener noreferrer">
+                Source: EU Justice Scoreboard &amp; national bar surveys
+              </a>
+            </div>
+          </div>
+          <div className="problem-card">
+            <div className="problem-number">40%</div>
+            <div className="problem-label">
+              Lawyers who stop taking legal aid cases due to payment delays
+            </div>
+            <p className="problem-detail">
+              Nearly half of eligible lawyers opt out of legal aid work entirely,
+              shrinking the pool of representation for the most vulnerable
+              citizens.
+            </p>
+            <div className="problem-source">
+              <a href="https://www.ccbe.eu/documents/publications/" target="_blank" rel="noopener noreferrer">
+                Source: Council of Bars &amp; Law Societies of Europe (CCBE)
+              </a>
+            </div>
+          </div>
+          <div className="problem-card">
+            <div className="problem-number">2 billion+</div>
+            <div className="problem-label">
+              People worldwide who lack access to legal aid
+            </div>
+            <p className="problem-detail">
+              Over two billion people live outside the protection of the law.
+              Modernizing payment infrastructure is the first step to closing the
+              justice gap.
+            </p>
+            <div className="problem-source">
+              <a href="https://www.undp.org/publications/global-study-legal-aid" target="_blank" rel="noopener noreferrer">
+                Source: UNDP Global Study on Legal Aid (2024)
+              </a>
+            </div>
+          </div>
+          <div className="problem-card">
+            <div className="problem-number">$0.30 &rarr; $0.004</div>
+            <div className="problem-label">
+              Cost per document anchor with ZK compression
+            </div>
+            <p className="problem-detail">
+              Standard on-chain storage costs 75x more. Light Protocol&rsquo;s
+              ZK compression makes government-scale document integrity feasible
+              for the first time.
+            </p>
+            <div className="problem-source">
+              <a href="https://explorer.solana.com/address/3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV?cluster=devnet" target="_blank" rel="noopener noreferrer">
+                Measured on Solana Devnet, May 2025
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/*
+      -- TESTIMONIALS (commented out until real feedback is collected) --
+      <section className="social-proof">
+        <div className="social-proof-label">What people are saying</div>
+        <h2>Loved by lawyers.</h2>
+        <div className="testimonial-grid">
+          ...testimonial cards...
+        </div>
+      </section>
+      */}
+
+      {/* DASHBOARD PREVIEW */}
+      <section className="dashboard-section">
+        <h2>Manage cases, not paperwork.</h2>
+        <p className="subtitle">
+          One dashboard. Credential verification, case tracking, instant payment
+          claims.
+        </p>
+
+        <div className="dashboard-mockup">
+          <div className="dashboard-topbar">
+            <div className="dashboard-sidebar-items">
+              <span className="dashboard-sidebar-item active">
+                <span className="dot dot-green" /> Cases
+              </span>
+              <span className="dashboard-sidebar-item">
+                <span className="dot dot-yellow" /> Credentials
+              </span>
+              <span className="dashboard-sidebar-item">
+                <span className="dot dot-red" /> Payments
+              </span>
+            </div>
+            <div className="dashboard-live-badge">Devnet</div>
+          </div>
+          <div className="dashboard-body">
+            <div className="dashboard-nav">
+              <div className="dash-nav-section">
+                <div className="dash-nav-label">Navigation</div>
+                <div className="dash-nav-item active">{"\u229e"} Dashboard</div>
+                <div className="dash-nav-item">{"\u25ce"} My Cases</div>
+                <div className="dash-nav-item">{"\u2b21"} Credentials</div>
+              </div>
+              <div className="dash-nav-section">
+                <div className="dash-nav-label">Actions</div>
+                <div className="dash-nav-item">{"\u2197"} Claim Payment</div>
+                <div className="dash-nav-item">{"\u25c9"} Verify</div>
+              </div>
+              <div className="dash-nav-section">
+                <div className="dash-nav-label">Wallet</div>
+                <div
+                  className="dash-nav-item"
+                  style={{ fontFamily: "var(--mono)", fontSize: "0.7rem" }}
+                >
+                  C35K...7wkU
+                </div>
+              </div>
+            </div>
+            <div className="dashboard-content">
+              <div className="dash-content-header">
+                <div className="dash-content-title">Active Cases</div>
+                <div className="dash-filters">
+                  <button className="dash-filter">{"\u2195"} Sort</button>
+                  <button className="dash-filter">{"\u2298"} Filter</button>
+                </div>
+              </div>
+              <div className="dash-table">
+                <div className="dash-table-header">
+                  <span>Case ID</span>
+                  <span>Status</span>
+                  <span>Jurisdiction</span>
+                  <span>Document Hash</span>
+                  <span>Date</span>
+                </div>
+                <div className="dash-table-row">
+                  <span>E2E-DEMO-1748</span>
+                  <span>
+                    <span className="status-badge status-paid">Paid</span>
+                  </span>
+                  <span>DE</span>
+                  <span className="hash-text">a3b2c1d4...</span>
+                  <span>2025-05-01</span>
+                </div>
+                <div className="dash-table-row">
+                  <span>CASE-DE-2847</span>
+                  <span>
+                    <span className="status-badge status-closed">Closed</span>
+                  </span>
+                  <span>DE</span>
+                  <span className="hash-text">f7e8d9c0...</span>
+                  <span>2025-04-28</span>
+                </div>
+                <div className="dash-table-row">
+                  <span>CASE-FR-9103</span>
+                  <span>
+                    <span className="status-badge status-progress">
+                      In Progress
+                    </span>
+                  </span>
+                  <span>FR</span>
+                  <span className="hash-text">b1c2d3e4...</span>
+                  <span>2025-04-25</span>
+                </div>
+                <div className="dash-table-row">
+                  <span>CASE-BR-4521</span>
+                  <span>
+                    <span className="status-badge status-open">Open</span>
+                  </span>
+                  <span>BR</span>
+                  <span className="hash-text">&mdash;</span>
+                  <span>2025-04-22</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CASE TRACKING */}
+      <section className="tracking-section">
+        <div className="tracking-layout">
+          {/* Left: copy */}
+          <div className="tracking-copy">
+            <div className="tracking-label">Case Tracking</div>
+            <h2>
+              Every case tracked.
+              <br />
+              Every payment traced.
+            </h2>
+            <p>
+              From credential issuance to final payment &mdash; every step is an
+              immutable on-chain transaction. Courts, lawyers, and auditors can
+              verify any case at any time. Nothing happens off the record.
+            </p>
+
+            <div className="tracking-features">
+              <div className="tracking-feature">
+                <div className="tracking-feature-icon">{"\u25a3"}</div>
+                <div>
+                  <h3>Structured lifecycle</h3>
+                  <p>
+                    Every case has a clear status: Open, In Progress, Closed,
+                    Paid. No ambiguity.
+                  </p>
+                </div>
+              </div>
+              <div className="tracking-feature">
+                <div className="tracking-feature-icon">{"\u25ce"}</div>
+                <div>
+                  <h3>Full trace</h3>
+                  <p>
+                    Every document hash, credential check, and payment is a
+                    Solana transaction with a block explorer link.
+                  </p>
+                </div>
+              </div>
+              <div className="tracking-feature">
+                <div className="tracking-feature-icon">{"\u25cb"}</div>
+                <div>
+                  <h3>Immutable audit log</h3>
+                  <p>
+                    Append-only. No edits, no deletions. Full accountability for
+                    government auditors.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: ticket mockup */}
+          <div className="tracking-ticket">
+            <div className="ticket-header">
+              <span className="ticket-id">#CASE-DE-2847</span>
+              <span className="ticket-title">
+                Legal Aid Case &mdash; Jurisdiction DE
+              </span>
+            </div>
+            <div className="ticket-meta">
+              <span className="ticket-status">Closed</span>
+              <span className="ticket-assignee">
+                {"\u2696"} Lawyer: C35K&hellip;7wkU
+              </span>
+            </div>
+
+            <div className="ticket-timeline">
+              <div className="ticket-event">
+                <div className="ticket-event-dot ticket-dot-blue" />
+                <div className="ticket-event-body">
+                  <div className="ticket-event-header">
+                    <strong>Court Authority</strong>
+                    <span>2 min ago</span>
+                  </div>
+                  <p>Case closed. Ruling in favor of applicant.</p>
+                </div>
+              </div>
+              <div className="ticket-event">
+                <div className="ticket-event-dot ticket-dot-green" />
+                <div className="ticket-event-body">
+                  <div className="ticket-event-header">
+                    <strong>Automation Agent</strong>
+                    <span>1 min ago</span>
+                  </div>
+                  <p>
+                    Document anchored. Compressed log created. Initiating
+                    payment disbursement.
+                  </p>
+                </div>
+              </div>
+              <div className="ticket-event">
+                <div className="ticket-event-dot ticket-dot-blue" />
+                <div className="ticket-event-body">
+                  <div className="ticket-event-header">
+                    <strong>Lawyer</strong>
+                    <span>just now</span>
+                  </div>
+                  <p>Payment claimed. 50 USDC received.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="ticket-trace">
+              <div className="ticket-trace-label">Trace</div>
+              <div className="ticket-trace-row">
+                <span className="ticket-trace-dot ticket-dot-green" />
+                <code>issue_credential()</code>
+                <span className="ticket-trace-status trace-ok">verified</span>
+              </div>
+              <div className="ticket-trace-row">
+                <span className="ticket-trace-dot ticket-dot-green" />
+                <code>open_case()</code>
+                <span className="ticket-trace-status trace-ok">done</span>
+              </div>
+              <div className="ticket-trace-row">
+                <span className="ticket-trace-dot ticket-dot-green" />
+                <code>anchor_document()</code>
+                <span className="ticket-trace-status trace-ok">done</span>
+              </div>
+              <div className="ticket-trace-row">
+                <span className="ticket-trace-dot ticket-dot-green" />
+                <code>close_case()</code>
+                <span className="ticket-trace-status trace-ok">done</span>
+              </div>
+              <div className="ticket-trace-row">
+                <span className="ticket-trace-dot ticket-dot-green" />
+                <code>claim_payment()</code>
+                <span className="ticket-trace-status trace-settled">
+                  settled
+                </span>
+              </div>
+              <div className="ticket-trace-row">
+                <span className="ticket-trace-dot ticket-dot-green" />
+                <code>mark_paid()</code>
+                <span className="ticket-trace-status trace-ok">confirmed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section className="how-section">
+        <h2>How it works.</h2>
+        <p className="subtitle">
+          Three steps. Zero changes to your existing court system.
+        </p>
+        <div className="how-steps">
+          <div className="how-step">
+            <div className="how-step-num">01</div>
+            <h3>Court issues credential.</h3>
+            <p>
+              A government court or NGO issues a verifiable digital
+              legal aid certificate directly to the citizen&rsquo;s wallet
+              using the Solana Attestation Service.
+            </p>
+          </div>
+          <div className="how-step">
+            <div className="how-step-num">02</div>
+            <h3>Lawyer anchors the case.</h3>
+            <p>
+              The lawyer accepts the case, uploads documents. Every filing is
+              SHA-256 hashed and anchored on-chain with ZK compression &mdash;
+              tamper-proof for fractions of a cent.
+            </p>
+          </div>
+          <div className="how-step">
+            <div className="how-step-num">03</div>
+            <h3>Payment. Instantly.</h3>
+            <p>
+              Case closed? The x402 payment gateway verifies the lawyer&rsquo;s
+              credential, confirms the case closure on-chain, and transfers USDC
+              directly to their wallet. No invoices. No waiting.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <section className="features-section" id="features">
+        <div className="features-label">Features</div>
+        <h2>
+          Everything you need to modernize
+          <br />
+          legal aid infrastructure.
+        </h2>
+        <p className="subtitle" />
+        <div className="features-grid">
+          <div className="feature-card">
+            <div className="feature-icon">{"\u2b21"}</div>
+            <h3>Verifiable Credentials</h3>
+            <p>
+              Government-issued digital certificates via Solana Attestation
+              Service. Issue, verify, and revoke without exposing citizen data.
+            </p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">{"\u25ce"}</div>
+            <h3>Instant Settlement</h3>
+            <p>
+              USDC disbursement in 400ms via x402 protocol. Credential-gated
+              &mdash; payment only flows when cryptographic verification passes.
+            </p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">{"\u2b21"}</div>
+            <h3>ZK Compression</h3>
+            <p>
+              Light Protocol compressed state. 98.8% cheaper than standard
+              storage. Layer 1 security through zero-knowledge proofs.
+            </p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">{"\u2298"}</div>
+            <h3>Legacy Compatible</h3>
+            <p>
+              Plug-in architecture. Your SAP, SQL, or legacy database stays
+              untouched. The automation agent bridges it to blockchain.
+            </p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">{"\u25c8"}</div>
+            <h3>Tamper-Proof Audit</h3>
+            <p>
+              Every document hash, credential issuance, and payment is immutably
+              logged. Click any transaction on Solana Explorer to verify.
+            </p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">{"\u229e"}</div>
+            <h3>Open Standard</h3>
+            <p>
+              Built on SAS, x402, and Light Protocol &mdash; open, interoperable
+              standards. Any court can issue, any law firm can verify.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* COST */}
+      <section className="cost-section" id="cost">
+        <h2>Infrastructure that pays for itself.</h2>
+        <div className="cost-compare">
+          <div className="cost-card old">
+            <div className="cost-card-label">Standard PDA</div>
+            <div className="cost-card-price">$0.30</div>
+            <div className="cost-card-unit">per document anchor</div>
+          </div>
+          <div className="cost-arrow">&rarr;</div>
+          <div className="cost-card new">
+            <div className="cost-card-label">ZK Compressed</div>
+            <div className="cost-card-price">$0.004</div>
+            <div className="cost-card-unit">per document anchor</div>
+          </div>
+        </div>
+        <p className="cost-savings">
+          <strong>98.8% savings.</strong> At 100,000 cases per year, that&rsquo;s
+          $29,600 saved on storage alone.
+        </p>
+      </section>
+
+      {/* COUNTRIES */}
+      <section className="countries-section" id="countries">
+        <h2>Certificate-based legal aid systems.</h2>
+        <p className="subtitle">
+          These jurisdictions issue voucher-style legal aid certificates to
+          authorize and pay private lawyers &mdash; the exact workflow this
+          protocol digitalizes.
+        </p>
+        <div className="cert-grid">
+          {CERTIFICATE_SYSTEMS.map((s) => (
+            <div key={s.country} className="cert-card">
+              <div className="cert-flag">{s.flag}</div>
+              <div className="cert-country">{s.country}</div>
+              <div className="cert-name">{s.cert}</div>
+            </div>
+          ))}
+        </div>
+        <div className="countries-stat">
+          <div className="countries-stat-row">
+            <div className="stat-item">
+              <div className="stat-number">9</div>
+              <div className="stat-label">Certificate-based systems</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number">3</div>
+              <div className="stat-label">Continents</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number">500M+</div>
+              <div className="stat-label">Citizens covered</div>
+            </div>
+          </div>
+          <p className="cert-source">
+            Reference:{" "}
+            <a
+              href={PRO_BONO_SURVEY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Latham &amp; Watkins &mdash; A Survey of Pro Bono Practices and
+              Opportunities (PDF)
             </a>
           </p>
-          <div className="flex items-center gap-3">
-            <span>SAS</span>
-            <span className="text-zinc-800">&middot;</span>
-            <span>Light Protocol</span>
-            <span className="text-zinc-800">&middot;</span>
-            <span>x402</span>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="cta-section">
+        <h2>
+          Justice shouldn&rsquo;t wait
+          <br />
+          for a bank transfer.
+        </h2>
+        <p>
+          Deploy on Solana Devnet today. Every transaction verifiable. Every
+          credential tamper-proof. Every payment instant.
+        </p>
+        <div className="hero-buttons">
+          <Link href="/dashboard" className="btn-primary">
+            Launch App
+          </Link>
+          <a
+            href={EXPLORER_URL}
+            className="btn-secondary"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Verify on Explorer {"\u2197"}
+          </a>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="footer-rich">
+        <div className="footer-bg">
+          {/* Footer background image — add footer-bg.png to /app/public */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/footer-bg.png" alt="" />
+        </div>
+        <div className="footer-columns">
+          <div className="footer-col">
+            <div className="footer-col-title">Product</div>
+            <Link href="/dashboard">Launch App</Link>
+            <a href={`${GITHUB_URL}#quick-start`} target="_blank" rel="noopener noreferrer">Quickstart</a>
+            <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+          <div className="footer-col">
+            <div className="footer-col-title">Protocol</div>
+            <a href="https://www.sas.eco/" target="_blank" rel="noopener noreferrer">SAS</a>
+            <a href="https://www.lightprotocol.com/" target="_blank" rel="noopener noreferrer">Light Protocol</a>
+            <a href="https://www.x402.org/" target="_blank" rel="noopener noreferrer">x402</a>
+            <a href="https://solana.com" target="_blank" rel="noopener noreferrer">Solana</a>
+          </div>
+          <div className="footer-col">
+            <div className="footer-col-title">Developers</div>
+            <a href={`${GITHUB_URL}#readme`} target="_blank" rel="noopener noreferrer">Documentation</a>
+            <a href={EXPLORER_URL} target="_blank" rel="noopener noreferrer">Explorer</a>
+            <a href={`${GITHUB_URL}/blob/main/target/idl/legal_aid.json`} target="_blank" rel="noopener noreferrer">IDL Reference</a>
+          </div>
+          <div className="footer-col">
+            <div className="footer-col-title">Resources</div>
+            <a href={PRO_BONO_SURVEY_URL} target="_blank" rel="noopener noreferrer">Pro Bono Survey</a>
+            <a href={`${GITHUB_URL}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer">License</a>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <p>&copy; 2026 Adduce. Source-available under proprietary license.</p>
+          <div className="footer-bottom-links">
+            <a href={`${GITHUB_URL}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer">License</a>
           </div>
         </div>
       </footer>

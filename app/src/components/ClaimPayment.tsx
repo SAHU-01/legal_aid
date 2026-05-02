@@ -46,12 +46,34 @@ function truncate(s: string, head = 4, tail = 4): string {
   return `${s.slice(0, head)}...${s.slice(-tail)}`;
 }
 
+const DEMO_CLOSED: CaseAccount[] = [
+  {
+    publicKey: { toBase58: () => "DemoCase2222222222222222222222222222222222222" } as unknown as PublicKey,
+    caseId: "CASE-DE-2847",
+    status: "Closed",
+    createdAt: Math.floor(new Date("2025-04-28").getTime() / 1000),
+    updatedAt: Math.floor(new Date("2025-04-28").getTime() / 1000),
+  },
+];
+
+const DEMO_PAID: CaseAccount[] = [
+  {
+    publicKey: { toBase58: () => "DemoCase1111111111111111111111111111111111111" } as unknown as PublicKey,
+    caseId: "E2E-DEMO-1748",
+    status: "Paid",
+    createdAt: Math.floor(new Date("2025-05-01").getTime() / 1000),
+    updatedAt: Math.floor(new Date("2025-05-01").getTime() / 1000),
+  },
+];
+
 export default function ClaimPayment({
   refreshKey,
   onClaimed,
+  demoMode = false,
 }: {
   refreshKey: number;
   onClaimed: () => void;
+  demoMode?: boolean;
 }) {
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
@@ -115,8 +137,14 @@ export default function ClaimPayment({
   }, [program, wallet]);
 
   useEffect(() => {
+    if (demoMode) {
+      setClosedCases(DEMO_CLOSED);
+      setPaidCases(DEMO_PAID);
+      setLoading(false);
+      return;
+    }
     fetchCases();
-  }, [fetchCases, refreshKey]);
+  }, [fetchCases, refreshKey, demoMode]);
 
   // Auto-dismiss toast
   useEffect(() => {
@@ -126,9 +154,24 @@ export default function ClaimPayment({
   }, [toast]);
 
   async function handleClaim(caseId: string) {
-    if (!wallet) return;
+    if (!wallet && !demoMode) return;
     setClaiming(true);
     setConfirmCaseId(null);
+
+    if (demoMode) {
+      // Simulate a short delay and success
+      await new Promise((r) => setTimeout(r, 1200));
+      const fakeTx = "5DemoTx" + Math.random().toString(36).slice(2, 10) + "ExampleSignature1111111111111111111111111111111111111111";
+      setClaims((prev) => [
+        { caseId, txSignature: fakeTx, amount: String(AMOUNT_USDC), claimedAt: Math.floor(Date.now() / 1000) },
+        ...prev,
+      ]);
+      setClosedCases((prev) => prev.filter((c) => c.caseId !== caseId));
+      setToast({ type: "success", message: `[Demo] Payment claimed for ${caseId}`, detail: "This is a simulated transaction — connect a wallet with real devnet data to claim for real." });
+      setClaiming(false);
+      onClaimed();
+      return;
+    }
 
     try {
       const res = await fetch("/api/claim-payment", {
