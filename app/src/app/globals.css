@@ -1,1 +1,116 @@
 @import "tailwindcss";
+
+/* ───────── SHARED NAVBAR ───────── */
+.shared-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+}
+
+.shared-nav-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  background: rgba(15, 15, 15, 0.92);
+  backdrop-filter: blur(20px);
+  padding: 0.6rem 1.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+.shared-nav-col {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.shared-nav-link {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 400;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.shared-nav-link:hover {
+  color: #fff;
+}
+
+.shared-nav-active {
+  color: #fff !important;
+  font-weight: 500;
+}
+
+.shared-nav-disabled {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.shared-nav-brand {
+  margin: 0 1.2rem;
+  padding: 0 1.2rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  color: #fff !important;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.shared-nav-logo {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  filter: invert(1);
+}
+
+.shared-nav-star {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.7) !important;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.shared-nav-star:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff !important;
+}
+
+@media (max-width: 640px) {
+  .shared-nav-pill { padding: 0.5rem 1rem; }
+  .shared-nav-link { font-size: 0.75rem; }
+  .shared-nav-col { gap: 1rem; }
+  .shared-nav-left a { display: none; }
+  .shared-nav-right .shared-nav-disabled { display: none; }
+  .shared-nav-disabled { font-size: 0.75rem; }
+  .shared-nav-brand { margin: 0 0.75rem; padding: 0 0.75rem; }
+}

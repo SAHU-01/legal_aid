@@ -1,5 +1,9 @@
 import Link from "next/link";
 import "./landing.css";
+import TerminalTabs from "./TerminalTabs";
+import ArchDiagram from "./ArchDiagram";
+import HeartbeatTimeline from "./HeartbeatTimeline";
+import Navbar from "./Navbar";
 
 const GITHUB_URL = "https://github.com/SAHU-01/legal_aid";
 const EXPLORER_URL =
@@ -113,36 +117,7 @@ const PRO_BONO_SURVEY_URL =
 export default function LandingPage() {
   return (
     <div className="landing">
-      {/* NAV */}
-      <nav>
-        <div className="nav-pill">
-          <div className="nav-col nav-col-left">
-            <span className="nav-disabled">Blog</span>
-            <span className="nav-disabled">Docs</span>
-            <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
-              <GitHubIcon size={14} />
-              GitHub
-            </a>
-          </div>
-          <a href="#" className="nav-brand">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/adduce_logo.png" alt="Adduce" className="nav-logo-img" />
-            Adduce
-          </a>
-          <div className="nav-col nav-col-right">
-            <span className="nav-disabled">Our Story</span>
-            <a
-              href={GITHUB_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="nav-star"
-            >
-              <StarIcon />
-              Star
-            </a>
-          </div>
-        </div>
-      </nav>
+      <Navbar activePage="home" />
 
       {/* HERO */}
       <section className="hero">
@@ -160,9 +135,9 @@ export default function LandingPage() {
             on-chain.
           </h1>
           <p className="hero-sub">
-            Instant legal aid payments. Tamper-proof credentials. Government-grade
-            infrastructure at a fraction of the cost. Your court system stays the
-            same. Everything else gets faster.
+            One artifact &mdash; the legal aid entitlement certificate &mdash;
+            issued, verified, and settled on a public rail. Your court system
+            stays untouched. The certificate goes on-chain.
           </p>
           <div className="hero-buttons">
             <Link href="/dashboard" className="btn-primary">
@@ -186,9 +161,9 @@ export default function LandingPage() {
         <div>
           <h2>Quickstart</h2>
           <p>
-            Clone, configure, deploy. The legal aid plug-in connects to your
-            existing court system with zero changes to legacy infrastructure. All
-            you need is a Solana wallet and a Helius API key.
+            Clone, configure, deploy. A specialized QEAA issuer/verifier for
+            legal aid entitlements, anchored on Solana for cross-jurisdictional
+            auditability and revocation. All you need is a Solana wallet.
           </p>
           <div className="quickstart-links">
             <a
@@ -213,23 +188,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div>
-          <div className="terminal-box">
-            <div className="terminal-bar">
-              <div className="terminal-dots">
-                <span />
-                <span />
-                <span />
-              </div>
-              <div className="terminal-tabs">
-                <span className="terminal-tab active">clone</span>
-                <span className="terminal-tab">devnet</span>
-              </div>
-            </div>
-            <div className="terminal-body">
-              <span className="prompt">$</span>
-              git clone https://github.com/SAHU-01/legal_aid.git
-            </div>
-          </div>
+          <TerminalTabs />
         </div>
       </section>
 
@@ -421,6 +380,152 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* HOW IT WORKS */}
+      <section className="how-section">
+        <h2>
+          Disburse legal aid,
+          <br />
+          not manual invoices.
+        </h2>
+        <div className="how-steps">
+          <div className="how-step">
+            <div className="how-step-num">01</div>
+            <h3>Issue the credential.</h3>
+            <p>
+              Define the jurisdiction and eligibility. The court issues a
+              digital, tamper-proof legal aid certificate directly to the
+              citizen.
+            </p>
+          </div>
+          <div className="how-step">
+            <div className="how-step-num">02</div>
+            <h3>Anchor the proof.</h3>
+            <p>
+              The lawyer accepts the case. Zero-knowledge architecture verifies
+              the court filings on-chain instantly, without ever exposing
+              private case data.
+            </p>
+          </div>
+          <div className="how-step">
+            <div className="how-step-num">03</div>
+            <h3>Settle instantly.</h3>
+            <p>
+              Case closed. The x402 gateway verifies the proof and transfers
+              USDC to the lawyer. No waiting. Monitor budgets directly from
+              the dashboard.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <section className="features-section" id="features">
+        <div className="features-label">Features</div>
+        <h2>
+          One artifact on a public rail.
+          <br />
+          Everything else stays.
+        </h2>
+        <p className="subtitle" />
+        <div className="features-grid">
+          <div className="feature-card">
+            <div className="feature-icon">{"\u2b21"}</div>
+            <h3>Verifiable Credentials</h3>
+            <p>
+              The entitlement certificate becomes a QEAA &mdash; issued by one
+              authority, consumed by another, verifiable across institutional
+              boundaries without phone calls.
+            </p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">{"\u25ce"}</div>
+            <h3>Instant Settlement</h3>
+            <p>
+              USDC disbursement in 400ms via x402. Payment only flows when
+              the credential is valid, unused, and unrevoked. Double-spend
+              prevention built into the protocol.
+            </p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">{"\u2b21"}</div>
+            <h3>ZK Compression</h3>
+            <p>
+              Light Protocol compressed state. 98.8% cheaper than standard
+              storage. Layer 1 security through zero-knowledge proofs.
+            </p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">{"\u2298"}</div>
+            <h3>Legacy Compatible</h3>
+            <p>
+              Case content stays in your existing national system. Adduce
+              slots in underneath one specific workflow &mdash; the
+              entitlement certificate &mdash; not a full-stack replacement.
+            </p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">{"\u25c8"}</div>
+            <h3>Tamper-Proof Audit</h3>
+            <p>
+              The chain is the neutral, auditable, multi-party-readable
+              substrate. Any participating lawyer in any jurisdiction can
+              verify an entitlement without calling the issuing authority.
+            </p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">{"\u229e"}</div>
+            <h3>EUDI-Ready</h3>
+            <p>
+              Positioned as a specialized QEAA issuer compatible with W3C VC
+              and ARF specs. Not an alternative to EUDI &mdash; a reference
+              implementation for legal aid.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* JURISDICTION */}
+      <section className="jurisdiction-section">
+        <div className="jurisdiction-layout">
+          {/* Left: copy */}
+          <div className="jurisdiction-copy">
+            <div className="jurisdiction-label">Bring Your Own Jurisdiction</div>
+            <h2>Bring your own jurisdiction.</h2>
+            <p>
+              Legal frameworks change across borders; your infrastructure
+              shouldn&rsquo;t have to. Adduce uses a modular, multi-tenant
+              architecture on Solana. Connect to our audited core engine, deploy
+              your local compliance parameters, and launch.
+            </p>
+            <div className="jurisdiction-frameworks">
+              <div className="jurisdiction-frameworks-label">
+                Works with any legal framework
+              </div>
+              <div className="jurisdiction-icons">
+                <div className="jurisdiction-icon-item">
+                  <div className="jurisdiction-icon">{"\ud83c\udde9\ud83c\uddea"}</div>
+                  <span>Germany</span>
+                </div>
+                <div className="jurisdiction-icon-item">
+                  <div className="jurisdiction-icon">{"\ud83c\uddeb\ud83c\uddf7"}</div>
+                  <span>France</span>
+                </div>
+                <div className="jurisdiction-icon-item">
+                  <div className="jurisdiction-icon">{"\ud83c\uddee\ud83c\uddf3"}</div>
+                  <span>India</span>
+                </div>
+                <div className="jurisdiction-icon-item jurisdiction-more">
+                  <span>and 6 more&hellip;</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: animated architecture diagram */}
+          <ArchDiagram />
+        </div>
+      </section>
+
       {/* CASE TRACKING */}
       <section className="tracking-section">
         <div className="tracking-layout">
@@ -562,133 +667,170 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section className="how-section">
-        <h2>How it works.</h2>
-        <p className="subtitle">
-          Three steps. Zero changes to your existing court system.
-        </p>
-        <div className="how-steps">
-          <div className="how-step">
-            <div className="how-step-num">01</div>
-            <h3>Court issues credential.</h3>
-            <p>
-              A government court or NGO issues a verifiable digital
-              legal aid certificate directly to the citizen&rsquo;s wallet
-              using the Solana Attestation Service.
-            </p>
+      {/* HEARTBEATS */}
+      <section className="heartbeat-section">
+        <div className="heartbeat-layout">
+          <div className="heartbeat-copy">
+            <div className="heartbeat-label-row">
+              <div className="heartbeat-label">
+                {"\u2699\ufe0f"} Autonomous Heartbeats
+              </div>
+              <div className="heartbeat-coming-soon">Coming Soon</div>
+            </div>
+            <h2>
+              Automate the
+              <br />
+              bureaucracy.
+            </h2>
+            <ul className="heartbeat-bullets">
+              <li>
+                <span className="hb-bullet-icon">{"\u2734"}</span>
+                <span>
+                  <strong>Extraction agents</strong> wake up on a defined
+                  schedule to securely query your legacy SQL court databases for
+                  newly closed cases.
+                </span>
+              </li>
+              <li>
+                <span className="hb-bullet-icon">{"\u2734"}</span>
+                <span>
+                  <strong>Unstructured docket data</strong> is automatically
+                  parsed for required metadata &mdash; jurisdiction, lawyer ID,
+                  case outcome &mdash; with zero human data entry.
+                </span>
+              </li>
+              <li>
+                <span className="hb-bullet-icon">{"\u2734"}</span>
+                <span>
+                  <strong>Compliance agents</strong> verify the extracted data
+                  against your specific jurisdictional eligibility tiers and
+                  limits.
+                </span>
+              </li>
+              <li>
+                <span className="hb-bullet-icon">{"\u2734"}</span>
+                <span>
+                  <strong>Settlement nodes</strong> format the verified data into
+                  a JSON payload, triggering Solana ZK-compression anchoring and
+                  x402 payment.
+                </span>
+              </li>
+            </ul>
           </div>
-          <div className="how-step">
-            <div className="how-step-num">02</div>
-            <h3>Lawyer anchors the case.</h3>
-            <p>
-              The lawyer accepts the case, uploads documents. Every filing is
-              SHA-256 hashed and anchored on-chain with ZK compression &mdash;
-              tamper-proof for fractions of a cent.
-            </p>
-          </div>
-          <div className="how-step">
-            <div className="how-step-num">03</div>
-            <h3>Payment. Instantly.</h3>
-            <p>
-              Case closed? The x402 payment gateway verifies the lawyer&rsquo;s
-              credential, confirms the case closure on-chain, and transfers USDC
-              directly to their wallet. No invoices. No waiting.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* FEATURES */}
-      <section className="features-section" id="features">
-        <div className="features-label">Features</div>
-        <h2>
-          Everything you need to modernize
-          <br />
-          legal aid infrastructure.
-        </h2>
-        <p className="subtitle" />
-        <div className="features-grid">
-          <div className="feature-card">
-            <div className="feature-icon">{"\u2b21"}</div>
-            <h3>Verifiable Credentials</h3>
-            <p>
-              Government-issued digital certificates via Solana Attestation
-              Service. Issue, verify, and revoke without exposing citizen data.
-            </p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">{"\u25ce"}</div>
-            <h3>Instant Settlement</h3>
-            <p>
-              USDC disbursement in 400ms via x402 protocol. Credential-gated
-              &mdash; payment only flows when cryptographic verification passes.
-            </p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">{"\u2b21"}</div>
-            <h3>ZK Compression</h3>
-            <p>
-              Light Protocol compressed state. 98.8% cheaper than standard
-              storage. Layer 1 security through zero-knowledge proofs.
-            </p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">{"\u2298"}</div>
-            <h3>Legacy Compatible</h3>
-            <p>
-              Plug-in architecture. Your SAP, SQL, or legacy database stays
-              untouched. The automation agent bridges it to blockchain.
-            </p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">{"\u25c8"}</div>
-            <h3>Tamper-Proof Audit</h3>
-            <p>
-              Every document hash, credential issuance, and payment is immutably
-              logged. Click any transaction on Solana Explorer to verify.
-            </p>
-          </div>
-          <div className="feature-card">
-            <div className="feature-icon">{"\u229e"}</div>
-            <h3>Open Standard</h3>
-            <p>
-              Built on SAS, x402, and Light Protocol &mdash; open, interoperable
-              standards. Any court can issue, any law firm can verify.
-            </p>
+          <div className="heartbeat-visual">
+            <HeartbeatTimeline />
           </div>
         </div>
       </section>
 
       {/* COST */}
       <section className="cost-section" id="cost">
-        <h2>Infrastructure that pays for itself.</h2>
-        <div className="cost-compare">
-          <div className="cost-card old">
-            <div className="cost-card-label">Standard PDA</div>
-            <div className="cost-card-price">$0.30</div>
-            <div className="cost-card-unit">per document anchor</div>
+        <div className="cost-top">
+          <div className="cost-label">OpEx vs. CapEx</div>
+          <h2>
+            Stop paying for idle servers.
+            <br />
+            Pay per cryptographic proof.
+          </h2>
+          <p className="cost-subtext">
+            Enterprise consortium chains require massive upfront consulting fees
+            and permanent server costs just to keep the network alive. Adduce
+            operates on pure OpEx. You pay fractions of a cent only when a
+            credential is issued or a ZK proof is anchored. No runaway IT
+            contracts. No black box consulting fees.
+          </p>
+        </div>
+
+        <div className="cost-breakdown-layout">
+          {/* Left: table widget */}
+          <div className="cost-widget">
+            <div className="cost-table-header">
+              <span>Infrastructure</span>
+              <span>Budget Used</span>
+              <span>Spend / Budget</span>
+            </div>
+
+            <div className="cost-table-row">
+              <div className="cost-row-info">
+                <div className="cost-row-title">ZK Document Anchoring</div>
+                <div className="cost-row-sub">Light Protocol (State Compression)</div>
+              </div>
+              <div className="cost-bar-wrap">
+                <div className="cost-bar" style={{ width: "28.4%" }} />
+              </div>
+              <div className="cost-row-price">
+                <strong>$1.42</strong> / $5.00
+              </div>
+            </div>
+
+            <div className="cost-table-row">
+              <div className="cost-row-info">
+                <div className="cost-row-title">Credential Issuance</div>
+                <div className="cost-row-sub">Solana Attestation Service (SAS)</div>
+              </div>
+              <div className="cost-bar-wrap">
+                <div className="cost-bar" style={{ width: "40%" }} />
+              </div>
+              <div className="cost-row-price">
+                <strong>$0.80</strong> / $2.00
+              </div>
+            </div>
+
+            <div className="cost-table-row">
+              <div className="cost-row-info">
+                <div className="cost-row-title">USDC Settlement Compute</div>
+                <div className="cost-row-sub">x402 Gateway</div>
+              </div>
+              <div className="cost-bar-wrap">
+                <div className="cost-bar" style={{ width: "15%" }} />
+              </div>
+              <div className="cost-row-price">
+                <strong>$0.15</strong> / $1.00
+              </div>
+            </div>
+
+            <div className="cost-table-row">
+              <div className="cost-row-info">
+                <div className="cost-row-title">RPC API Routing</div>
+                <div className="cost-row-sub">Helius</div>
+              </div>
+              <div className="cost-bar-wrap">
+                <div className="cost-bar" style={{ width: "49%" }} />
+              </div>
+              <div className="cost-row-price">
+                <strong>$49.00</strong> / $100.00
+              </div>
+            </div>
+
+            <div className="cost-table-total">
+              <span>Total</span>
+              <span>
+                <strong>$51.37</strong> / $108.00
+              </span>
+            </div>
           </div>
-          <div className="cost-arrow">&rarr;</div>
-          <div className="cost-card new">
-            <div className="cost-card-label">ZK Compressed</div>
-            <div className="cost-card-price">$0.004</div>
-            <div className="cost-card-unit">per document anchor</div>
+
+          {/* Right: context copy */}
+          <div className="cost-context">
+            <p>
+              Track your exact infrastructure burn down to the individual case.
+              Because Adduce utilizes Solana state compression and public RPC
+              routing, your operational costs drop from hundreds of thousands in
+              legacy server maintenance to literal dollars a month. Predictable,
+              transparent, and bound by hard protocol limits.
+            </p>
           </div>
         </div>
-        <p className="cost-savings">
-          <strong>98.8% savings.</strong> At 100,000 cases per year, that&rsquo;s
-          $29,600 saved on storage alone.
-        </p>
       </section>
 
       {/* COUNTRIES */}
       <section className="countries-section" id="countries">
         <h2>Certificate-based legal aid systems.</h2>
         <p className="subtitle">
-          These jurisdictions issue voucher-style legal aid certificates to
-          authorize and pay private lawyers &mdash; the exact workflow this
-          protocol digitalizes.
+          These jurisdictions issue voucher-style legal aid certificates &mdash;
+          statutory entitlements that cross institutional boundaries every time
+          a private lawyer uses one. That&rsquo;s the exact verification
+          problem Adduce solves.
         </p>
         <div className="cert-grid">
           {CERTIFICATE_SYSTEMS.map((s) => (
@@ -728,16 +870,132 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* WHY SPECIAL */}
+      <section className="special-section">
+        <div className="special-top">
+          <div className="special-label">Under the Hood</div>
+          <h2>Why Adduce is special.</h2>
+          <p className="subtitle">
+            Adduce handles the hard orchestration details correctly.
+          </p>
+        </div>
+        <div className="special-grid">
+          <div className="special-card">
+            <h3>Single-artifact anchoring.</h3>
+            <p>
+              Not asking governments to put their court system on a public
+              chain. Just one artifact: the legal aid entitlement certificate
+              &mdash; the voucher that authorizes and pays a private lawyer.
+            </p>
+          </div>
+          <div className="special-card">
+            <h3>Cross-institutional verification.</h3>
+            <p>
+              The certificate is issued by one authority, consumed by another.
+              Currently verified by phone or trust. Adduce makes it
+              cryptographically verifiable across institutional boundaries.
+            </p>
+          </div>
+          <div className="special-card">
+            <h3>Double-spend prevention.</h3>
+            <p>
+              A lawyer billing the state for a certificate already used or
+              revoked is a real fraud surface. The public chain makes
+              double-spending structurally impossible.
+            </p>
+          </div>
+          <div className="special-card">
+            <h3>No consortium required.</h3>
+            <p>
+              Fabric can&rsquo;t give cross-border verification without an
+              inter-ministerial consortium that doesn&rsquo;t exist and
+              won&rsquo;t. A public chain does this natively.
+            </p>
+          </div>
+          <div className="special-card">
+            <h3>Non-sensitive by design.</h3>
+            <p>
+              The certificate data isn&rsquo;t case content. It&rsquo;s
+              &ldquo;person X is entitled to Y hours for matter Z, valid until
+              date D.&rdquo; Exactly what ZK + SAS handles cleanly.
+            </p>
+          </div>
+          <div className="special-card">
+            <h3>EUDI Wallet tailwind.</h3>
+            <p>
+              The EU mandates verifiable credentials by 2026. A legal aid
+              entitlement certificate is exactly a QEAA. Adduce is the
+              specialized issuer that plugs into the EUDI ecosystem.
+            </p>
+          </div>
+          <div className="special-card">
+            <h3>Vertical specialization.</h3>
+            <p>
+              Not a generic QTSP competing with Yousign or Gataca. Purpose-built
+              for legal aid lifecycle: case workflow, lawyer billing, credential
+              gating, and settlement.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* WHAT WE ARE NOT */}
+      <section className="not-section">
+        <div className="not-top">
+          <div className="not-label">Differentiation</div>
+          <h2>What Adduce is not.</h2>
+        </div>
+        <div className="not-grid">
+          <div className="not-card">
+            <h3>Not a private chain.</h3>
+            <p>
+              No consortium setup, no dedicated nodes, no IBM consulting fees.
+              One audited program on Solana, shared by all jurisdictions.
+            </p>
+          </div>
+          <div className="not-card">
+            <h3>Not a case management system.</h3>
+            <p>
+              Case content stays in your existing national system. Adduce
+              handles one artifact: the entitlement certificate. That&rsquo;s
+              it.
+            </p>
+          </div>
+          <div className="not-card">
+            <h3>Not a generic QTSP.</h3>
+            <p>
+              We don&rsquo;t do KYC, digital signatures, or identity wallets.
+              We do legal aid entitlement issuance, verification, and
+              settlement.
+            </p>
+          </div>
+          <div className="not-card">
+            <h3>Not an alternative to EUDI.</h3>
+            <p>
+              Adduce is a specialized QEAA issuer that plugs into the EUDI
+              ecosystem. Building with the regulation, not against it.
+            </p>
+          </div>
+          <div className="not-card">
+            <h3>Not a replacement for your infrastructure.</h3>
+            <p>
+              Your ministry&rsquo;s database stays untouched. We slot in
+              underneath one specific workflow you already hate managing.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="cta-section">
         <h2>
-          Justice shouldn&rsquo;t wait
+          The entitlement certificate
           <br />
-          for a bank transfer.
+          deserves a public rail.
         </h2>
         <p>
-          Deploy on Solana Devnet today. Every transaction verifiable. Every
-          credential tamper-proof. Every payment instant.
+          One artifact. Cross-border verification. Instant settlement. No
+          consortium. Deploy on Solana Devnet today.
         </p>
         <div className="hero-buttons">
           <Link href="/dashboard" className="btn-primary">
