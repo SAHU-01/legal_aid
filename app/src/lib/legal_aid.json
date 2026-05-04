@@ -9,6 +9,10 @@
   "instructions": [
     {
       "name": "anchor_document",
+      "docs": [
+        "Anchor a document hash. Requires lawyer signature.",
+        "FIX #4: Re-checks credential liveness (not just stored pubkey)."
+      ],
       "discriminator": [
         87,
         8,
@@ -42,6 +46,9 @@
           }
         },
         {
+          "name": "credential_account"
+        },
+        {
           "name": "lawyer",
           "signer": true
         }
@@ -64,6 +71,10 @@
     },
     {
       "name": "close_case",
+      "docs": [
+        "Close a case. Requires reviewer role.",
+        "Re-checks credential liveness before allowing close."
+      ],
       "discriminator": [
         188,
         7,
@@ -120,6 +131,9 @@
           }
         },
         {
+          "name": "credential_account"
+        },
+        {
           "name": "authority",
           "signer": true
         }
@@ -133,6 +147,10 @@
     },
     {
       "name": "initialize",
+      "docs": [
+        "Initialize a jurisdiction config with role separation.",
+        "authority = opens cases, reviewer = reviews/links/closes, payer = marks paid."
+      ],
       "discriminator": [
         175,
         175,
@@ -181,11 +199,116 @@
         {
           "name": "jurisdiction",
           "type": "string"
+        },
+        {
+          "name": "expected_schema",
+          "type": "pubkey"
+        },
+        {
+          "name": "reviewer",
+          "type": "pubkey"
+        },
+        {
+          "name": "payer_role",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "link_credential",
+      "docs": [
+        "Link a SAS credential to a case. Requires reviewer role.",
+        "Validates:",
+        "1. Account owner == SAS program",
+        "2. Schema matches expected (dynamic offset parsing)",
+        "3. Credential not expired",
+        "4. Credential nonce matches case applicant (citizen binding)",
+        "5. Commitment root is non-zero"
+      ],
+      "discriminator": [
+        20,
+        80,
+        186,
+        195,
+        12,
+        98,
+        36,
+        11
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.jurisdiction",
+                "account": "ProgramConfig"
+              }
+            ]
+          }
+        },
+        {
+          "name": "case_file",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  115,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "case_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "credential_account"
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "_case_id",
+          "type": "string"
+        },
+        {
+          "name": "commitment_root",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
         }
       ]
     },
     {
       "name": "mark_paid",
+      "docs": [
+        "Mark case as paid. Requires payer role (separate from authority/reviewer)."
+      ],
       "discriminator": [
         51,
         120,
@@ -255,6 +378,10 @@
     },
     {
       "name": "open_case",
+      "docs": [
+        "Open a new case. Requires authority role.",
+        "`applicant` = the citizen's pubkey (SAS credential nonce must match)."
+      ],
       "discriminator": [
         249,
         236,
@@ -329,6 +456,10 @@
         {
           "name": "lawyer",
           "type": "pubkey"
+        },
+        {
+          "name": "applicant",
+          "type": "pubkey"
         }
       ]
     }
@@ -381,6 +512,51 @@
       "code": 6003,
       "name": "InvalidStatus",
       "msg": "Invalid case status for this operation"
+    },
+    {
+      "code": 6004,
+      "name": "CredentialNotLinked",
+      "msg": "No credential linked to this case"
+    },
+    {
+      "code": 6005,
+      "name": "CredentialWrongOwner",
+      "msg": "Credential account is not owned by the SAS program"
+    },
+    {
+      "code": 6006,
+      "name": "CredentialSchemaMismatch",
+      "msg": "Credential schema does not match expected schema"
+    },
+    {
+      "code": 6007,
+      "name": "CredentialExpired",
+      "msg": "Credential has expired"
+    },
+    {
+      "code": 6008,
+      "name": "CredentialDataTooShort",
+      "msg": "Credential account data is too short"
+    },
+    {
+      "code": 6009,
+      "name": "CredentialAlreadyLinked",
+      "msg": "Credential already linked to this case"
+    },
+    {
+      "code": 6010,
+      "name": "CommitmentRootEmpty",
+      "msg": "Commitment root must be non-zero"
+    },
+    {
+      "code": 6011,
+      "name": "CredentialApplicantMismatch",
+      "msg": "Credential nonce does not match case applicant"
+    },
+    {
+      "code": 6012,
+      "name": "CredentialRevoked",
+      "msg": "Credential account has been revoked (no longer exists on-chain)"
     }
   ],
   "types": [
@@ -411,6 +587,13 @@
             "type": "pubkey"
           },
           {
+            "name": "applicant",
+            "docs": [
+              "The applicant/citizen this case is for — credential nonce must match"
+            ],
+            "type": "pubkey"
+          },
+          {
             "name": "status",
             "type": {
               "defined": {
@@ -425,6 +608,25 @@
           {
             "name": "updated_at",
             "type": "i64"
+          },
+          {
+            "name": "credential_pubkey",
+            "docs": [
+              "SAS attestation account linked to this case"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "commitment_root",
+            "docs": [
+              "Merkle root of credential field commitments (commitment-based selective disclosure)"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
           },
           {
             "name": "bump",
@@ -463,12 +665,33 @@
             "type": "pubkey"
           },
           {
+            "name": "reviewer",
+            "docs": [
+              "Role: reviews cases and links credentials"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "payer",
+            "docs": [
+              "Role: approves payments (mark_paid)"
+            ],
+            "type": "pubkey"
+          },
+          {
             "name": "jurisdiction",
             "type": "string"
           },
           {
             "name": "total_cases",
             "type": "u64"
+          },
+          {
+            "name": "expected_schema",
+            "docs": [
+              "Expected SAS schema address for this jurisdiction's credentials"
+            ],
+            "type": "pubkey"
           },
           {
             "name": "bump",

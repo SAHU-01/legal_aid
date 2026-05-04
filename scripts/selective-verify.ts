@@ -217,7 +217,8 @@ async function main() {
   console.log("   │ Cross-jurisdiction     │ Ledger-bound     │ Global (any RPC) │");
   console.log("   │ Verifier requirements  │ Indy ledger      │ Internet access  │");
   console.log("   │                        │ access           │                  │");
-  console.log("   │ ZK strength            │ Full ZKP         │ Hash commitment  │");
+  console.log("   │ Privacy model          │ CL signatures    │ Commitment-based │");
+  console.log("   │                        │ (full ZKP)       │ selective disc.  │");
   console.log("   │                        │                  │ (ZK via Light    │");
   console.log("   │                        │                  │ Protocol roadmap)│");
   console.log("   │ Anchoring cost         │ Indy txn fees    │ ~$0.004          │");

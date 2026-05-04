@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",
+    "@irys/upload": "^0.0.15",
+    "@irys/upload-solana": "^0.1.8",
     "@lightprotocol/compressed-token": "^0.23.3",
     "@lightprotocol/stateless.js": "^0.23.3",
     "dotenv": "^17.4.2",

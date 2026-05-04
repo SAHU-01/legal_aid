@@ -1,0 +1,12 @@
+{
+  "issuance": {
+    "tx": "2vJKsByGezQXanKjJP24FWfHC1vJxtLQrjnHWCwPLuc8SuFMVXGZdenY9y2AtP63Qfv6MqjbzdvcNEEPMpj5Nx8q",
+    "citizen": "HYTBJCaYdGozuTVjeXcrAMM5FoMs3evPSsPTGHz9LKoP",
+    "attestation": "Fe1kRCUAdbZ3sR3jpp8b69LVkmVdmUHBgxCPHR82Scju"
+  },
+  "revocation": {
+    "tx": "2LK7Ct5kny2VRpanPTd9FkXAZUUYa1FoHLiohAE63UrmLSWL7b2wdQ5uUE4gCvacLNDyVACeHhdGNCXwx2dT4P3c",
+    "credentialExistsAfter": false
+  },
+  "timestamp": "2026-05-04T08:04:02.164Z"
+}

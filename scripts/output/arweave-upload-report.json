@@ -1,0 +1,22 @@
+{
+  "case_id": "BS-DE-143/22",
+  "encryption": {
+    "algorithm": "X25519-ECDH + AES-256-GCM",
+    "plaintextHash": "dee3a9f717efb2cb696cb712b7594ce5458bf473b00d66a25af31e207c73ee6f"
+  },
+  "arweave": {
+    "txId": "2Cyx7gpJgDmivrgDiaCnwsrVCAWqkUMRVWCyDaNAVymn",
+    "url": "https://gateway.irys.xyz/2Cyx7gpJgDmivrgDiaCnwsrVCAWqkUMRVWCyDaNAVymn",
+    "sizeBytes": 1723
+  },
+  "solana": {
+    "txSignature": "46MSok862zP141gSFncAnnwSDSE4svuu85AsbVSD6aRXPx49ZBtxSfh1CZZKHN1PbakWqfi3iPV8b5cGMdbuAdcb",
+    "explorer": "https://explorer.solana.com/tx/46MSok862zP141gSFncAnnwSDSE4svuu85AsbVSD6aRXPx49ZBtxSfh1CZZKHN1PbakWqfi3iPV8b5cGMdbuAdcb?cluster=devnet"
+  },
+  "verification": {
+    "retrievalSuccess": true,
+    "decryptionSuccess": true,
+    "integrityPassed": true
+  },
+  "timestamp": "2026-05-04T08:06:54.545Z"
+}

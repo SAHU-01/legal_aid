@@ -1,7 +1,9 @@
 export const runtime = "nodejs";
 
 import { NextRequest, NextResponse } from "next/server";
-import { Connection } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
+import { AnchorProvider, Program, Wallet } from "@coral-xyz/anchor";
+import { Keypair } from "@solana/web3.js";
 import { createSolanaRpc, address, type Address } from "@solana/kit";
 import {
   fetchMaybeAttestation,
@@ -222,6 +224,62 @@ export async function POST(req: NextRequest) {
         },
         { status: 403 }
       );
+    }
+
+    // ── 2b. Verify case-credential linkage (FIX #4) ─────────────────
+    // Fetch the CaseFile PDA and confirm the credential is linked to THIS case.
+    // Without this check, a lawyer with ANY valid credential could claim
+    // payment for ANY case — a critical authorization bypass.
+
+    if (caseId) {
+      const connection = new Connection(getRpcUrl(), "confirmed");
+      const PROGRAM_ID = new PublicKey(
+        process.env.NEXT_PUBLIC_PROGRAM_ID ?? "3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV"
+      );
+
+      const [casePda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("case"), Buffer.from(caseId)],
+        PROGRAM_ID
+      );
+
+      const caseAccount = await connection.getAccountInfo(casePda);
+      if (caseAccount && caseAccount.data.length > 0) {
+        // CaseFile layout: 8 disc + (4 + case_id_len) + 32 doc_hash + 32 lawyer + 32 issuer
+        //   + 1 status_disc + 1 status_variant + 8 created + 8 updated + 32 credential_pubkey
+        const caseIdLen = caseAccount.data.readUInt32LE(8);
+        const lawyerOffset = 8 + 4 + caseIdLen + 32; // after disc + case_id + doc_hash
+        const credentialOffset = lawyerOffset + 32 + 32 + 2 + 8 + 8; // after lawyer + issuer + status + timestamps
+
+        // Verify the lawyer on the case matches the requesting lawyer
+        const caseLawyer = new PublicKey(caseAccount.data.slice(lawyerOffset, lawyerOffset + 32));
+        if (caseLawyer.toBase58() !== lawyerWallet) {
+          return NextResponse.json(
+            {
+              error: "Lawyer wallet does not match the assigned lawyer for this case",
+              caseId,
+              caseLawyer: caseLawyer.toBase58(),
+              requestingLawyer: lawyerWallet,
+            },
+            { status: 403 }
+          );
+        }
+
+        // Verify a credential is linked to this case (not default pubkey)
+        if (credentialOffset + 32 <= caseAccount.data.length) {
+          const linkedCredential = new PublicKey(
+            caseAccount.data.slice(credentialOffset, credentialOffset + 32)
+          );
+          if (linkedCredential.equals(PublicKey.default)) {
+            return NextResponse.json(
+              {
+                error: "No credential linked to this case — cannot disburse payment",
+                caseId,
+              },
+              { status: 403 }
+            );
+          }
+        }
+      }
     }
 
     // ── 3. Verify payment on-chain ───────────────────────────────────

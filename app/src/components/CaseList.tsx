@@ -14,9 +14,12 @@ interface CaseAccount {
   documentHash: number[];
   lawyer: PublicKey;
   issuer: PublicKey;
+  applicant?: PublicKey;
   status: string;
   createdAt: number;
   updatedAt: number;
+  credentialPubkey?: PublicKey;
+  commitmentRoot?: number[];
   jurisdiction?: string;
 }
 
