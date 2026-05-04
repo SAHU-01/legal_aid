@@ -1,0 +1,734 @@
+/* ───────── DOCS PAGE ───────── */
+.docs {
+  --bg-primary: #faf9f7;
+  --bg-dark: #0f0f0f;
+  --bg-card: #ffffff;
+  --bg-warm: #f5f2ed;
+  --bg-code: #1a1a2e;
+  --text-primary: #0f0f0f;
+  --text-secondary: #5a5a5a;
+  --text-muted: #8a8a8a;
+  --text-inverse: #faf9f7;
+  --accent: #1a6b4a;
+  --accent-light: #e8f5ee;
+  --border: #e5e3df;
+  --serif: "Playfair Display", "Georgia", serif;
+  --mono: "JetBrains Mono", "Fira Code", monospace;
+  font-family: "DM Sans", -apple-system, sans-serif;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+}
+
+/* ───────── HERO ───────── */
+.docs .docs-hero {
+  padding: 8rem 2rem 4rem;
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.docs .docs-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  background: var(--accent-light);
+  padding: 0.3rem 1rem;
+  border-radius: 999px;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.docs .docs-hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.docs .docs-hero h1 em {
+  font-style: italic;
+}
+
+.docs .docs-hero-sub {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-weight: 300;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* ───────── LAYOUT: SIDEBAR + CONTENT ───────── */
+.docs .docs-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem 6rem;
+  align-items: start;
+}
+
+.docs .docs-sidebar {
+  position: sticky;
+  top: 5rem;
+  padding: 1.5rem 0;
+}
+
+.docs .docs-sidebar-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  padding-left: 0.8rem;
+}
+
+.docs .docs-sidebar-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.docs .docs-sidebar-nav li a {
+  display: block;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.15s;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.docs .docs-sidebar-nav li a:hover {
+  color: var(--text-primary);
+  background: rgba(0,0,0,0.04);
+}
+
+.docs .docs-sidebar-nav li a.active {
+  color: var(--accent);
+  background: var(--accent-light);
+  font-weight: 500;
+}
+
+.docs .docs-sidebar-nav li.nav-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.5rem 0.8rem;
+}
+
+/* ───────── CONTENT ───────── */
+.docs .docs-content {
+  min-width: 0;
+}
+
+.docs .docs-section {
+  margin-bottom: 4rem;
+  scroll-margin-top: 5rem;
+}
+
+.docs .docs-section-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  display: inline-block;
+  padding: 0.25rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  margin-bottom: 0.8rem;
+}
+
+.docs .docs-section h2 {
+  font-family: var(--serif);
+  font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+  font-weight: 400;
+  line-height: 1.3;
+  margin-bottom: 0.6rem;
+}
+
+.docs .docs-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.docs .docs-section p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+  font-weight: 300;
+  margin-bottom: 0.8rem;
+}
+
+/* ───────── MODULE CARDS ───────── */
+.docs .module-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  margin-top: 1.5rem;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.docs .module-card {
+  background: var(--bg-card);
+  padding: 1.8rem;
+}
+
+.docs .module-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.docs .module-step {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.docs .module-card h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.docs .module-card p {
+  font-size: 0.83rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  font-weight: 300;
+  margin-bottom: 0;
+}
+
+.docs .module-card .module-tech {
+  margin-top: 0.6rem;
+  font-size: 0.72rem;
+  color: var(--accent);
+  font-weight: 500;
+  font-family: var(--mono);
+}
+
+/* ───────── CODE BLOCKS ───────── */
+.docs .code-block {
+  background: var(--bg-code);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 1rem 0;
+}
+
+.docs .code-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.docs .code-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.docs .code-dot-red { background: #ff5f56; }
+.docs .code-dot-yellow { background: #ffbd2e; }
+.docs .code-dot-green { background: #27c93f; }
+
+.docs .code-title {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.4);
+  font-family: var(--mono);
+  margin-left: 0.5rem;
+}
+
+.docs .code-body {
+  padding: 1rem 1.2rem;
+  overflow-x: auto;
+}
+
+.docs .code-body pre {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.85);
+  white-space: pre;
+}
+
+.docs .code-body .code-comment {
+  color: rgba(255,255,255,0.35);
+}
+.docs .code-body .code-keyword {
+  color: #c792ea;
+}
+.docs .code-body .code-string {
+  color: #c3e88d;
+}
+.docs .code-body .code-fn {
+  color: #82aaff;
+}
+.docs .code-body .code-flag {
+  color: #f78c6c;
+}
+
+/* ───────── LIVE CASE TABLE ───────── */
+.docs .live-case-table {
+  margin-top: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.docs .live-case-row {
+  display: grid;
+  grid-template-columns: 0.8fr 1fr 2fr;
+  gap: 0;
+}
+
+.docs .live-case-row-header {
+  background: var(--bg-warm);
+}
+
+.docs .live-case-cell {
+  padding: 0.7rem 1rem;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  font-weight: 300;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  word-break: break-all;
+}
+
+.docs .live-case-cell:last-child {
+  border-right: none;
+}
+
+.docs .live-case-row:last-child .live-case-cell {
+  border-bottom: none;
+}
+
+.docs .live-case-cell-header {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.docs .live-case-cell a {
+  color: var(--accent);
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+}
+.docs .live-case-cell a:hover {
+  text-decoration: underline;
+}
+
+.docs .live-case-cell .cell-label {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ───────── COUNTRY CONFIG ───────── */
+.docs .country-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin-top: 1.5rem;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.docs .country-card {
+  background: var(--bg-card);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.docs .country-flag {
+  font-size: 2rem;
+  margin-bottom: 0.4rem;
+}
+
+.docs .country-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+}
+
+.docs .country-cert {
+  font-size: 0.72rem;
+  color: var(--accent);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.docs .country-detail {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  font-weight: 300;
+}
+
+/* ───────── REQUIREMENTS LIST ───────── */
+.docs .req-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.docs .req-list li {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-weight: 300;
+  padding-left: 1.4rem;
+  position: relative;
+}
+
+.docs .req-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ───────── ARCHITECTURE DIAGRAM ───────── */
+.docs .arch-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+
+.docs .arch-node {
+  padding: 0.8rem 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  text-align: center;
+  min-width: 130px;
+}
+
+.docs .arch-node-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.docs .arch-node-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 0.15rem;
+}
+
+.docs .arch-arrow {
+  font-size: 1.2rem;
+  color: var(--accent);
+  padding: 0 0.5rem;
+}
+
+/* ───────── ROLE BADGES ───────── */
+.docs .role-badge {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+.docs .role-badge-court {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+.docs .role-badge-lawyer {
+  background: #eff6ff;
+  color: #2563eb;
+}
+.docs .role-badge-applicant {
+  background: #fffbeb;
+  color: #d97706;
+}
+.docs .role-badge-protocol {
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+/* ───────── FLOW TIMELINE ───────── */
+.docs .flow-timeline {
+  margin: 1.5rem 0;
+  padding: 0;
+  list-style: none;
+  position: relative;
+}
+
+.docs .flow-timeline::before {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+
+.docs .flow-step {
+  position: relative;
+  padding-left: 44px;
+  padding-bottom: 1.4rem;
+}
+
+.docs .flow-step:last-child {
+  padding-bottom: 0;
+}
+
+.docs .flow-step-dot {
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  z-index: 1;
+}
+
+.docs .flow-step-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+
+.docs .flow-step-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.docs .flow-step-desc {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  font-weight: 300;
+}
+
+.docs .flow-step-tx {
+  margin-top: 0.25rem;
+}
+
+.docs .flow-step-tx a {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--accent);
+  text-decoration: none;
+  opacity: 0.75;
+}
+.docs .flow-step-tx a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* ───────── PAIN POINTS GRID ───────── */
+.docs .pain-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  margin-top: 1.5rem;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.docs .pain-card {
+  background: var(--bg-card);
+  padding: 1.5rem;
+}
+
+.docs .pain-card h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.docs .pain-icon {
+  color: #dc2626;
+  font-size: 0.9rem;
+}
+
+.docs .pain-card p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-weight: 300;
+  margin-bottom: 0;
+}
+
+.docs .pain-fix {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* ───────── ROLE CARD VARIANT ───────── */
+.docs .role-card {
+  background: var(--bg-card);
+  padding: 1.8rem;
+  border-left: 3px solid var(--accent);
+}
+
+.docs .role-card-court { border-left-color: var(--accent); }
+.docs .role-card-lawyer { border-left-color: #2563eb; }
+.docs .role-card-applicant { border-left-color: #d97706; }
+
+.docs .role-card h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+}
+
+.docs .role-card .role-subtitle {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 0.6rem;
+  font-family: var(--mono);
+}
+
+.docs .role-card p {
+  font-size: 0.83rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  font-weight: 300;
+  margin-bottom: 0;
+}
+
+.docs .callout {
+  margin: 1rem 0;
+  padding: 1rem 1.2rem;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-light);
+  border-radius: 0 8px 8px 0;
+}
+
+.docs .callout p {
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-weight: 400;
+  margin-bottom: 0;
+}
+
+/* ───────── RESPONSIVE ADDITIONS ───────── */
+@media (max-width: 900px) {
+  .docs .pain-grid { grid-template-columns: 1fr; }
+}
+
+/* ───────── FOOTER ───────── */
+.docs .docs-footer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.docs .docs-footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.docs .docs-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ───────── RESPONSIVE ───────── */
+@media (max-width: 900px) {
+  .docs .docs-layout {
+    grid-template-columns: 1fr;
+  }
+  .docs .docs-sidebar {
+    position: static;
+    padding: 0;
+  }
+  .docs .docs-sidebar-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+  .docs .docs-sidebar-nav li a {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.75rem;
+  }
+  .docs .docs-sidebar-nav li.nav-divider {
+    display: none;
+  }
+  .docs .country-grid {
+    grid-template-columns: 1fr;
+  }
+  .docs .live-case-row {
+    grid-template-columns: 1fr;
+  }
+  .docs .arch-flow {
+    flex-direction: column;
+  }
+  .docs .arch-arrow {
+    transform: rotate(90deg);
+  }
+}

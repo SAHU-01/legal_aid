@@ -70,10 +70,14 @@ export default function ClaimPayment({
   refreshKey,
   onClaimed,
   demoMode = false,
+  guideActive = false,
+  operatorMode = false,
 }: {
   refreshKey: number;
   onClaimed: () => void;
   demoMode?: boolean;
+  guideActive?: boolean;
+  operatorMode?: boolean;
 }) {
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
@@ -179,7 +183,7 @@ export default function ClaimPayment({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           caseId,
-          lawyerWallet: wallet.publicKey.toBase58(),
+          lawyerWallet: wallet!.publicKey!.toBase58(),
         }),
       });
 
@@ -281,7 +285,7 @@ export default function ClaimPayment({
                   rel="noopener noreferrer"
                   className="mt-1 inline-block text-xs text-blue-400 hover:underline"
                 >
-                  View transaction on Explorer &nearr;
+                  View transaction on Explorer {"\u2197"}
                 </a>
               )}
             </div>
@@ -298,6 +302,15 @@ export default function ClaimPayment({
 
       {/* Claimable cases */}
       <div>
+        {guideActive && (
+          <div className="mb-3 rounded border border-emerald-800/40 bg-emerald-950/30 px-3 py-2">
+            <p className="text-xs leading-relaxed text-emerald-300/80">
+              These cases are in &ldquo;Closed&rdquo; status &mdash; the court has finished review.
+              Clicking &ldquo;Claim Payment&rdquo; triggers the x402 flow: your SAS credential is verified,
+              USDC is transferred from the court treasury, and the case moves to Paid status.
+            </p>
+          </div>
+        )}
         <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-500">
           Claimable
         </h3>
@@ -315,20 +328,20 @@ export default function ClaimPayment({
             {closedCases.map((c) => (
               <div
                 key={c.caseId}
-                className="flex flex-col gap-2 rounded bg-zinc-800/40 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-2 rounded-xl bg-zinc-800/30 border border-zinc-700/20 px-4 py-3 sm:flex-row sm:items-center sm:justify-between transition-all hover:border-emerald-500/20"
               >
                 <div>
-                  <p className="font-mono text-sm text-zinc-200">{c.caseId}</p>
-                  <p className="text-xs text-zinc-500">
-                    Closed {formatDate(c.updatedAt)} &middot; {AMOUNT_USDC} USDC
+                  <p className="font-mono text-sm font-bold text-zinc-100">{c.caseId}</p>
+                  <p className="text-xs text-zinc-500 mt-0.5">
+                    Closed {formatDate(c.updatedAt)} &middot; <span className="text-emerald-400 font-bold">{AMOUNT_USDC} USDC</span>
                   </p>
                 </div>
                 <button
                   onClick={() => setConfirmCaseId(c.caseId)}
                   disabled={claiming}
-                  className="rounded bg-emerald-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-emerald-600 disabled:opacity-50"
+                  className="rounded-lg bg-emerald-600 px-4 py-1.5 text-xs font-bold text-white hover:bg-emerald-500 disabled:opacity-50 transition-all active:scale-95 shadow-lg shadow-emerald-900/10"
                 >
-                  {claiming ? "Processing\u2026" : "Claim Payment"}
+                  {claiming ? "Processing\u2026" : operatorMode ? "Approve Disbursement" : "Claim Payment"}
                 </button>
               </div>
             ))}
@@ -347,16 +360,16 @@ export default function ClaimPayment({
             {claims.map((cl) => (
               <div
                 key={`claim-${cl.caseId}`}
-                className="flex flex-col gap-1 rounded bg-zinc-800/40 px-4 py-2.5 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-1 rounded-xl bg-zinc-800/30 border border-zinc-700/10 px-4 py-3 sm:flex-row sm:items-center sm:justify-between mb-2"
               >
                 <div>
-                  <p className="text-sm text-zinc-200">
+                  <p className="text-sm font-bold text-zinc-100">
                     <span className="font-mono">{cl.caseId}</span>
                     <span className="ml-2 text-emerald-400">
                       {cl.amount} USDC
                     </span>
                   </p>
-                  <p className="text-xs text-zinc-500">
+                  <p className="text-xs text-zinc-500 mt-1">
                     {formatDate(cl.claimedAt)}
                     {cl.txSignature && (
                       <>
@@ -365,10 +378,10 @@ export default function ClaimPayment({
                           href={`${EXPLORER}/tx/${cl.txSignature}?cluster=devnet`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="font-mono text-blue-400 hover:underline"
+                          className="font-mono text-blue-400 hover:text-blue-300"
                         >
                           tx {truncate(cl.txSignature, 4, 4)}
-                          <span className="ml-0.5 text-zinc-600">&nearr;</span>
+                          <span className="ml-0.5 text-zinc-600">{"\u2197"}</span>
                         </a>
                       </>
                     )}
@@ -379,9 +392,9 @@ export default function ClaimPayment({
                     href={`${EXPLORER}/tx/${cl.txSignature}?cluster=devnet`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-blue-400 hover:underline"
+                    className="text-[10px] font-bold text-zinc-400 hover:text-white transition-colors"
                   >
-                    Explorer &nearr;
+                    VIEW TX {"\u2197"}
                   </a>
                 )}
               </div>
@@ -395,29 +408,29 @@ export default function ClaimPayment({
               .map((c) => (
                 <div
                   key={`paid-${c.caseId}`}
-                  className="flex flex-col gap-1 rounded bg-zinc-800/40 px-4 py-2.5 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-1 rounded-xl bg-zinc-800/30 border border-zinc-700/10 px-4 py-3 sm:flex-row sm:items-center sm:justify-between mb-2"
                 >
                   <div>
-                    <p className="text-sm text-zinc-200">
+                    <p className="text-sm font-bold text-zinc-100">
                       <span className="font-mono">{c.caseId}</span>
                       <span className="ml-2 text-emerald-400">
                         {AMOUNT_USDC} USDC
                       </span>
                     </p>
-                    <p className="text-xs text-zinc-500">
+                    <p className="text-xs text-zinc-500 mt-1">
                       {formatDate(c.updatedAt)}
                       {" "}&middot;{" "}
                       <a
                         href={`${EXPLORER}/address/${c.publicKey.toBase58()}?cluster=devnet`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-400 hover:underline"
+                        className="text-blue-400 hover:text-blue-300"
                       >
-                        View case &nearr;
+                        View case {"\u2197"}
                       </a>
                     </p>
                   </div>
-                  <span className="inline-block rounded border border-emerald-900 bg-emerald-950 px-2 py-0.5 text-xs text-emerald-300">
+                  <span className="inline-block rounded-md bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
                     Paid
                   </span>
                 </div>

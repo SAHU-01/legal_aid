@@ -37,9 +37,11 @@ function truncateAddress(addr: string): string {
 export default function CredentialStatus({
   walletAddress,
   demoMode = false,
+  guideActive = false,
 }: {
   walletAddress: string;
   demoMode?: boolean;
+  guideActive?: boolean;
 }) {
   const [state, setState] = useState<CredentialState>({ status: "loading" });
 
@@ -138,8 +140,18 @@ export default function CredentialStatus({
   if (state.status === "verified") {
     return (
       <div className="space-y-1.5">
+        {guideActive && (
+          <div className="mb-3 rounded border border-emerald-800/40 bg-emerald-950/30 px-3 py-2">
+            <p className="text-xs leading-relaxed text-emerald-300/80">
+              This is your digital Berechtigungsschein &mdash; issued by the court and stored as a
+              verifiable SAS attestation on Solana. Any lawyer, court, or system can verify it
+              instantly by reading the on-chain PDA. Without a valid, non-expired credential,
+              payment claims at the next step will be rejected.
+            </p>
+          </div>
+        )}
         <p className="flex items-center gap-2 text-sm font-medium text-emerald-400">
-          <span>&check;</span> Credential Verified
+          <span>{"\u2713"}</span> Credential Verified
         </p>
         <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm text-zinc-300">
           <dt className="text-zinc-500">Jurisdiction</dt>
@@ -159,7 +171,7 @@ export default function CredentialStatus({
               className="font-mono text-blue-400 hover:underline"
             >
               {truncateAddress(state.attestationPda)}
-              <span className="ml-1 text-zinc-600">&nearr;</span>
+              <span className="ml-1 text-zinc-600">{"\u2197"}</span>
             </a>
           </dd>
         </dl>

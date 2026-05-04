@@ -24,13 +24,18 @@ function StarIcon() {
   );
 }
 
-export default function Navbar({ activePage }: { activePage?: "home" | "eudi" }) {
+export default function Navbar({ activePage }: { activePage?: "home" | "eudi" | "docs" }) {
   return (
     <nav className="shared-nav">
       <div className="shared-nav-pill">
         <div className="shared-nav-col shared-nav-left">
           <span className="shared-nav-disabled">Blog</span>
-          <span className="shared-nav-disabled">Docs</span>
+          <Link
+            href="/docs"
+            className={`shared-nav-link${activePage === "docs" ? " shared-nav-active" : ""}`}
+          >
+            Docs
+          </Link>
           <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="shared-nav-link">
             <GitHubIcon />
             GitHub
