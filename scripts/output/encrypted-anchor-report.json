@@ -1,0 +1,25 @@
+{
+  "case_id": "BS-DE-143/22",
+  "encryption": {
+    "algorithm": "X25519-ECDH + AES-256-GCM",
+    "plaintextHash": "e8e57614def9009903d5a06bb7024f7ea687d0bca06350510aef0439bb47a3fc",
+    "ciphertextHash": "20ab4072e8e591ee328d1d3f26c239affb0345f26010bd47ed796f0c1a25116d",
+    "plaintextSize": 640,
+    "ciphertextSize": 640
+  },
+  "onChain": {
+    "txSignature": "5KPP9zvaihULGrggr39KKozfhrVMqWWCu6c7yVjkzhcxRdsTpXJvAaAm8Hi9tP9YPck8sXWsfHooAYkA9bZ7duQ3",
+    "explorer": "https://explorer.solana.com/tx/5KPP9zvaihULGrggr39KKozfhrVMqWWCu6c7yVjkzhcxRdsTpXJvAaAm8Hi9tP9YPck8sXWsfHooAYkA9bZ7duQ3?cluster=devnet",
+    "network": "devnet",
+    "protocol": "Light Protocol (compressed memo)"
+  },
+  "offChain": {
+    "storagePath": "/Users/ankitasahu/Developer/Hackathon/colosseum/legal-aid-plugin/scripts/output/encrypted/BS-DE-143-22-envelope.json",
+    "storageType": "local (demo) — Shadow Drive (production)"
+  },
+  "verification": {
+    "decryptionSuccessful": true,
+    "integrityCheckPassed": true
+  },
+  "timestamp": "2026-05-04T07:46:15.885Z"
+}

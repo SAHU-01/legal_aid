@@ -1,0 +1,79 @@
+{
+  "timestamp": "2026-05-02T15:46:46.921Z",
+  "network": "solana:devnet",
+  "programId": "3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV",
+  "sampleCase": {
+    "lawyerName": "Rechtsanwalt Dieter Stein",
+    "lawyerId": "123ABC",
+    "clientName": "Max Mustermann",
+    "referenceNo": "123 UR II 143/22",
+    "assistanceType": "Representation (Vertretung)",
+    "applicationDate": "2026-05-02",
+    "courtName": "Amtsgericht Weiden i.d.OPf.",
+    "courtDepartment": "Beratungshilfe",
+    "paymentAmount": 85,
+    "documents": [
+      "Abrechnungsvordruck (Form 789)",
+      "Berechtigungsschein (Doc123.pdf)",
+      "Vollmacht (Power of Attorney)"
+    ]
+  },
+  "caseId": "BS-DE-123-UR-II-143/22-772655",
+  "identities": {
+    "authority": "C35KAMuYGrkCf1nw5c4qQ1137pJT1zQnkbrCzrpm7wkU",
+    "lawyer": "zYw8nVoNTnSR8phJHDkJoXMi3VbQUTvkzynMobRa9Pj",
+    "client": "5pUv56LEmMgVTY4JbJUgrNUEb56QKFxezYg8X3QcrC6g",
+    "usdcMint": "DG43aKdBh1XAxKGEJEBizq3nf9eAzqvAefjXsijEsJ2J",
+    "lawyerAta": "4tsh6psLydRTmjGi9FbCbaXaM9pdEW1F9Mcq8yYYFas9"
+  },
+  "transactions": {
+    "berechtigungsscheinIssued": {
+      "tx": "uonEG3e45h7NRt2kWh9hr8cG3Bt36rwsdNedJr7yBZdnnrLbPZydANGaQzVo8eEsScKovy9fG5VDYeeTCG6xihq",
+      "pda": "C8B4AJp5U8UBw7fJCqvYiE7W26n15Aw3F35BLaVrgwu7",
+      "explorer": "https://explorer.solana.com/tx/uonEG3e45h7NRt2kWh9hr8cG3Bt36rwsdNedJr7yBZdnnrLbPZydANGaQzVo8eEsScKovy9fG5VDYeeTCG6xihq?cluster=devnet"
+    },
+    "caseOpened": {
+      "tx": "XvybzQRqQ2EbUPW4jPgwBcGp4tc76DxkAhupimMDYdjz6kER5TWL96jCQ2kyM5fCxLArED3YWWAnUzuky74k5LA",
+      "pda": "23kjFise2XnUgwYbv3ka5R2VQP8uE1FGBGfZBEDie5n9",
+      "caseId": "BS-DE-123-UR-II-143/22-772655",
+      "explorer": "https://explorer.solana.com/tx/XvybzQRqQ2EbUPW4jPgwBcGp4tc76DxkAhupimMDYdjz6kER5TWL96jCQ2kyM5fCxLArED3YWWAnUzuky74k5LA?cluster=devnet"
+    },
+    "documentsAnchored": {
+      "tx": "2HKRkJU2FEbV2xfizhwDbARr6PGLEyvQq11vojH4h3e4eQ899JzB16H16r7bzxWoouCTevh7BLHbMCuJxJWpkjjE",
+      "hash": "175b1e36e8c94b94e4019994df951385b48fd8908f8d529a7e4b2a8da1af2351",
+      "explorer": "https://explorer.solana.com/tx/2HKRkJU2FEbV2xfizhwDbARr6PGLEyvQq11vojH4h3e4eQ899JzB16H16r7bzxWoouCTevh7BLHbMCuJxJWpkjjE?cluster=devnet"
+    },
+    "compressedLog": {
+      "tx": "3ETQA5nkgapbYXxjneEH9SpkCFAJx9Pub2gijcGNCu6QxY9yjL7FB2xut1rZoErFwZNVqTKG249MhLSSxz9qC6yh",
+      "costLamports": 25003,
+      "explorer": "https://explorer.solana.com/tx/3ETQA5nkgapbYXxjneEH9SpkCFAJx9Pub2gijcGNCu6QxY9yjL7FB2xut1rZoErFwZNVqTKG249MhLSSxz9qC6yh?cluster=devnet"
+    },
+    "caseClosed": {
+      "tx": "5MJ7wZFhPkwqFvRjTseSFvve4JSsHs7bKvits46E2RHnpUEZXJ85bs5MSJ6FH8xu5BNWwU3ZiVp2jTqzK6sZ8ZqK",
+      "explorer": "https://explorer.solana.com/tx/5MJ7wZFhPkwqFvRjTseSFvve4JSsHs7bKvits46E2RHnpUEZXJ85bs5MSJ6FH8xu5BNWwU3ZiVp2jTqzK6sZ8ZqK?cluster=devnet"
+    },
+    "paymentDisbursed": {
+      "tx": "sVZAS7DAARA9zXGzozpSsMhBSZpYpHFpQ8qxPPw5q9bGwK2G47AnmSRYh5Vhmbmk4ctNjyfecPjZp8S4LGSFQBe",
+      "amount": 85,
+      "explorer": "https://explorer.solana.com/tx/sVZAS7DAARA9zXGzozpSsMhBSZpYpHFpQ8qxPPw5q9bGwK2G47AnmSRYh5Vhmbmk4ctNjyfecPjZp8S4LGSFQBe?cluster=devnet"
+    },
+    "caseMarkedPaid": {
+      "tx": "4SPWnLkv4V7wqghbzqs8FoAgHRGho6K5erbUEUSkEdrJdwCHiLWYgLjDihbkqBeiJ9xqWpcc3QtCGWvmzq5Hupdg",
+      "explorer": "https://explorer.solana.com/tx/4SPWnLkv4V7wqghbzqs8FoAgHRGho6K5erbUEUSkEdrJdwCHiLWYgLjDihbkqBeiJ9xqWpcc3QtCGWvmzq5Hupdg?cluster=devnet"
+    }
+  },
+  "verification": {
+    "onChainStatus": "paid",
+    "berechtigungsscheinValid": true,
+    "compressedLogFound": true,
+    "usdcReceived": 85,
+    "documentHashMatches": true,
+    "allPassed": true
+  },
+  "explorerLinks": {
+    "program": "https://explorer.solana.com/address/3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV?cluster=devnet",
+    "casePda": "https://explorer.solana.com/address/23kjFise2XnUgwYbv3ka5R2VQP8uE1FGBGfZBEDie5n9?cluster=devnet",
+    "berechtigungsschein": "https://explorer.solana.com/address/C8B4AJp5U8UBw7fJCqvYiE7W26n15Aw3F35BLaVrgwu7?cluster=devnet",
+    "lawyerWallet": "https://explorer.solana.com/address/zYw8nVoNTnSR8phJHDkJoXMi3VbQUTvkzynMobRa9Pj?cluster=devnet"
+  }
+}

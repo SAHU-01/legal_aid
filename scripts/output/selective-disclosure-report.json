@@ -1,0 +1,46 @@
+{
+  "case_id": "BS-DE-143/22",
+  "commitments": [
+    {
+      "fieldName": "jurisdiction",
+      "commitment": "d458a62cddb213faa7a53fa6010d17d9ba854865e31ea9d151bdaf3e4606bb12"
+    },
+    {
+      "fieldName": "eligibility_tier",
+      "commitment": "94983140046af0704b597fa0fcc14d1a7c551c520b85056ea1b64114e674238f"
+    },
+    {
+      "fieldName": "expiry_date",
+      "commitment": "883e37da8a89b9b969245cb8323d78f23aaabdafcf4c8b9b160c9a09c39157ba"
+    },
+    {
+      "fieldName": "case_type",
+      "commitment": "68df49004737454781b6f7229818c039fb3ef0a69cfc4f26e386701e1cbfa66f"
+    },
+    {
+      "fieldName": "issuing_court",
+      "commitment": "f02f4bae8aa1d4ad57e1a97ee0d3a226924e6789abe41cace29afe858cb64473"
+    },
+    {
+      "fieldName": "applicant_eligible",
+      "commitment": "e9305b974cd032761f33441b35ed9ae6439c47774db778b9d1c45657572a0adc"
+    }
+  ],
+  "merkleRoot": "481556cba361f7ae4c574d7d81f5a4272defc60d1b6089d204c08e58d44b25b6",
+  "onChain": {
+    "txSignature": "4SjCyKL91Re8foe4ZvzzG3pTqEAw7rMaMwuTLbJaKpDZQjc8tgvLKiCVwfmSNabehu5hpogG6UMooh5PsAzYMnpe",
+    "explorer": "https://explorer.solana.com/tx/4SjCyKL91Re8foe4ZvzzG3pTqEAw7rMaMwuTLbJaKpDZQjc8tgvLKiCVwfmSNabehu5hpogG6UMooh5PsAzYMnpe?cluster=devnet"
+  },
+  "verification": {
+    "singleFieldDisclosure": {
+      "field": "jurisdiction",
+      "value": "DE",
+      "valid": true
+    },
+    "tamperResistance": {
+      "tamperedValue": true,
+      "wrongSalt": true
+    }
+  },
+  "timestamp": "2026-05-04T07:46:29.497Z"
+}
