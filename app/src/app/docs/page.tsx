@@ -406,9 +406,10 @@ export default function DocsPage() {
                   Government employee at the court or ministry. Reviews
                   eligibility applications, issues legal aid certificates
                   (Berechtigungsscheine), monitors case progress, and approves
-                  payment disbursements. In Adduce, the operator holds the
-                  authority keypair and can call <code>initialize</code>,{" "}
-                  <code>open_case</code>, <code>close_case</code>, and{" "}
+                  payment disbursements. Role-separated: <strong>authority</strong>{" "}
+                  calls <code>initialize</code> and <code>open_case</code>,{" "}
+                  <strong>reviewer</strong> calls <code>link_credential</code> and{" "}
+                  <code>close_case</code>, <strong>payer</strong> calls{" "}
                   <code>mark_paid</code>.
                 </p>
               </div>
@@ -424,7 +425,8 @@ export default function DocsPage() {
                   case assignments, submits case documents by anchoring their
                   SHA-256 hash on-chain, verifies credential validity, and
                   claims payment after case closure. Can call{" "}
-                  <code>anchor_document</code> (must be the assigned lawyer).
+                  <code>anchor_document</code> (must be the assigned lawyer;
+                  credential liveness re-checked on-chain).
                 </p>
               </div>
               <div className="module-card role-card role-card-applicant">
@@ -503,7 +505,7 @@ export default function DocsPage() {
               <div className="live-case-row">
                 <div className="live-case-cell"><span className="cell-label">Verfahren er&ouml;ffnen (Open Proceeding)</span></div>
                 <div className="live-case-cell">Create case on-chain</div>
-                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>open_case(case_id, lawyer)</div>
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>open_case(case_id, lawyer, applicant)</div>
               </div>
               <div className="live-case-row">
                 <div className="live-case-cell"><span className="cell-label">Sachbearbeitung (Case Processing)</span></div>
@@ -944,7 +946,7 @@ npx ts-node scripts/issue-credential.ts
                 <span className="code-title">Step 4 &mdash; Run the full case lifecycle</span>
               </div>
               <div className="code-body">
-                <pre>{`# Executes: open_case -> anchor_document -> close_case -> USDC transfer -> mark_paid
+                <pre>{`# Executes: open_case -> link_credential -> anchor_document -> close_case -> USDC transfer -> mark_paid
 # Every step is a real devnet transaction
 npx ts-node scripts/sample-german-bs-case.ts
 # Output: scripts/output/german-bs-case-report.json`}</pre>
@@ -1047,7 +1049,7 @@ npx ts-node scripts/verify-credential.ts
               </a>
             </p>
 
-            <h3>initialize(jurisdiction)</h3>
+            <h3>initialize(jurisdiction, expected_schema, reviewer, payer_role)</h3>
             <div className="live-case-table">
               <div className="live-case-row live-case-row-header">
                 <div className="live-case-cell live-case-cell-header">Property</div>
@@ -1060,23 +1062,18 @@ npx ts-node scripts/verify-credential.ts
                 <div className="live-case-cell">Must be payer. Becomes the jurisdiction authority.</div>
               </div>
               <div className="live-case-row">
-                <div className="live-case-cell"><span className="cell-label">Accounts</span></div>
-                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>config (init), authority, system_program</div>
-                <div className="live-case-cell">PDA seeds: [&quot;config&quot;, jurisdiction]</div>
-              </div>
-              <div className="live-case-row">
                 <div className="live-case-cell"><span className="cell-label">Params</span></div>
-                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>jurisdiction: String (max 10 chars)</div>
-                <div className="live-case-cell">ISO country code, e.g. &quot;DE&quot;</div>
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>jurisdiction: String, expected_schema: Pubkey, reviewer: Pubkey, payer_role: Pubkey</div>
+                <div className="live-case-cell">Role separation: authority opens cases, reviewer links/closes, payer approves payment</div>
               </div>
               <div className="live-case-row">
                 <div className="live-case-cell"><span className="cell-label">Creates</span></div>
-                <div className="live-case-cell">ProgramConfig (63 bytes)</div>
-                <div className="live-case-cell">authority, jurisdiction, total_cases=0, bump</div>
+                <div className="live-case-cell">ProgramConfig (159 bytes)</div>
+                <div className="live-case-cell">authority, reviewer, payer, jurisdiction, expected_schema, total_cases=0</div>
               </div>
             </div>
 
-            <h3>open_case(case_id, lawyer)</h3>
+            <h3>open_case(case_id, lawyer, applicant)</h3>
             <div className="live-case-table">
               <div className="live-case-row live-case-row-header">
                 <div className="live-case-cell live-case-cell-header">Property</div>
@@ -1089,19 +1086,43 @@ npx ts-node scripts/verify-credential.ts
                 <div className="live-case-cell">Only the jurisdiction authority can open cases</div>
               </div>
               <div className="live-case-row">
-                <div className="live-case-cell"><span className="cell-label">Accounts</span></div>
-                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>config (mut), case_file (init), authority, system_program</div>
-                <div className="live-case-cell">case_file PDA: [&quot;case&quot;, case_id]</div>
-              </div>
-              <div className="live-case-row">
                 <div className="live-case-cell"><span className="cell-label">Params</span></div>
-                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>case_id: String (max 32), lawyer: Pubkey</div>
-                <div className="live-case-cell">Assigns lawyer, increments total_cases</div>
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>case_id: String (max 32), lawyer: Pubkey, applicant: Pubkey</div>
+                <div className="live-case-cell">applicant = citizen&apos;s pubkey (credential nonce must match at link time)</div>
               </div>
               <div className="live-case-row">
                 <div className="live-case-cell"><span className="cell-label">Status</span></div>
                 <div className="live-case-cell">{"\u2192"} Open</div>
-                <div className="live-case-cell">CaseFile created with document_hash=[0;32]</div>
+                <div className="live-case-cell">CaseFile (255 bytes) with credential_pubkey=default, commitment_root=[0;32]</div>
+              </div>
+            </div>
+
+            <h3>link_credential(case_id, commitment_root)</h3>
+            <div className="live-case-table">
+              <div className="live-case-row live-case-row-header">
+                <div className="live-case-cell live-case-cell-header">Property</div>
+                <div className="live-case-cell live-case-cell-header">Value</div>
+                <div className="live-case-cell live-case-cell-header">Notes</div>
+              </div>
+              <div className="live-case-row">
+                <div className="live-case-cell"><span className="cell-label">Signer</span></div>
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>reviewer or authority</div>
+                <div className="live-case-cell">Role-separated: reviewer links credentials</div>
+              </div>
+              <div className="live-case-row">
+                <div className="live-case-cell"><span className="cell-label">Accounts</span></div>
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>config, case_file (mut), credential_account, authority</div>
+                <div className="live-case-cell">credential_account = SAS attestation PDA</div>
+              </div>
+              <div className="live-case-row">
+                <div className="live-case-cell"><span className="cell-label">Validates</span></div>
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>owner == SAS, schema match, expiry, nonce == applicant</div>
+                <div className="live-case-cell">Dynamic SAS binary parsing; citizen binding enforced</div>
+              </div>
+              <div className="live-case-row">
+                <div className="live-case-cell"><span className="cell-label">Params</span></div>
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>case_id: String, commitment_root: [u8; 32]</div>
+                <div className="live-case-cell">Merkle root of credential field commitments (must be non-zero)</div>
               </div>
             </div>
 
@@ -1119,18 +1140,18 @@ npx ts-node scripts/verify-credential.ts
               </div>
               <div className="live-case-row">
                 <div className="live-case-cell"><span className="cell-label">Accounts</span></div>
-                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>case_file (mut), lawyer (signer)</div>
-                <div className="live-case-cell">case_file PDA: [&quot;case&quot;, case_id]</div>
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>case_file (mut), credential_account, lawyer (signer)</div>
+                <div className="live-case-cell">credential_account re-checked for liveness (revoked = rejected)</div>
               </div>
               <div className="live-case-row">
-                <div className="live-case-cell"><span className="cell-label">Params</span></div>
-                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>case_id: String, document_hash: [u8; 32]</div>
-                <div className="live-case-cell">SHA-256 of the document bundle</div>
+                <div className="live-case-cell"><span className="cell-label">Precondition</span></div>
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>credential_pubkey != default, commitment_root != [0;32]</div>
+                <div className="live-case-cell">Credential must be linked first via link_credential</div>
               </div>
               <div className="live-case-row">
                 <div className="live-case-cell"><span className="cell-label">Status</span></div>
                 <div className="live-case-cell">Open/InProgress {"\u2192"} InProgress</div>
-                <div className="live-case-cell">Can be called multiple times (idempotent)</div>
+                <div className="live-case-cell">SHA-256 hash stored on CaseFile PDA</div>
               </div>
             </div>
 
@@ -1143,13 +1164,13 @@ npx ts-node scripts/verify-credential.ts
               </div>
               <div className="live-case-row">
                 <div className="live-case-cell"><span className="cell-label">Signer</span></div>
-                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>authority (must match config.authority)</div>
-                <div className="live-case-cell">Only authority can close cases</div>
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>reviewer or authority</div>
+                <div className="live-case-cell">Role-separated: reviewer closes cases</div>
               </div>
               <div className="live-case-row">
-                <div className="live-case-cell"><span className="cell-label">Precondition</span></div>
-                <div className="live-case-cell">Status must be InProgress</div>
-                <div className="live-case-cell">Error 6003 if wrong status</div>
+                <div className="live-case-cell"><span className="cell-label">Accounts</span></div>
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>config, case_file (mut), credential_account, authority</div>
+                <div className="live-case-cell">Credential liveness re-checked (revoked = rejected)</div>
               </div>
               <div className="live-case-row">
                 <div className="live-case-cell"><span className="cell-label">Status</span></div>
@@ -1167,8 +1188,8 @@ npx ts-node scripts/verify-credential.ts
               </div>
               <div className="live-case-row">
                 <div className="live-case-cell"><span className="cell-label">Signer</span></div>
-                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>authority (must match config.authority)</div>
-                <div className="live-case-cell">Called after USDC transfer is confirmed</div>
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>payer or authority</div>
+                <div className="live-case-cell">Role-separated: payer approves payment after USDC transfer</div>
               </div>
               <div className="live-case-row">
                 <div className="live-case-cell"><span className="cell-label">Precondition</span></div>
@@ -1208,6 +1229,36 @@ npx ts-node scripts/verify-credential.ts
                 <div className="live-case-cell" style={{ fontFamily: "var(--mono)" }}>6003</div>
                 <div className="live-case-cell">InvalidStatus</div>
                 <div className="live-case-cell">Case status does not permit this operation</div>
+              </div>
+              <div className="live-case-row">
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)" }}>6004</div>
+                <div className="live-case-cell">CredentialNotLinked</div>
+                <div className="live-case-cell">No credential linked &mdash; call link_credential first</div>
+              </div>
+              <div className="live-case-row">
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)" }}>6005</div>
+                <div className="live-case-cell">CredentialWrongOwner</div>
+                <div className="live-case-cell">Account not owned by SAS program</div>
+              </div>
+              <div className="live-case-row">
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)" }}>6006</div>
+                <div className="live-case-cell">CredentialSchemaMismatch</div>
+                <div className="live-case-cell">Credential schema doesn&apos;t match jurisdiction&apos;s expected schema</div>
+              </div>
+              <div className="live-case-row">
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)" }}>6007</div>
+                <div className="live-case-cell">CredentialExpired</div>
+                <div className="live-case-cell">Credential expiry timestamp is in the past</div>
+              </div>
+              <div className="live-case-row">
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)" }}>6009</div>
+                <div className="live-case-cell">CredentialApplicantMismatch</div>
+                <div className="live-case-cell">Credential nonce does not match case applicant</div>
+              </div>
+              <div className="live-case-row">
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)" }}>6010</div>
+                <div className="live-case-cell">CredentialRevoked</div>
+                <div className="live-case-cell">Credential account has been closed (revoked via SAS)</div>
               </div>
             </div>
           </section>

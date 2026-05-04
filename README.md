@@ -99,16 +99,18 @@ This executes: credential issuance, case opening, document anchoring, compressed
 ```
 legal-aid-plugin/
   programs/legal-aid/         Anchor program (Rust)
-    src/lib.rs                  Case lifecycle: open, anchor, close, mark_paid
+    src/lib.rs                  Case lifecycle: initialize, open_case, link_credential, anchor_document, close_case, mark_paid
   app/                        Next.js 16 frontend
     src/app/
       page.tsx                  Lawyer dashboard
       api/claim-payment/        x402 payment endpoint with SAS verification
   scripts/                    Automation and testing
-    lib/                        Shared utilities (connection, USDC, case scanner)
+    lib/                        Shared utilities (connection, USDC, case scanner, privacy)
+    lib/privacy.ts              X25519+AES-256-GCM encryption, Merkle selective disclosure
+    e2e-credential-pipeline.ts  Full 8-step lifecycle: open → credential → link → encrypt → anchor → close → paid
+    upload-to-arweave.ts        Encrypted document upload to Arweave via Irys
+    revoke-credential.ts        SAS credential revocation demo
     agent.ts                    Production workflow agent
-    e2e-full-pipeline.ts        Full end-to-end demo
-    ...                         Schema creation, credential issuance, verification
   tests/                      Anchor integration tests
   target/idl/                 Generated IDL and TypeScript types
 ```
