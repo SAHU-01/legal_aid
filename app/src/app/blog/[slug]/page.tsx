@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Navbar from "../../Navbar";
 import { posts } from "../posts";
+import "../blog.css";
 
 export function generateStaticParams() {
   return posts.map((post) => ({ slug: post.slug }));
@@ -38,7 +39,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         />
 
         <div
-          style={{ fontSize: "1rem", lineHeight: 1.8, color: "#2a2a2a", fontWeight: 300 }}
+          className="blog-content"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
 
