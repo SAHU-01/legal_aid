@@ -3,8 +3,8 @@
 import { useState } from "react";
 
 const tabs = [
-  { label: "clone", command: "git clone https://github.com/SAHU-01/legal_aid.git" },
-  { label: "devnet", command: "anchor deploy --provider.cluster devnet" },
+  { label: "install", command: "npm install @adduce/sdk" },
+  { label: "use", command: 'import { AdduceClient } from "@adduce/sdk"' },
 ];
 
 export default function TerminalTabs() {

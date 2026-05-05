@@ -1,0 +1,36 @@
+{
+  "name": "@adduce/sdk",
+  "version": "0.1.0",
+  "description": "Adduce SDK: Issue, Prove, Settle legal aid credentials on Solana",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist/", "README.md"],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["solana", "legal-aid", "credentials", "zk-proofs", "groth16", "sas"],
+  "license": "SEE LICENSE IN ../LICENSE",
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.32.1",
+    "@solana/web3.js": "^1.98.0",
+    "sas-lib": "^1.0.10"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  },
+  "peerDependencies": {
+    "snarkjs": "^0.7.4",
+    "circomlibjs": "^0.1.7",
+    "@irys/upload": "^0.0.15",
+    "@irys/upload-solana": "^0.1.8",
+    "@lightprotocol/stateless.js": "^0.23.3"
+  },
+  "peerDependenciesMeta": {
+    "snarkjs": { "optional": true },
+    "circomlibjs": { "optional": true },
+    "@irys/upload": { "optional": true },
+    "@irys/upload-solana": { "optional": true },
+    "@lightprotocol/stateless.js": { "optional": true }
+  }
+}

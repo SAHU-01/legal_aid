@@ -856,29 +856,28 @@ export default function LandingPage() {
       {/* FOOTER */}
       <footer className="footer-rich">
         <div className="footer-bg">
-          {/* Footer background image — add footer-bg.png to /app/public */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/footer-bg.png" alt="" />
         </div>
         <div className="footer-columns">
           <div className="footer-col">
             <div className="footer-col-title">Product</div>
-            <Link href="/dashboard">Launch App</Link>
-            <a href={`${GITHUB_URL}#quick-start`} target="_blank" rel="noopener noreferrer">Quickstart</a>
-            <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub</a>
-          </div>
-          <div className="footer-col">
-            <div className="footer-col-title">Protocol</div>
-            <a href="https://www.sas.eco/" target="_blank" rel="noopener noreferrer">SAS</a>
-            <a href="https://www.lightprotocol.com/" target="_blank" rel="noopener noreferrer">Light Protocol</a>
-            <a href="https://www.x402.org/" target="_blank" rel="noopener noreferrer">x402</a>
-            <a href="https://solana.com" target="_blank" rel="noopener noreferrer">Solana</a>
+            <Link href="/dashboard">Demo</Link>
+            <Link href="/docs">Documentation</Link>
+            <Link href="/story">Our Story</Link>
           </div>
           <div className="footer-col">
             <div className="footer-col-title">Developers</div>
-            <a href={`${GITHUB_URL}#readme`} target="_blank" rel="noopener noreferrer">Documentation</a>
-            <a href={EXPLORER_URL} target="_blank" rel="noopener noreferrer">Explorer</a>
-            <a href={`${GITHUB_URL}/blob/main/target/idl/legal_aid.json`} target="_blank" rel="noopener noreferrer">IDL Reference</a>
+            <a href="https://www.npmjs.com/package/@adduce/sdk" target="_blank" rel="noopener noreferrer">npm: @adduce/sdk</a>
+            <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href={EXPLORER_URL} target="_blank" rel="noopener noreferrer">Solana Explorer</a>
+          </div>
+          <div className="footer-col">
+            <div className="footer-col-title">Built On</div>
+            <a href="https://solana.com" target="_blank" rel="noopener noreferrer">Solana</a>
+            <a href="https://attest.solana.com" target="_blank" rel="noopener noreferrer">SAS</a>
+            <a href="https://www.lightprotocol.com/" target="_blank" rel="noopener noreferrer">Light Protocol</a>
+            <a href="https://irys.xyz" target="_blank" rel="noopener noreferrer">Irys / Arweave</a>
           </div>
           <div className="footer-col">
             <div className="footer-col-title">Resources</div>
@@ -887,10 +886,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="footer-bottom">
-          <p>&copy; 2026 Adduce. Source-available under proprietary license.</p>
-          <div className="footer-bottom-links">
-            <a href={`${GITHUB_URL}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer">License</a>
-          </div>
+          <p>&copy; 2026 Adduce. Issue. Prove. Settle.</p>
         </div>
       </footer>
     </div>

@@ -65,8 +65,13 @@ export default function RoleSwitcher({
       {/* Single merged navbar */}
       <header className="border-b border-zinc-800 bg-[#0f0f0f]">
         <div className="max-w-7xl mx-auto w-full px-6 lg:px-10 py-2 flex items-center">
-          {/* Left: Logo */}
-          <div className="flex-1 flex justify-start">
+          {/* Left: Back + Logo */}
+          <div className="flex-1 flex justify-start items-center gap-2">
+            <a href="/" className="flex items-center justify-center h-6 w-6 rounded-full border border-zinc-700 hover:border-zinc-500 transition-colors" title="Back to home">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </a>
             <a href="/" className="flex items-center gap-2 flex-shrink-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/adduce_logo.png" alt="Adduce" className="h-5 w-5 rounded" />
@@ -97,14 +102,7 @@ export default function RoleSwitcher({
 
           {/* Right: Wallet + controls */}
           <div className="flex-1 flex justify-end items-center gap-2 flex-shrink-0">
-            {connected && (
-              <button
-                onClick={onExit}
-                className="rounded-full border border-zinc-700 px-2.5 py-0.5 text-[10px] text-zinc-500 hover:text-zinc-300 transition-colors"
-              >
-                Live Mode
-              </button>
-            )}
+            {/* Demo-only mode: no exit button, dashboard always shows demo data */}
             {walletButton}
             <span className="flex items-center gap-1 rounded-full border border-emerald-800/50 bg-emerald-950/40 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
               <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />

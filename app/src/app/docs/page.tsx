@@ -670,7 +670,7 @@ export default function DocsPage() {
               </div>
               <div className="live-case-row">
                 <div className="live-case-cell"><span className="cell-label">Submit case documents</span></div>
-                <div className="live-case-cell">Anchor SHA-256 hash on-chain</div>
+                <div className="live-case-cell">Documents encrypted (X25519+AES-256-GCM), uploaded to Arweave via Irys (permanent, only assigned lawyer can decrypt). SHA-256 hash of plaintext anchored on-chain.</div>
                 <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>anchor_document(case_id, hash, lawyer_salt)</div>
               </div>
               <div className="live-case-row">
@@ -692,6 +692,22 @@ export default function DocsPage() {
                 eligibility certificate. With Adduce, verification is a single
                 on-chain PDA read: no phone calls, no hold queues, no
                 business-hour dependency.
+              </p>
+            </div>
+
+            <div className="callout" style={{ marginTop: "1rem" }}>
+              <p>
+                <strong>Sensitive document handling:</strong> Case documents
+                (billing forms, court filings, settlement records) are
+                encrypted end-to-end using X25519 ECDH key agreement +
+                AES-256-GCM. The encrypted blob is stored permanently on
+                Arweave via Irys (pay once, stored forever). Only the
+                assigned lawyer can decrypt using their wallet key. The
+                plaintext SHA-256 hash is anchored on Solana for integrity
+                verification. No sensitive content ever touches the public
+                ledger.
+                See <code>scripts/encrypt-and-anchor.ts</code> for the
+                full working implementation.
               </p>
             </div>
           </section>
@@ -975,12 +991,55 @@ export default function DocsPage() {
           <section id="quickstart-integration" className="docs-section">
             <div className="docs-section-label">Integration</div>
             <h2>5-minute integration quickstart</h2>
+
+            <CopyBlock
+              title="Install the SDK (npm)"
+              code={`npm install @adduce/sdk`}
+            >
+              <p>
+                The fastest path. Install the published SDK and call
+                the already-deployed program on devnet. No cloning, no
+                deploying, no Anchor setup. Works from any TypeScript/Node.js
+                project.{" "}
+                <a href="https://www.npmjs.com/package/@adduce/sdk" target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent)" }}>
+                  View on npm
+                </a>
+              </p>
+            </CopyBlock>
+
+            <CopyBlock
+              title="SDK usage (TypeScript)"
+              code={`import { AdduceClient, Keypair } from "@adduce/sdk";
+
+const wallet = Keypair.fromSecretKey(/* your keypair */);
+const adduce = new AdduceClient({ cluster: "devnet", wallet });
+
+// Open a case
+const { casePda, lawyerCommitment } = await adduce.openCase({
+  caseId: "CASE-DE-2025-001",
+  lawyerPubkey: lawyerWallet.publicKey,
+  applicant: citizenWallet.publicKey,
+  authorizedAmount: 8500,
+}, "DE");
+
+// Read case status
+const caseData = await adduce.getCase("CASE-DE-2025-001");
+console.log(caseData.status); // "Open"`}
+            >
+              <p>
+                All 14 program instructions are callable through the SDK.
+                The program is already deployed at{" "}
+                <code>3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV</code>.
+                You connect to it, not deploy your own.
+              </p>
+            </CopyBlock>
+
+            <h3>Or clone the full repo</h3>
             <p>
-              The shortest path from zero to a working legal aid case on Solana
-              Devnet. Every snippet uses real functions from the
-              <code>/scripts</code> directory. Tested with the German
-              jurisdiction but works for any of the 9 supported countries by
-              changing the jurisdiction parameter.
+              For running scripts, modifying the program, or building the
+              ZK circuit locally. Tested with the German jurisdiction but
+              works for any of the 9 supported countries by changing the
+              jurisdiction parameter.
             </p>
 
             <h3>Prerequisites</h3>
@@ -1285,7 +1344,7 @@ POST /api/gov/cases/{caseId}/pay
               </div>
               {[
                 { a: "Issue certificate", add: "One POST to create SAS attestation + case PDA", same: "PDF generation, internal DB, operator UI" },
-                { a: "Submit documents", add: "One POST to anchor SHA-256 hash", same: "Upload flow, DMS storage, document format" },
+                { a: "Submit documents", add: "Documents encrypted end-to-end (X25519+AES-256-GCM), stored permanently on Arweave via Irys. Plaintext hash anchored on-chain. Only assigned lawyer can decrypt.", same: "Upload flow, DMS as primary storage" },
                 { a: "Verify eligibility", add: "One GET to read credential status", same: "Decision logic, eligibility rules" },
                 { a: "Approve payment", add: "One POST to record disbursement on-chain", same: "Approval workflow, bank transfer, audit requirements" },
                 { a: "Reassign lawyer", add: "One POST with new lawyer commitment", same: "Case assignment UI, notification flow" },

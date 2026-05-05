@@ -1,6 +1,12 @@
+<p align="center">
+  <img src="app/public/hero-img.png" alt="Adduce" width="100%" />
+</p>
+
 # Adduce: Issue. Prove. Settle.
 
-The first credential issuer for legal aid on Solana. Adduce digitizes the eligibility certificate: the single paper artifact that crosses institutional boundaries every time a lawyer gets paid: by issuing it as a cryptographically signed on-chain attestation with zero-knowledge selective disclosure and instant settlement.
+The first credential issuer for legal aid on Solana. Adduce digitizes the eligibility certificate, the single paper artifact that crosses institutional boundaries every time a lawyer gets paid, by issuing it as a cryptographically signed on-chain attestation with zero-knowledge selective disclosure and instant settlement.
+
+**[SDK](https://www.npmjs.com/package/@adduce/sdk) | [Documentation](https://github.com/SAHU-01/legal_aid/tree/main/app/src/app/docs) | [Explorer](https://explorer.solana.com/address/3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV?cluster=devnet) | [Our Story](https://github.com/SAHU-01/legal_aid/tree/main/app/src/app/story)**
 
 **14 instructions. 4 events. 26 error codes. Deployed on Solana Devnet.**
 
@@ -13,6 +19,7 @@ The first credential issuer for legal aid on Solana. Adduce digitizes the eligib
 | SAS Schema | `7uKMGSgup1UZ26MnptCCMCac6rqpe6vBNXET338cDeid` | [Explorer](https://explorer.solana.com/address/7uKMGSgup1UZ26MnptCCMCac6rqpe6vBNXET338cDeid?cluster=devnet) |
 | Encrypted Document (Arweave) | `2Cyx7gpJgDmivrgDiaCnwsrVCAWqkUMRVWCyDaNAVymn` | [Irys Devnet Gateway](https://devnet.irys.xyz/2Cyx7gpJgDmivrgDiaCnwsrVCAWqkUMRVWCyDaNAVymn) |
 | ZK Circuit | 7,883 constraints, 256-byte proof | [Test proof](circuits/test_proof.js) |
+| SDK | `@adduce/sdk` v0.1.0 | [npm](https://www.npmjs.com/package/@adduce/sdk) |
 
 ## Three Pillars
 
@@ -22,7 +29,29 @@ The first credential issuer for legal aid on Solana. Adduce digitizes the eligib
 
 **03. Settle.** Case closed + credential unrevoked + disbursed amount <= authorized amount = payment. Supports both on-chain USDC (400ms) and off-chain bank transfer with on-chain payment reference for audit. Government pays per transaction, no servers to maintain.
 
-## Quick Start
+## Install the SDK
+
+```bash
+npm install @adduce/sdk
+```
+
+```typescript
+import { AdduceClient } from "@adduce/sdk";
+
+const adduce = new AdduceClient({ cluster: "devnet", wallet });
+const { casePda } = await adduce.openCase({
+  caseId: "CASE-DE-2025-001",
+  lawyerPubkey, applicant, authorizedAmount: 8500,
+}, "DE");
+await adduce.closeCase("CASE-DE-2025-001", credentialAddress, "DE");
+await adduce.markPaid({ caseId: "CASE-DE-2025-001", disbursedAmount: 8500, paymentReference: "INV-001" }, "DE");
+```
+
+No cloning. No deploying. No scripts. Connect to the already-deployed program and call functions.
+
+**[View on npm](https://www.npmjs.com/package/@adduce/sdk)**
+
+## Quick Start (Full Repo)
 
 ```bash
 git clone https://github.com/SAHU-01/legal_aid.git && cd legal_aid
