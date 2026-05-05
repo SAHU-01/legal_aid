@@ -1,6 +1,6 @@
-# Adduce -- Issue. Prove. Settle.
+# Adduce: Issue. Prove. Settle.
 
-The first credential issuer for legal aid on Solana. Adduce digitizes the eligibility certificate -- the single paper artifact that crosses institutional boundaries every time a lawyer gets paid -- by issuing it as a cryptographically signed on-chain attestation with zero-knowledge selective disclosure and instant settlement.
+The first credential issuer for legal aid on Solana. Adduce digitizes the eligibility certificate: the single paper artifact that crosses institutional boundaries every time a lawyer gets paid: by issuing it as a cryptographically signed on-chain attestation with zero-knowledge selective disclosure and instant settlement.
 
 **14 instructions. 4 events. 26 error codes. Deployed on Solana Devnet.**
 

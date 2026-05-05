@@ -47,7 +47,7 @@ export default function Navbar({ activePage }: { activePage?: "home" | "docs" })
           Adduce
         </Link>
         <div className="shared-nav-col shared-nav-right">
-          <span className="shared-nav-disabled">Our Story</span>
+          <Link href="/story" className="shared-nav-link">Our Story</Link>
           <Link
             href="/dashboard"
             className="shared-nav-link"

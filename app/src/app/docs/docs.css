@@ -306,7 +306,7 @@
 
 .docs .live-case-row {
   display: grid;
-  grid-template-columns: 0.8fr 1fr 2fr;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
   gap: 0;
 }
 
@@ -322,7 +322,8 @@
   font-weight: 300;
   border-bottom: 1px solid var(--border);
   border-right: 1px solid var(--border);
-  word-break: break-all;
+  word-break: normal;
+  overflow-wrap: break-word;
 }
 
 .docs .live-case-cell:last-child {
