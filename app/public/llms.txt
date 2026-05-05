@@ -1,0 +1,41 @@
+# Adduce — Issue. Prove. Settle.
+
+> The first credential issuer for legal aid on Solana.
+
+## What is Adduce
+
+Adduce digitizes the legal aid eligibility certificate — the single paper artifact that crosses institutional boundaries every time a lawyer gets paid — by issuing it as a cryptographically signed on-chain attestation on Solana with zero-knowledge selective disclosure and instant settlement.
+
+## Key Facts
+
+- 14 on-chain instructions, 4 events, 26 error codes
+- Groth16 ZK circuit: 7,883 constraints, 256-byte proofs
+- Deployed on Solana Devnet: 3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV
+- Published SDK: npm install @adduce/sdk
+- 9 countries with certificate-based legal aid: Germany, France, Netherlands, Italy, Spain, Austria, Portugal, Canada, Ireland
+- 500M+ citizens covered
+
+## Three Pillars
+
+1. Issue: Court authority signs on-chain attestation (SAS). Supports wallet-based and custodial issuance.
+2. Prove: 256-byte Groth16 ZK proof. "Jurisdiction is DE, not expired" without revealing other fields.
+3. Settle: Credential-gated payment. 400ms USDC or off-chain bank transfer with on-chain reference.
+
+## Tech Stack
+
+- Smart Contracts: Anchor 0.32 / Rust
+- ZK Circuits: Circom 2.2 / snarkjs / Groth16 (BN254)
+- Identity: Solana Attestation Service (SAS)
+- Compression: Light Protocol (98.8% cost savings)
+- Document Storage: Arweave + Irys (X25519 + AES-256-GCM encryption)
+- Payments: x402 Protocol v2
+- SDK: @adduce/sdk on npm
+
+## Links
+
+- Website: https://adduce.vercel.app
+- GitHub: https://github.com/SAHU-01/legal_aid
+- npm: https://www.npmjs.com/package/@adduce/sdk
+- Solana Explorer: https://explorer.solana.com/address/3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV?cluster=devnet
+- Documentation: https://adduce.vercel.app/docs
+- Blog: https://adduce.vercel.app/blog
