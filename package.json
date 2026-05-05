@@ -17,8 +17,10 @@
     "@irys/upload-solana": "^0.1.8",
     "@lightprotocol/compressed-token": "^0.23.3",
     "@lightprotocol/stateless.js": "^0.23.3",
+    "circomlibjs": "^0.1.7",
     "dotenv": "^17.4.2",
     "sas-lib": "^1.0.10",
+    "snarkjs": "^0.7.6",
     "x402-solana": "^2.0.4"
   },
   "devDependencies": {

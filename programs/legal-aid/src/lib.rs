@@ -1,5 +1,8 @@
 use anchor_lang::prelude::*;
 
+pub mod groth16;
+pub mod vk;
+
 declare_id!("3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV");
 
 // ── SAS Program ID ──────────────────────────────────────────────────
@@ -148,6 +151,12 @@ pub enum LegalAidError {
     CredentialApplicantMismatch,
     #[msg("Credential account has been revoked (no longer exists on-chain)")]
     CredentialRevoked,
+    #[msg("ZK proof verification failed")]
+    ZkProofVerificationFailed,
+    #[msg("ZK proof public inputs do not match on-chain state")]
+    ZkPublicInputMismatch,
+    #[msg("Predicate not satisfied by ZK proof")]
+    ZkPredicateNotSatisfied,
 }
 
 // ---------- Program ----------
@@ -389,6 +398,84 @@ pub mod legal_aid {
 
         Ok(())
     }
+
+    /// Verify a ZK selective disclosure proof on-chain.
+    ///
+    /// This replaces commitment-based disclosure with true zero-knowledge proofs:
+    /// the verifier learns ONLY the disclosed value and predicate result, nothing else.
+    ///
+    /// Uses Groth16 over BN254 via Solana's alt_bn128 precompile (same curve as
+    /// Light Protocol's verifier).
+    ///
+    /// Public inputs (7 field elements):
+    ///   [0] commitmentRoot   — must match case_file.commitment_root
+    ///   [1] disclosedValue   — the selectively revealed field value
+    ///   [2] disclosureIndex  — which field is being disclosed
+    ///   [3] predicateValue   — threshold for range check
+    ///   [4] predicateIndex   — which field the predicate applies to
+    ///   [5] predicateSatisfied — 1 if predicate holds (enforced == 1)
+    ///   [6] issuerPubkeyHash — binding to credential issuer
+    ///
+    /// Proof: 256 bytes (Groth16: A[G1] + B[G2] + C[G1])
+    pub fn verify_zk_disclosure(
+        ctx: Context<VerifyZkDisclosure>,
+        _case_id: String,
+        proof_data: [u8; 256],
+        public_inputs: [[u8; 32]; 7],
+    ) -> Result<()> {
+        let case_file = &ctx.accounts.case_file;
+
+        // Ensure credential is linked and case is active
+        require!(
+            case_file.credential_pubkey != Pubkey::default(),
+            LegalAidError::CredentialNotLinked
+        );
+        require!(
+            case_file.status == CaseStatus::InProgress || case_file.status == CaseStatus::Open,
+            LegalAidError::InvalidStatus
+        );
+
+        // Public input [0] (commitmentRoot) must match the on-chain commitment root
+        require!(
+            public_inputs[0] == case_file.commitment_root,
+            LegalAidError::ZkPublicInputMismatch
+        );
+
+        // Public input [5] (predicateSatisfied) must be 1
+        let mut expected_one = [0u8; 32];
+        expected_one[31] = 1;
+        require!(
+            public_inputs[5] == expected_one,
+            LegalAidError::ZkPredicateNotSatisfied
+        );
+
+        // Parse the proof
+        let proof = groth16::parse_proof(&proof_data);
+
+        // Get verification key
+        let verification_key = vk::get_verification_key();
+
+        // Verify the Groth16 proof
+        let valid = groth16::verify_proof(
+            &verification_key,
+            &proof,
+            &public_inputs,
+        )?;
+
+        require!(valid, LegalAidError::ZkProofVerificationFailed);
+
+        // Emit event for off-chain indexing
+        emit!(ZkDisclosureVerified {
+            case_id: case_file.case_id.clone(),
+            disclosed_value: public_inputs[1],
+            disclosure_index: public_inputs[2][31] as u8,
+            predicate_satisfied: true,
+            verifier: ctx.accounts.verifier.key(),
+            timestamp: Clock::get()?.unix_timestamp,
+        });
+
+        Ok(())
+    }
 }
 
 // ---------- Instruction accounts ----------
@@ -498,4 +585,33 @@ pub struct MarkPaid<'info> {
     )]
     pub case_file: Account<'info, CaseFile>,
     pub authority: Signer<'info>,
+}
+
+#[derive(Accounts)]
+#[instruction(case_id: String)]
+pub struct VerifyZkDisclosure<'info> {
+    #[account(
+        seeds = [b"case", case_id.as_bytes()],
+        bump = case_file.bump,
+    )]
+    pub case_file: Account<'info, CaseFile>,
+    /// The party requesting verification (can be anyone — proof is self-verifying)
+    pub verifier: Signer<'info>,
+}
+
+// ---------- Events ----------
+
+#[event]
+pub struct ZkDisclosureVerified {
+    pub case_id: String,
+    /// The selectively disclosed value (as BN254 field element)
+    pub disclosed_value: [u8; 32],
+    /// Index of the disclosed field (0-5)
+    pub disclosure_index: u8,
+    /// Whether the range predicate was satisfied
+    pub predicate_satisfied: bool,
+    /// Who submitted the verification
+    pub verifier: Pubkey,
+    /// When verification occurred
+    pub timestamp: i64,
 }
