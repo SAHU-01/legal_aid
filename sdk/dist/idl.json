@@ -1,0 +1,1599 @@
+{
+  "address": "3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV",
+  "metadata": {
+    "name": "legal_aid",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Legal Aid Plugin — Solana Devnet MVP"
+  },
+  "instructions": [
+    {
+      "name": "add_delegate",
+      "discriminator": [
+        3,
+        67,
+        128,
+        218,
+        69,
+        139,
+        53,
+        88
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.jurisdiction",
+                "account": "ProgramConfig"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "delegate",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "anchor_document",
+      "discriminator": [
+        87,
+        8,
+        127,
+        44,
+        152,
+        147,
+        82,
+        183
+      ],
+      "accounts": [
+        {
+          "name": "case_file",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  115,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "case_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "credential_account"
+        },
+        {
+          "name": "lawyer",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "_case_id",
+          "type": "string"
+        },
+        {
+          "name": "document_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "lawyer_salt",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "close_case",
+      "discriminator": [
+        188,
+        7,
+        71,
+        62,
+        186,
+        245,
+        29,
+        55
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.jurisdiction",
+                "account": "ProgramConfig"
+              }
+            ]
+          }
+        },
+        {
+          "name": "case_file",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  115,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "case_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "credential_account"
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "_case_id",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "fund_operations",
+      "discriminator": [
+        165,
+        82,
+        28,
+        5,
+        251,
+        236,
+        9,
+        219
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.jurisdiction",
+                "account": "ProgramConfig"
+              }
+            ]
+          }
+        },
+        {
+          "name": "funder",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "operations_wallet",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initialize",
+      "docs": [
+        "Initialize a jurisdiction config with role separation and operations wallet."
+      ],
+      "discriminator": [
+        175,
+        175,
+        109,
+        31,
+        13,
+        152,
+        155,
+        237
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "jurisdiction"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "jurisdiction",
+          "type": "string"
+        },
+        {
+          "name": "expected_schema",
+          "type": "pubkey"
+        },
+        {
+          "name": "reviewer",
+          "type": "pubkey"
+        },
+        {
+          "name": "payer_role",
+          "type": "pubkey"
+        },
+        {
+          "name": "operations_wallet",
+          "type": "pubkey"
+        },
+        {
+          "name": "case_timeout_days",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "link_credential",
+      "discriminator": [
+        20,
+        80,
+        186,
+        195,
+        12,
+        98,
+        36,
+        11
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.jurisdiction",
+                "account": "ProgramConfig"
+              }
+            ]
+          }
+        },
+        {
+          "name": "case_file",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  115,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "case_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "credential_account"
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "_case_id",
+          "type": "string"
+        },
+        {
+          "name": "commitment_root",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "mark_paid",
+      "discriminator": [
+        51,
+        120,
+        9,
+        160,
+        70,
+        29,
+        18,
+        205
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.jurisdiction",
+                "account": "ProgramConfig"
+              }
+            ]
+          }
+        },
+        {
+          "name": "case_file",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  115,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "case_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "_case_id",
+          "type": "string"
+        },
+        {
+          "name": "disbursed_amount",
+          "type": "u64"
+        },
+        {
+          "name": "payment_reference",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "open_case",
+      "discriminator": [
+        249,
+        236,
+        95,
+        19,
+        245,
+        178,
+        92,
+        13
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.jurisdiction",
+                "account": "ProgramConfig"
+              }
+            ]
+          }
+        },
+        {
+          "name": "case_file",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  115,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "case_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "case_id",
+          "type": "string"
+        },
+        {
+          "name": "lawyer_commitment",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "applicant",
+          "type": "pubkey"
+        },
+        {
+          "name": "authorized_amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "open_case_custodial",
+      "discriminator": [
+        209,
+        37,
+        206,
+        157,
+        220,
+        133,
+        14,
+        129
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.jurisdiction",
+                "account": "ProgramConfig"
+              }
+            ]
+          }
+        },
+        {
+          "name": "case_file",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  115,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "case_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "case_id",
+          "type": "string"
+        },
+        {
+          "name": "lawyer_commitment",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "citizen_id_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "custodian",
+          "type": "pubkey"
+        },
+        {
+          "name": "authorized_amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "reassign_lawyer",
+      "discriminator": [
+        78,
+        220,
+        39,
+        81,
+        183,
+        209,
+        240,
+        128
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.jurisdiction",
+                "account": "ProgramConfig"
+              }
+            ]
+          }
+        },
+        {
+          "name": "case_file",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  115,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "case_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "credential_account"
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "_case_id",
+          "type": "string"
+        },
+        {
+          "name": "new_lawyer_commitment",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "reason",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "remove_delegate",
+      "discriminator": [
+        94,
+        37,
+        16,
+        59,
+        7,
+        84,
+        97,
+        211
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.jurisdiction",
+                "account": "ProgramConfig"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "delegate",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "reopen_case",
+      "discriminator": [
+        234,
+        142,
+        153,
+        35,
+        217,
+        0,
+        175,
+        175
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.jurisdiction",
+                "account": "ProgramConfig"
+              }
+            ]
+          }
+        },
+        {
+          "name": "case_file",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  115,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "case_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "_case_id",
+          "type": "string"
+        },
+        {
+          "name": "reason",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "update_case_status",
+      "discriminator": [
+        51,
+        120,
+        238,
+        138,
+        136,
+        171,
+        158,
+        80
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.jurisdiction",
+                "account": "ProgramConfig"
+              }
+            ]
+          }
+        },
+        {
+          "name": "case_file",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  115,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "case_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "_case_id",
+          "type": "string"
+        },
+        {
+          "name": "new_status",
+          "type": {
+            "defined": {
+              "name": "CaseStatus"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "verify_zk_disclosure",
+      "discriminator": [
+        3,
+        172,
+        73,
+        72,
+        177,
+        249,
+        250,
+        133
+      ],
+      "accounts": [
+        {
+          "name": "case_file",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  115,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "case_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "verifier",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "_case_id",
+          "type": "string"
+        },
+        {
+          "name": "proof_data",
+          "type": {
+            "array": [
+              "u8",
+              256
+            ]
+          }
+        },
+        {
+          "name": "public_inputs",
+          "type": {
+            "array": [
+              {
+                "array": [
+                  "u8",
+                  32
+                ]
+              },
+              7
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "CaseFile",
+      "discriminator": [
+        228,
+        30,
+        183,
+        159,
+        99,
+        51,
+        180,
+        4
+      ]
+    },
+    {
+      "name": "ProgramConfig",
+      "discriminator": [
+        196,
+        210,
+        90,
+        231,
+        144,
+        149,
+        140,
+        63
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "CaseReopened",
+      "discriminator": [
+        227,
+        183,
+        12,
+        70,
+        244,
+        20,
+        95,
+        9
+      ]
+    },
+    {
+      "name": "CaseStatusUpdated",
+      "discriminator": [
+        74,
+        79,
+        241,
+        60,
+        203,
+        95,
+        209,
+        24
+      ]
+    },
+    {
+      "name": "LawyerReassigned",
+      "discriminator": [
+        241,
+        176,
+        232,
+        229,
+        224,
+        229,
+        245,
+        42
+      ]
+    },
+    {
+      "name": "ZkDisclosureVerified",
+      "discriminator": [
+        209,
+        220,
+        187,
+        32,
+        20,
+        145,
+        227,
+        74
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "JurisdictionTooLong",
+      "msg": "Jurisdiction exceeds maximum length"
+    },
+    {
+      "code": 6001,
+      "name": "CaseIdTooLong",
+      "msg": "Case ID exceeds maximum length"
+    },
+    {
+      "code": 6002,
+      "name": "Unauthorized",
+      "msg": "Unauthorized signer"
+    },
+    {
+      "code": 6003,
+      "name": "InvalidStatus",
+      "msg": "Invalid case status for this operation"
+    },
+    {
+      "code": 6004,
+      "name": "CredentialNotLinked",
+      "msg": "No credential linked to this case"
+    },
+    {
+      "code": 6005,
+      "name": "CredentialWrongOwner",
+      "msg": "Credential account is not owned by the SAS program"
+    },
+    {
+      "code": 6006,
+      "name": "CredentialSchemaMismatch",
+      "msg": "Credential schema does not match expected schema"
+    },
+    {
+      "code": 6007,
+      "name": "CredentialExpired",
+      "msg": "Credential has expired"
+    },
+    {
+      "code": 6008,
+      "name": "CredentialDataTooShort",
+      "msg": "Credential account data is too short"
+    },
+    {
+      "code": 6009,
+      "name": "CaseAlreadyHasCredential",
+      "msg": "This case already has a credential linked"
+    },
+    {
+      "code": 6010,
+      "name": "CommitmentRootEmpty",
+      "msg": "Commitment root must be non-zero"
+    },
+    {
+      "code": 6011,
+      "name": "CredentialApplicantMismatch",
+      "msg": "Credential nonce does not match case applicant"
+    },
+    {
+      "code": 6012,
+      "name": "CredentialRevoked",
+      "msg": "Credential account has been revoked (no longer exists on-chain)"
+    },
+    {
+      "code": 6013,
+      "name": "ZkProofVerificationFailed",
+      "msg": "ZK proof verification failed"
+    },
+    {
+      "code": 6014,
+      "name": "ZkPublicInputMismatch",
+      "msg": "ZK proof public inputs do not match on-chain state"
+    },
+    {
+      "code": 6015,
+      "name": "ZkPredicateNotSatisfied",
+      "msg": "Predicate not satisfied by ZK proof"
+    },
+    {
+      "code": 6016,
+      "name": "ReasonTooLong",
+      "msg": "Reassignment reason exceeds 128 characters"
+    },
+    {
+      "code": 6017,
+      "name": "CannotReassignTerminalCase",
+      "msg": "Cannot reassign lawyer on a terminal case (Closed/Paid)"
+    },
+    {
+      "code": 6018,
+      "name": "CitizenIdHashEmpty",
+      "msg": "Citizen ID hash must be non-zero for custodial cases"
+    },
+    {
+      "code": 6019,
+      "name": "MaxDelegatesReached",
+      "msg": "Maximum delegates (3) reached"
+    },
+    {
+      "code": 6020,
+      "name": "DelegateNotFound",
+      "msg": "Delegate not found"
+    },
+    {
+      "code": 6021,
+      "name": "InvalidStatusTransition",
+      "msg": "Invalid status transition"
+    },
+    {
+      "code": 6022,
+      "name": "CannotReopenNonClosedCase",
+      "msg": "Can only reopen a Closed case"
+    },
+    {
+      "code": 6023,
+      "name": "PaymentExceedsAuthorized",
+      "msg": "Disbursed amount exceeds authorized amount"
+    },
+    {
+      "code": 6024,
+      "name": "PaymentReferenceTooLong",
+      "msg": "Payment reference exceeds 64 characters"
+    },
+    {
+      "code": 6025,
+      "name": "LawyerCommitmentMismatch",
+      "msg": "Lawyer commitment hash does not match signer"
+    }
+  ],
+  "types": [
+    {
+      "name": "CaseFile",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "case_id",
+            "type": "string"
+          },
+          {
+            "name": "document_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "lawyer_commitment",
+            "docs": [
+              "Privacy-preserving lawyer assignment: hash(lawyer_pubkey || salt).",
+              "Lawyer proves assignment by providing the salt during anchor_document."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "issuer",
+            "type": "pubkey"
+          },
+          {
+            "name": "applicant",
+            "docs": [
+              "The applicant/citizen (wallet pubkey). Zero for custodial cases."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "CaseStatus"
+              }
+            }
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "updated_at",
+            "type": "i64"
+          },
+          {
+            "name": "credential_pubkey",
+            "type": "pubkey"
+          },
+          {
+            "name": "commitment_root",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "custodian",
+            "docs": [
+              "Custodian acting on behalf of a citizen without a wallet"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "citizen_id_hash",
+            "docs": [
+              "Hash of citizen's national ID (for custodial cases where citizen has no wallet)"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "authorized_amount",
+            "docs": [
+              "Fee schedule: authorized payment amount for this case (in atomic units)"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "disbursed_amount",
+            "docs": [
+              "Actual amount disbursed (set during mark_paid)"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "payment_reference",
+            "docs": [
+              "Government payment reference (invoice number, SAP reference, etc.)"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CaseReopened",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "case_id",
+            "type": "string"
+          },
+          {
+            "name": "reason",
+            "type": "string"
+          },
+          {
+            "name": "reopened_by",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CaseStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Open"
+          },
+          {
+            "name": "InProgress"
+          },
+          {
+            "name": "Closed"
+          },
+          {
+            "name": "Paid"
+          },
+          {
+            "name": "Stayed"
+          },
+          {
+            "name": "Appealed"
+          },
+          {
+            "name": "Withdrawn"
+          },
+          {
+            "name": "Remanded"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CaseStatusUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "case_id",
+            "type": "string"
+          },
+          {
+            "name": "old_status",
+            "type": {
+              "defined": {
+                "name": "CaseStatus"
+              }
+            }
+          },
+          {
+            "name": "new_status",
+            "type": {
+              "defined": {
+                "name": "CaseStatus"
+              }
+            }
+          },
+          {
+            "name": "updated_by",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LawyerReassigned",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "case_id",
+            "type": "string"
+          },
+          {
+            "name": "old_lawyer_commitment",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "new_lawyer_commitment",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "reason",
+            "type": "string"
+          },
+          {
+            "name": "reassigned_by",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProgramConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "reviewer",
+            "type": "pubkey"
+          },
+          {
+            "name": "payer",
+            "type": "pubkey"
+          },
+          {
+            "name": "jurisdiction",
+            "type": "string"
+          },
+          {
+            "name": "total_cases",
+            "type": "u64"
+          },
+          {
+            "name": "expected_schema",
+            "type": "pubkey"
+          },
+          {
+            "name": "operations_wallet",
+            "docs": [
+              "Wallet that pays transaction fees for all operations (funded by ministry)"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "delegates",
+            "docs": [
+              "Delegate reviewers who can link credentials and close cases (max 3)"
+            ],
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "case_timeout_days",
+            "docs": [
+              "Auto-escalation: if a case is InProgress for this many days, authority can close directly"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ZkDisclosureVerified",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "case_id",
+            "type": "string"
+          },
+          {
+            "name": "disclosed_value",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "disclosure_index",
+            "type": "u8"
+          },
+          {
+            "name": "predicate_satisfied",
+            "type": "bool"
+          },
+          {
+            "name": "verifier",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,12 +1,12 @@
 {
   "name": "@adduce/sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Adduce SDK: Issue, Prove, Settle legal aid credentials on Solana",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist/", "README.md"],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp src/idl.json dist/idl.json",
     "prepublishOnly": "npm run build"
   },
   "keywords": ["solana", "legal-aid", "credentials", "zk-proofs", "groth16", "sas"],

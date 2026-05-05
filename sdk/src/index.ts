@@ -213,11 +213,9 @@ export class AdduceClient {
       { commitment: "confirmed" }
     );
 
-    // Load IDL from chain or use local
-    this.program = new anchor.Program(
-      require("../../target/idl/legal_aid.json"),
-      provider
-    );
+    // IDL is bundled with the SDK — no external file needed
+    const idl = require("./idl.json");
+    this.program = new anchor.Program(idl, provider);
   }
 
   // ── Jurisdiction Setup ──────────────────────────────────────────
