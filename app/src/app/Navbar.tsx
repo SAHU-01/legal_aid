@@ -24,7 +24,7 @@ function StarIcon() {
   );
 }
 
-export default function Navbar({ activePage }: { activePage?: "home" | "eudi" | "docs" }) {
+export default function Navbar({ activePage }: { activePage?: "home" | "docs" }) {
   return (
     <nav className="shared-nav">
       <div className="shared-nav-pill">
@@ -49,10 +49,10 @@ export default function Navbar({ activePage }: { activePage?: "home" | "eudi" | 
         <div className="shared-nav-col shared-nav-right">
           <span className="shared-nav-disabled">Our Story</span>
           <Link
-            href="/eudi-framework"
-            className={`shared-nav-link${activePage === "eudi" ? " shared-nav-active" : ""}`}
+            href="/dashboard"
+            className="shared-nav-link"
           >
-            EUDI Framework
+            Demo
           </Link>
           <a
             href={GITHUB_URL}

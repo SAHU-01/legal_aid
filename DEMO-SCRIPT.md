@@ -36,27 +36,33 @@ A step-by-step script for presenting this MVP to a government stakeholder or NGO
 
 ### 2. The Solution (1 min)
 
-> "We built a plug-in — not a replacement — that connects to existing court information systems and automates three things:
+> "We built a plug-in — not a replacement — that connects to existing court information systems and digitizes exactly one artifact: the Berechtigungsschein.
 >
-> **One**, digital credentialing. Courts issue a verifiable credential to each lawyer's wallet. No more paper Berechtigungsscheine.
+> **Issuance.** The court authority cryptographically signs an on-chain attestation binding the citizen to their eligibility tier and jurisdiction. A commitment root hashes all credential fields — no personal data ever touches the ledger. The credential survives issuing-server failure because it lives on the Solana ledger, not on any ministry's server.
 >
-> **Two**, tamper-proof document anchoring. Every case document is hashed and recorded. Anyone can verify nothing was altered.
+> **Verification.** When eligibility needs to be proved, the holder generates a zero-knowledge proof: 'jurisdiction is DE, credential isn't expired' — without revealing tier, dates, or identity. 256 bytes. Verified on-chain in one transaction. The verifier learns nothing else.
 >
-> **Three**, instant payment. The moment a case is closed, the lawyer gets paid in USDC. Not in 6 months — in 400 milliseconds."
+> **Settlement.** Case closed, proof valid, credential unrevoked — USDC transfers to the lawyer in 400 milliseconds. If eligibility changes mid-case, the credential is deleted on-chain and all downstream verification fails instantly. No window of abuse."
 
-### 3. Live Demo — Credential (2 min)
+### 3. Live Demo — Credential Issuance & Lifecycle (2 min)
 
 **Show the dashboard with wallet connected.**
 
-> "This is the lawyer's portal. At the top you can see their digital credential — a Berechtigungsschein issued by the court."
+> "This is the lawyer's portal. At the top you can see the linked credential — a digital Berechtigungsschein issued by the court authority."
 
 **Point to the credential section.**
 
-> "It shows the jurisdiction — Germany — the eligibility tier, and the expiry date. This credential lives on the lawyer's wallet. It was issued by the court authority and is cryptographically verifiable by anyone, instantly."
+> "Three things to notice here. First: jurisdiction, eligibility tier, and expiry date. These are the fields encoded in the SAS attestation — the same data that used to be on a paper certificate.
+>
+> Second: the credential is an on-chain account, owned by the SAS program. Even if the court's local server goes down, this credential remains verifiable by anyone on the network. That's credential longevity — something paper and even Hyperledger Aries can't guarantee without the issuing agent being online.
+>
+> Third: the commitment root. This is a Poseidon hash of all credential fields plus random salts. It enables zero-knowledge proofs later — the holder can prove facts about these fields without revealing them."
 
 **Click the attestation explorer link.**
 
-> "Here it is on Solana Explorer. This is not a simulation — this is a real on-chain record. The court issued this, and no one can forge or alter it."
+> "Here it is on Solana Explorer. This is a real PDA owned by the SAS program at address 22zo... You can see the raw bytes: the citizen's pubkey as nonce, the schema reference, the issuer's signature, the expiry timestamp. All on-chain, all immutable, all verifiable without calling anyone.
+>
+> If the court needs to revoke this — say the citizen gains employment — they delete this account. Instant. Global. Every system that checks this credential will immediately see it's gone. No revocation registry delays, no stale paper certificates floating around."
 
 ### 4. Live Demo — Case Lifecycle (2 min)
 
@@ -96,7 +102,27 @@ A step-by-step script for presenting this MVP to a government stakeholder or NGO
 >
 > This took 400 milliseconds. Not 6 months. Not 3 months. Under one second."
 
-### 6. Cost Argument (1 min)
+### 6. Live Demo — ZK Selective Disclosure (2 min)
+
+**Switch to terminal. Run the ZK demo:**
+
+```bash
+npx ts-node scripts/zk-disclosure-demo.ts
+```
+
+> "Remember that commitment root we stored during issuance? This is where it pays off.
+>
+> The credential has six fields: jurisdiction, eligibility tier, expiry date, applicant ID, case type, issued-at. During issuance, we hashed all of them into a single Poseidon Merkle root and stored it on-chain. Now, the holder can prove statements about those fields without revealing them.
+>
+> Watch: the holder generates a Groth16 proof — 'my jurisdiction is DE AND my credential expires after today.' The circuit verifies that the holder knows field values that hash to the on-chain commitment root, that the disclosed field matches the public input, and that the predicate holds. All in zero knowledge."
+
+**Point to the Privacy Analysis table in the output.**
+
+> "Look at what the verifier learns versus what stays private. Jurisdiction: revealed. 'Not expired': proved. Everything else — tier, applicant identity, exact dates, salts — cryptographically hidden. This is not access-control privacy like Hyperledger Fabric's Private Data Collections. This is mathematical privacy. Even with unlimited compute, the verifier cannot extract the hidden fields from the proof.
+>
+> The proof is 256 bytes. Smaller than an Aries AnonCreds proof. Verified on-chain in a single Solana transaction for $0.0001. No DIDComm agent infrastructure. No Indy ledger. No consortium. Just math."
+
+### 7. Cost Argument (1 min)
 
 **Switch to the demo report (terminal or text file).**
 
@@ -110,7 +136,7 @@ A step-by-step script for presenting this MVP to a government stakeholder or NGO
 >
 > At government scale — say 100,000 legal aid cases per year in a single jurisdiction — that's over $22,000 saved on storage alone. And this is just the on-chain cost. The real savings come from eliminating manual processing, paper handling, and payment delays."
 
-### 7. Interoperability (1 min)
+### 8. Interoperability (1 min)
 
 > "I want to emphasize: this is a plug-in, not a replacement. No government system needs to change.
 >
@@ -120,7 +146,7 @@ A step-by-step script for presenting this MVP to a government stakeholder or NGO
 >
 > And because we're using stablecoins — USDC — there's no cryptocurrency volatility. Lawyers receive the exact euro-equivalent amount they're owed."
 
-### 8. Q&A
+### 9. Q&A
 
 Have these tabs ready:
 
@@ -129,7 +155,9 @@ Have these tabs ready:
 | "Is this real?" | Explorer tab with program address: [`3f1y...KJRNV`](https://explorer.solana.com/address/3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV?cluster=devnet) |
 | "How do we know the credential is valid?" | Explorer tab with SAS attestation PDA |
 | "What if someone tampers with a document?" | Show the document hash in the case detail — explain SHA-256 |
-| "What about GDPR / data privacy?" | "No personal data is stored on-chain. Only hashes and public keys. The actual documents stay in the court's existing systems." |
+| "What about GDPR / data privacy?" | "No personal data is stored on-chain. Only hashes and public keys. The ZK proofs let us verify credentials without revealing personal data — mathematical privacy, not policy privacy." |
+| "How is this different from Hyperledger?" | "Same zero-knowledge guarantees as Aries AnonCreds, but verified on-chain in a single transaction. No DIDComm agents, no Indy ledger. 256-byte proof, $0.0001 to verify." |
+| "What's the ZK proof doing?" | "It proves 'I have a valid credential with jurisdiction=DE that isn't expired' without revealing tier, applicant ID, or exact dates. Groth16 — same math as Ethereum ZK rollups." |
 | "What does it cost to deploy?" | Point to the cost analysis — infrastructure costs are negligible at scale |
 | "Can this work with our existing systems?" | "Yes — the agent polls your database and writes to the chain. Your systems don't need to know about Solana." |
 | "What's the timeline to production?" | "The protocol layer is complete. Integration with a specific court system is a 2-3 month project — mostly mapping data fields and setting up credential issuance workflows." |
@@ -144,3 +172,6 @@ Have these tabs ready:
 - **$22,000+** — annual savings at 100,000 cases
 - **50 USDC** — standard legal aid disbursement per case
 - **0 personal data** — stored on-chain (GDPR compliant by design)
+- **256 bytes** — ZK proof size (smaller than Hyperledger Aries ~500 bytes)
+- **200k CU** — on-chain verification cost (~$0.0001)
+- **7,883 constraints** — circuit complexity (Groth16 over BN254)

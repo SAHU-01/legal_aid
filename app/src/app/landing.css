@@ -69,11 +69,11 @@
 
 .landing .hero h1 {
   font-family: var(--serif);
-  font-size: clamp(2.4rem, 5vw, 4.2rem);
+  font-size: clamp(3.2rem, 7vw, 5.5rem);
   font-weight: 400;
-  line-height: 1.12;
-  letter-spacing: -0.02em;
-  margin-bottom: 0.2em;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.3em;
 }
 
 .landing .hero h1 em {
@@ -81,11 +81,27 @@
   font-weight: 400;
 }
 
+.landing .hero-tagline {
+  font-family: var(--serif);
+  font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+  font-weight: 300;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  max-width: 560px;
+  margin: 0 auto 0.8rem;
+}
+
+.landing .hero-tagline em {
+  font-style: italic;
+  color: var(--accent, #7c3aed);
+}
+
 .landing .hero-sub {
-  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  font-size: clamp(0.9rem, 1.5vw, 1.05rem);
   color: var(--text-secondary);
   max-width: 560px;
-  margin: 1.5rem auto 2.5rem;
+  margin: 1rem auto 2.5rem;
   line-height: 1.6;
   font-weight: 300;
 }

@@ -119,7 +119,7 @@ export default function DocsPage() {
               Adduce is an on-chain legal-aid plugin. It provides credential
               issuance, document anchoring, and payment settlement primitives
               that integrate into existing government legal-aid portals.
-              Adduce does not replace your portal &mdash; it replaces the parts
+              Adduce does not replace your portal: it replaces the parts
               of your stack that are slow, opaque, or non-interoperable:
               identity attestations, document audit trails, and payment rails.
             </p>
@@ -148,10 +148,10 @@ export default function DocsPage() {
               <div className="module-card" style={{ borderLeft: "3px solid var(--accent)" }}>
                 <div style={{ fontSize: "0.7rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>Adduce Protocol Layer</div>
                 <ul className="req-list" style={{ margin: "0.5rem 0 0" }}>
-                  <li>SAS &mdash; identity attestations (Berechtigungsschein)</li>
-                  <li>Light Protocol &mdash; ZK-compressed document hashes</li>
-                  <li>x402 &mdash; HTTP-native payment settlement</li>
-                  <li>Anchor program &mdash; case lifecycle state machine</li>
+                  <li>SAS: identity attestations (Berechtigungsschein)</li>
+                  <li>Light Protocol: ZK-compressed document hashes</li>
+                  <li>x402: HTTP-native payment settlement</li>
+                  <li>Anchor program: case lifecycle state machine</li>
                 </ul>
                 <div style={{ margin: "0.8rem 0 0.4rem", fontSize: "0.7rem", color: "var(--accent)", fontWeight: 600 }}>{"\u2193"} All transactions on {"\u2193"}</div>
               </div>
@@ -198,7 +198,7 @@ export default function DocsPage() {
                 </div>
                 <p>
                   Lawyers anchor SHA-256 hashes of case documents on-chain. No
-                  PII is stored &mdash; only the cryptographic fingerprint. Any
+                  PII is stored: only the cryptographic fingerprint. Any
                   auditor can verify a document&rsquo;s integrity by comparing
                   hashes without accessing the original.
                 </p>
@@ -207,6 +207,21 @@ export default function DocsPage() {
               <div className="module-card">
                 <div className="module-card-header">
                   <div className="module-step">4</div>
+                  <h4>ZK Selective Disclosure (Groth16)</h4>
+                </div>
+                <p>
+                  Holders prove statements about credentials: &ldquo;jurisdiction
+                  is DE, credential not expired&rdquo;: without revealing other
+                  fields. A custom Circom circuit generates 256-byte Groth16 proofs
+                  verified on-chain via Solana&rsquo;s alt_bn128 pairing. Same
+                  BN254 curve as Light Protocol and Ethereum ZK rollups.
+                  Mathematical privacy, not access-control privacy.
+                </p>
+                <div className="module-tech">Circom &middot; snarkjs &middot; Groth16 &middot; alt_bn128 syscall</div>
+              </div>
+              <div className="module-card">
+                <div className="module-card-header">
+                  <div className="module-step">5</div>
                   <h4>ZK Compression (Light Protocol)</h4>
                 </div>
                 <p>
@@ -219,7 +234,7 @@ export default function DocsPage() {
               </div>
               <div className="module-card">
                 <div className="module-card-header">
-                  <div className="module-step">5</div>
+                  <div className="module-step">6</div>
                   <h4>Payment Settlement (x402 + USDC)</h4>
                 </div>
                 <p>
@@ -274,7 +289,7 @@ export default function DocsPage() {
               <div className="live-case-row">
                 <div className="live-case-cell"><span className="cell-label">Cross-border verification</span></div>
                 <div className="live-case-cell">Requires inter-ministerial agreement</div>
-                <div className="live-case-cell" style={{ color: "var(--accent)" }}>Native &mdash; anyone reads the PDA</div>
+                <div className="live-case-cell" style={{ color: "var(--accent)" }}>Native: anyone reads the PDA</div>
               </div>
               <div className="live-case-row">
                 <div className="live-case-cell"><span className="cell-label">Infrastructure cost</span></div>
@@ -294,7 +309,7 @@ export default function DocsPage() {
               <div className="live-case-row">
                 <div className="live-case-cell"><span className="cell-label">Interoperability</span></div>
                 <div className="live-case-cell">Walled garden per consortium</div>
-                <div className="live-case-cell" style={{ color: "var(--accent)" }}>Open &mdash; any W3C/eIDAS-compatible verifier</div>
+                <div className="live-case-cell" style={{ color: "var(--accent)" }}>Open: any W3C/eIDAS-compatible verifier</div>
               </div>
             </div>
 
@@ -438,7 +453,7 @@ export default function DocsPage() {
                 <p>
                   Citizen seeking legal aid. Files an application at the court,
                   receives a Berechtigungsschein if eligible, and takes it to a
-                  lawyer. The applicant has zero blockchain interaction &mdash;
+                  lawyer. The applicant has zero blockchain interaction.
                   the system is invisible to them. Their data never touches the
                   chain. Only entitlement metadata (jurisdiction, tier, expiry)
                   is stored as a verifiable credential.
@@ -453,7 +468,7 @@ export default function DocsPage() {
             <h2>Issuance, review, and disbursement.</h2>
             <p>
               The court operator is the system&rsquo;s authority. They control
-              the full case lifecycle &mdash; from certificate issuance to
+              the full case lifecycle: from certificate issuance to
               payment approval. In the German system, this maps to the
               Rechtspfleger at the Amtsgericht.
             </p>
@@ -573,7 +588,7 @@ export default function DocsPage() {
               <div className="live-case-row">
                 <div className="live-case-cell"><span className="cell-label">Request BS for client</span></div>
                 <div className="live-case-cell">Off-chain: client applies at court</div>
-                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>&mdash;</div>
+                <div className="live-case-cell" style={{ fontFamily: "var(--mono)", fontSize: "0.72rem" }}>-</div>
               </div>
               <div className="live-case-row">
                 <div className="live-case-cell"><span className="cell-label">Verify BS validity</span></div>
@@ -602,7 +617,7 @@ export default function DocsPage() {
                 <strong>Pain point solved:</strong> In the current paper system,
                 a lawyer must phone the issuing court to verify a
                 Berechtigungsschein. With Adduce, verification is a single
-                on-chain PDA read &mdash; no phone calls, no hold queues, no
+                on-chain PDA read: no phone calls, no hold queues, no
                 business-hour dependency.
               </p>
             </div>
@@ -614,14 +629,14 @@ export default function DocsPage() {
             <h2>Apply once. Carry a verifiable certificate.</h2>
             <p>
               The applicant is the citizen seeking legal aid. They interact with
-              the court and the lawyer &mdash; never with the blockchain
+              the court and the lawyer: never with the blockchain
               directly. Adduce is invisible to them.
             </p>
             <ul className="req-list">
               <li>Applicant goes to court (or online portal) and files an application for Beratungshilfe / legal aid</li>
               <li>Court clerk reviews eligibility based on income and case merits</li>
-              <li>If approved, court issues a Berechtigungsschein &mdash; in Adduce, this becomes an SAS credential on-chain, tied to the lawyer&rsquo;s wallet</li>
-              <li>Applicant takes the BS to a lawyer. The lawyer verifies it instantly on-chain &mdash; no phone calls needed</li>
+              <li>If approved, court issues a Berechtigungsschein: in Adduce, this becomes an SAS credential on-chain, tied to the lawyer&rsquo;s wallet</li>
+              <li>Applicant takes the BS to a lawyer. The lawyer verifies it instantly on-chain: no phone calls needed</li>
               <li>The applicant never creates a wallet, signs a transaction, or sees a blockchain address. The system is transparent to them.</li>
             </ul>
             <div className="callout">
@@ -779,7 +794,7 @@ export default function DocsPage() {
                 </div>
                 <div className="flow-step-desc">
                   On-chain status set to Paid. This is the terminal state
-                  &mdash; the case is now a permanent, immutable record.
+                 : the case is now a permanent, immutable record.
                 </div>
                 <div className="flow-step-tx">
                   <a href={`${EXPLORER_BASE}/tx/${LIVE_CASE.transactions.markPaid.tx}?cluster=devnet`} target="_blank" rel="noopener noreferrer">
@@ -792,8 +807,8 @@ export default function DocsPage() {
             <div className="callout">
               <p>
                 Every step after #3 produces a verifiable Solana transaction.
-                The full cycle &mdash; from certificate issuance to payment
-                &mdash; completed in under 2 minutes on-chain. In the paper
+                The full cycle: from certificate issuance to payment
+               : completed in under 2 minutes on-chain. In the paper
                 system, the same cycle takes 6&ndash;12 months.
               </p>
             </div>
@@ -898,7 +913,7 @@ export default function DocsPage() {
                 <span className="code-dot code-dot-red" />
                 <span className="code-dot code-dot-yellow" />
                 <span className="code-dot code-dot-green" />
-                <span className="code-title">Step 1 &mdash; Setup</span>
+                <span className="code-title">Step 1: Setup</span>
               </div>
               <div className="code-body">
                 <pre>{`git clone https://github.com/SAHU-01/legal_aid.git && cd legal_aid
@@ -913,7 +928,7 @@ anchor build && anchor deploy --provider.cluster devnet`}</pre>
                 <span className="code-dot code-dot-red" />
                 <span className="code-dot code-dot-yellow" />
                 <span className="code-dot code-dot-green" />
-                <span className="code-title">Step 2 &mdash; Deploy SAS credential schema</span>
+                <span className="code-title">Step 2: Deploy SAS credential schema</span>
               </div>
               <div className="code-body">
                 <pre>{`# Creates the legal-aid-eligibility schema on devnet
@@ -928,7 +943,7 @@ npx ts-node scripts/create-schema.ts
                 <span className="code-dot code-dot-red" />
                 <span className="code-dot code-dot-yellow" />
                 <span className="code-dot code-dot-green" />
-                <span className="code-title">Step 3 &mdash; Issue a credential</span>
+                <span className="code-title">Step 3: Issue a credential</span>
               </div>
               <div className="code-body">
                 <pre>{`# Issues a Berechtigungsschein (SAS attestation) to a lawyer wallet
@@ -943,7 +958,7 @@ npx ts-node scripts/issue-credential.ts
                 <span className="code-dot code-dot-red" />
                 <span className="code-dot code-dot-yellow" />
                 <span className="code-dot code-dot-green" />
-                <span className="code-title">Step 4 &mdash; Run the full case lifecycle</span>
+                <span className="code-title">Step 4: Run the full case lifecycle</span>
               </div>
               <div className="code-body">
                 <pre>{`# Executes: open_case -> link_credential -> anchor_document -> close_case -> USDC transfer -> mark_paid
@@ -958,7 +973,7 @@ npx ts-node scripts/sample-german-bs-case.ts
                 <span className="code-dot code-dot-red" />
                 <span className="code-dot code-dot-yellow" />
                 <span className="code-dot code-dot-green" />
-                <span className="code-title">Step 5 &mdash; Verify everything</span>
+                <span className="code-title">Step 5: Verify everything</span>
               </div>
               <div className="code-body">
                 <pre>{`# Verifies: SAS credential valid, case status Paid, document hash matches,
@@ -990,7 +1005,7 @@ npx ts-node scripts/verify-credential.ts
               <div className="live-case-row">
                 <div className="live-case-cell">Operator clicks &ldquo;Issue BS&rdquo;, portal generates PDF, stores in internal DB</div>
                 <div className="live-case-cell" style={{ color: "var(--accent)" }}>Portal also calls <code>issueCredential()</code> which writes a SAS attestation on Solana</div>
-                <div className="live-case-cell">PDF generation, internal DB record, operator UI &mdash; all unchanged</div>
+                <div className="live-case-cell">PDF generation, internal DB record, operator UI: all unchanged</div>
               </div>
             </div>
 
@@ -1003,8 +1018,8 @@ npx ts-node scripts/verify-credential.ts
               </div>
               <div className="live-case-row">
                 <div className="live-case-cell">Lawyer uploads Abrechnungsvordruck via portal, stored in DMS</div>
-                <div className="live-case-cell" style={{ color: "var(--accent)" }}>Portal also calls <code>anchorDocument()</code> with SHA-256 hash. Documents stay in DMS &mdash; only hash goes on-chain</div>
-                <div className="live-case-cell">Upload flow, DMS storage, document format &mdash; all unchanged</div>
+                <div className="live-case-cell" style={{ color: "var(--accent)" }}>Portal also calls <code>anchorDocument()</code> with SHA-256 hash. Documents stay in DMS: only hash goes on-chain</div>
+                <div className="live-case-cell">Upload flow, DMS storage, document format: all unchanged</div>
               </div>
             </div>
 
@@ -1017,8 +1032,8 @@ npx ts-node scripts/verify-credential.ts
               </div>
               <div className="live-case-row">
                 <div className="live-case-cell">Operator approves, finance dept queues bank transfer (6&ndash;12 month cycle)</div>
-                <div className="live-case-cell" style={{ color: "var(--accent)" }}>Portal calls x402 endpoint &mdash; USDC transferred in 400ms, case marked Paid on-chain</div>
-                <div className="live-case-cell">Approval decision, audit requirements &mdash; unchanged. Only payment rail changes</div>
+                <div className="live-case-cell" style={{ color: "var(--accent)" }}>Portal calls x402 endpoint: USDC transferred in 400ms, case marked Paid on-chain</div>
+                <div className="live-case-cell">Approval decision, audit requirements: unchanged. Only payment rail changes</div>
               </div>
             </div>
 
@@ -1233,7 +1248,7 @@ npx ts-node scripts/verify-credential.ts
               <div className="live-case-row">
                 <div className="live-case-cell" style={{ fontFamily: "var(--mono)" }}>6004</div>
                 <div className="live-case-cell">CredentialNotLinked</div>
-                <div className="live-case-cell">No credential linked &mdash; call link_credential first</div>
+                <div className="live-case-cell">No credential linked: call link_credential first</div>
               </div>
               <div className="live-case-row">
                 <div className="live-case-cell" style={{ fontFamily: "var(--mono)" }}>6005</div>
@@ -1304,7 +1319,7 @@ npx ts-node scripts/verify-credential.ts
               <li>Deploy the SAS schema once per jurisdiction using <code>scripts/create-schema.ts</code></li>
               <li>The schema address and credential address are saved to <code>scripts/schema-address.json</code></li>
               <li>Issue credentials to lawyers using <code>scripts/issue-credential.ts</code> or programmatically via the dashboard</li>
-              <li>Verification happens on-chain &mdash; any party can read the attestation PDA and check expiry</li>
+              <li>Verification happens on-chain: any party can read the attestation PDA and check expiry</li>
             </ul>
 
             <div className="code-block">
@@ -1419,14 +1434,14 @@ anchor test`}</pre>
               When a lawyer submits case documents (Abrechnungsvordruck,
               Berechtigungsschein PDF, settlement documents), the system
               computes a SHA-256 hash and anchors it on-chain. The original
-              documents stay in the existing ministry system &mdash; only the
+              documents stay in the existing ministry system: only the
               fingerprint goes to Solana.
             </p>
 
             <h3>GDPR compliance</h3>
             <ul className="req-list">
               <li>No personally identifiable information (PII) is stored on-chain</li>
-              <li>Document hashes are one-way &mdash; you cannot reconstruct the original from the hash</li>
+              <li>Document hashes are one-way: you cannot reconstruct the original from the hash</li>
               <li>Client names, addresses, case details remain in the national system</li>
               <li>Only public keys (wallet addresses) and cryptographic hashes touch the blockchain</li>
             </ul>
@@ -1448,7 +1463,7 @@ anchor test`}</pre>
             <p>
               Light Protocol compresses on-chain state using zero-knowledge
               proofs, reducing storage costs by 98.7%. This is critical at
-              government scale &mdash; a country processing 100,000 legal aid
+              government scale: a country processing 100,000 legal aid
               cases per year saves over $22,000 annually on infrastructure
               costs alone.
             </p>
@@ -1476,7 +1491,7 @@ anchor test`}</pre>
             <ul className="req-list">
               <li>Helius RPC endpoint (standard Solana RPC does not support compressed accounts)</li>
               <li>Set <code>HELIUS_RPC_URL</code> in your <code>.env</code> file</li>
-              <li>Photon indexer is built into Helius &mdash; no separate service needed</li>
+              <li>Photon indexer is built into Helius: no separate service needed</li>
               <li>The compression script: <code>scripts/anchor-document-compressed.ts</code></li>
             </ul>
           </section>
@@ -1494,8 +1509,8 @@ anchor test`}</pre>
 
             <h3>Payment flow</h3>
             <ul className="req-list">
-              <li><strong>GET /api/claim-payment</strong> &mdash; Returns 402 Payment Required with x402 spec (amount, asset, credential requirements)</li>
-              <li><strong>POST /api/claim-payment</strong> &mdash; Accepts payment signature + lawyer wallet. Verifies: (a) SAS credential exists and is valid, (b) USDC transfer confirmed on-chain, (c) case is in Closed status</li>
+              <li><strong>GET /api/claim-payment</strong>: Returns 402 Payment Required with x402 spec (amount, asset, credential requirements)</li>
+              <li><strong>POST /api/claim-payment</strong>: Accepts payment signature + lawyer wallet. Verifies: (a) SAS credential exists and is valid, (b) USDC transfer confirmed on-chain, (c) case is in Closed status</li>
               <li>On success, the automation agent or authority calls <code>mark_paid</code> to finalize the case</li>
             </ul>
 
@@ -1686,7 +1701,7 @@ npx ts-node scripts/sample-german-bs-case.ts`}</pre>
                 <div className="country-cert">Toevoeging</div>
                 <div className="country-detail">
                   Raad voor Rechtsbijstand issues assignment letters.
-                  High digitalization readiness. EUDI early adopter.
+                  High digitalization readiness. Digital credential early adopter.
                 </div>
               </div>
               <div className="country-card">
@@ -1827,11 +1842,11 @@ npm run dev
 
             <h3>Prerequisites</h3>
             <ul className="req-list">
-              <li><strong>Node.js 22+</strong> &mdash; Required by Anchor SDK. Use <code>nvm use 22</code></li>
-              <li><strong>Rust + Anchor CLI</strong> &mdash; <code>cargo install --git https://github.com/coral-xyz/anchor avm</code></li>
-              <li><strong>Solana CLI</strong> &mdash; <code>sh -c &quot;$(curl -sSfL https://release.anza.xyz/stable/install)&quot;</code></li>
-              <li><strong>Helius API key</strong> &mdash; Free tier at helius.dev (required for Light Protocol / compressed accounts)</li>
-              <li><strong>Devnet SOL</strong> &mdash; <code>solana airdrop 2</code> (fund your local wallet)</li>
+              <li><strong>Node.js 22+</strong>: Required by Anchor SDK. Use <code>nvm use 22</code></li>
+              <li><strong>Rust + Anchor CLI</strong>: <code>cargo install --git https://github.com/coral-xyz/anchor avm</code></li>
+              <li><strong>Solana CLI</strong>: <code>sh -c &quot;$(curl -sSfL https://release.anza.xyz/stable/install)&quot;</code></li>
+              <li><strong>Helius API key</strong>: Free tier at helius.dev (required for Light Protocol / compressed accounts)</li>
+              <li><strong>Devnet SOL</strong>: <code>solana airdrop 2</code> (fund your local wallet)</li>
             </ul>
           </section>
 
@@ -1959,8 +1974,8 @@ NEXT_PUBLIC_NETWORK=devnet`}</pre>
               <li>The Anchor program is currently deployed as upgradeable on Devnet (standard Anchor default)</li>
               <li>For production, the upgrade authority can be transferred to a multi-sig or frozen entirely</li>
               <li>Account structures (ProgramConfig, CaseFile) include a <code>bump</code> field for forward-compatible PDA derivation</li>
-              <li>New instructions can be added without breaking existing PDAs &mdash; Anchor&rsquo;s discriminator model ensures backward compatibility</li>
-              <li>SAS schema is immutable once deployed &mdash; new fields require a new schema version</li>
+              <li>New instructions can be added without breaking existing PDAs: Anchor&rsquo;s discriminator model ensures backward compatibility</li>
+              <li>SAS schema is immutable once deployed: new fields require a new schema version</li>
             </ul>
           </section>
 
@@ -1969,13 +1984,13 @@ NEXT_PUBLIC_NETWORK=devnet`}</pre>
 
       {/* FOOTER */}
       <footer className="docs-footer">
-        <span>Adduce &mdash; Justice, verified on-chain.</span>
+        <span>Adduce: Justice, verified on-chain.</span>
         <span>
           <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub</a>
           {" "}&middot;{" "}
           <Link href="/">Home</Link>
           {" "}&middot;{" "}
-          <Link href="/eudi-framework">EUDI Framework</Link>
+          <Link href="/docs">Documentation</Link>
           {" "}&middot;{" "}
           <Link href="/dashboard">Dashboard</Link>
         </span>

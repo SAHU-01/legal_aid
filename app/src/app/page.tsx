@@ -127,17 +127,16 @@ export default function LandingPage() {
           <div className="hero-image-overlay" />
         </div>
         <div className="hero-content">
-          <h1>
-            Adduce
+          <h1>Adduce</h1>
+          <p className="hero-tagline">
+            One paper certificate. Every problem in legal aid.
             <br />
-            Justice, <em>verified</em>
-            <br />
-            on-chain.
-          </h1>
+            <em>Issue. Prove. Settle.</em>
+          </p>
           <p className="hero-sub">
-            One artifact &mdash; the legal aid entitlement certificate &mdash;
-            issued, verified, and settled on a public rail. Your court system
-            stays untouched. The certificate goes on-chain.
+            Replacing 12-month manual processes with 400ms on-chain settlement.
+            Adduce is the first vertical credential issuer on Solana, making
+            justice unforgeable, private, and instant for 500M+ citizens.
           </p>
           <div className="hero-buttons">
             <Link href="/dashboard" className="btn-primary">
@@ -159,11 +158,16 @@ export default function LandingPage() {
       {/* QUICKSTART */}
       <section className="quickstart">
         <div>
-          <h2>Quickstart</h2>
+          <h2>The first credential issuer for legal aid on Solana.</h2>
           <p>
-            Clone, configure, deploy. A specialized QEAA issuer/verifier for
-            legal aid entitlements, anchored on Solana for cross-jurisdictional
-            auditability and revocation. All you need is a Solana wallet.
+            Generic identity platforms verify &ldquo;this person is real.&rdquo;
+            Adduce verifies &ldquo;this person is eligible for legal aid,
+            here is the case, and here is the payment.&rdquo; Built on the
+            Solana Attestation Service, Adduce is the only credential issuer
+            that wires issuance directly to case lifecycle management, ZK
+            selective disclosure, and instant USDC settlement. Not a
+            horizontal identity tool. A vertical application for one
+            specific document that the entire justice system depends on.
           </p>
           <div className="quickstart-links">
             <a
@@ -371,7 +375,7 @@ export default function LandingPage() {
                     <span className="status-badge status-open">Open</span>
                   </span>
                   <span>BR</span>
-                  <span className="hash-text">&mdash;</span>
+                  <span className="hash-text">-</span>
                   <span>2025-04-22</span>
                 </div>
               </div>
@@ -380,39 +384,47 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
+      {/* HOW IT WORKS — 3 PILLARS */}
       <section className="how-section">
         <h2>
-          Disburse legal aid,
-          <br />
-          not manual invoices.
+          Issue. Prove. Settle.
         </h2>
         <div className="how-steps">
           <div className="how-step">
             <div className="how-step-num">01</div>
-            <h3>Issue the credential.</h3>
+            <h3>Issue.</h3>
             <p>
-              Define the jurisdiction and eligibility. The court issues a
-              digital, tamper-proof legal aid certificate directly to the
-              citizen.
+              The court authority cryptographically signs an on-chain attestation
+              binding the citizen to their eligibility tier, jurisdiction, and
+              expiry. A Poseidon commitment root of all credential fields is
+              anchored alongside it. No personal data ever touches the
+              ledger. The credential survives issuing-server downtime because
+              the proof lives on-chain, not on any single ministry server.
             </p>
           </div>
           <div className="how-step">
             <div className="how-step-num">02</div>
-            <h3>Anchor the proof.</h3>
+            <h3>Prove.</h3>
             <p>
-              The lawyer accepts the case. Zero-knowledge architecture verifies
-              the court filings on-chain instantly, without ever exposing
-              private case data.
+              When the lawyer needs to verify eligibility, the citizen generates
+              a 256-byte Groth16 zero-knowledge proof: &ldquo;my jurisdiction is
+              DE and my credential is not expired&rdquo; without
+              disclosing tier, applicant ID, or exact dates. The on-chain
+              verifier checks the proof via BN254 pairing in a single
+              transaction. The verifier learns only what was proved, nothing
+              more.
             </p>
           </div>
           <div className="how-step">
             <div className="how-step-num">03</div>
-            <h3>Settle instantly.</h3>
+            <h3>Settle.</h3>
             <p>
-              Case closed. The x402 gateway verifies the proof and transfers
-              USDC to the lawyer. No waiting. Monitor budgets directly from
-              the dashboard.
+              Case closed. The x402 gateway confirms the ZK proof is valid,
+              the credential is unrevoked (account liveness check), and the
+              case status is closed, then transfers USDC to the lawyer
+              in 400ms. If eligibility changes mid-case, the credential is
+              revoked instantly on-chain and all downstream verification fails
+              automatically.
             </p>
           </div>
         </div>
@@ -420,65 +432,74 @@ export default function LandingPage() {
 
       {/* FEATURES */}
       <section className="features-section" id="features">
-        <div className="features-label">Features</div>
+        <div className="features-label">Three pillars, one credential</div>
         <h2>
-          One artifact on a public rail.
+          Issued by the court.
           <br />
-          Everything else stays.
+          Proved by the holder.
+          <br />
+          Settled in 400ms.
         </h2>
         <p className="subtitle" />
         <div className="features-grid">
           <div className="feature-card">
             <div className="feature-icon">{"\u2b21"}</div>
-            <h3>Verifiable Credentials</h3>
+            <h3>Cryptographic Issuance</h3>
             <p>
-              The entitlement certificate becomes a QEAA &mdash; issued by one
-              authority, consumed by another, verifiable across institutional
-              boundaries without phone calls.
+              The court signs an on-chain attestation binding the citizen to
+              their eligibility tier, jurisdiction, and expiry. A Poseidon
+              commitment root locks all fields cryptographically. No personal
+              data on the ledger. Only commitments and public keys.
             </p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">{"\u25ce"}</div>
-            <h3>Instant Settlement</h3>
+            <h3>Zero-Knowledge Verification</h3>
             <p>
-              USDC disbursement in 400ms via x402. Payment only flows when
-              the credential is valid, unused, and unrevoked. Double-spend
-              prevention built into the protocol.
+              The holder generates a 256-byte Groth16 proof: &ldquo;I am
+              eligible in Germany and my credential is not expired&rdquo;
+              without revealing tier, identity, or dates. The verifier
+              gets a mathematical guarantee. Not a promise. Math.
             </p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">{"\u2b21"}</div>
-            <h3>ZK Compression</h3>
+            <h3>Instant Revocation</h3>
             <p>
-              Light Protocol compressed state. 98.8% cheaper than standard
-              storage. Layer 1 security through zero-knowledge proofs.
+              Eligibility changes? The court deletes the credential account.
+              One transaction. Instant. Global. Every downstream system
+              immediately sees the credential is gone. No stale certificates
+              floating around for months.
             </p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">{"\u2298"}</div>
-            <h3>Legacy Compatible</h3>
+            <h3>Survives Server Failure</h3>
             <p>
-              Case content stays in your existing national system. Adduce
-              slots in underneath one specific workflow &mdash; the
-              entitlement certificate &mdash; not a full-stack replacement.
+              The credential lives on the Solana ledger, not on any ministry
+              server. Even if the court&rsquo;s IT system goes down, the
+              credential remains verifiable by anyone on the network.
+              Credential longevity independent of infrastructure.
             </p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">{"\u25c8"}</div>
-            <h3>Tamper-Proof Audit</h3>
+            <h3>Credential-Gated Payment</h3>
             <p>
-              The chain is the neutral, auditable, multi-party-readable
-              substrate. Any participating lawyer in any jurisdiction can
-              verify an entitlement without calling the issuing authority.
+              Payment only flows when: credential is valid, credential is
+              unrevoked, case is closed, and the ZK proof checks out. 400ms
+              settlement in USDC. No invoice processing. No 6-month wait.
+              Double-spend structurally impossible.
             </p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">{"\u229e"}</div>
-            <h3>EUDI-Ready</h3>
+            <h3>Cross-Border by Default</h3>
             <p>
-              Positioned as a specialized QEAA issuer compatible with W3C VC
-              and ARF specs. Not an alternative to EUDI &mdash; a reference
-              implementation for legal aid.
+              A French court can verify a German credential without calling
+              Berlin. No consortium. No inter-ministerial agreement. The
+              credential is on a public ledger, so any jurisdiction can
+              read it. No consortium agreements needed.
             </p>
           </div>
         </div>
@@ -538,7 +559,7 @@ export default function LandingPage() {
               Every payment traced.
             </h2>
             <p>
-              From credential issuance to final payment &mdash; every step is an
+              From credential issuance to final payment, every step is an
               immutable on-chain transaction. Courts, lawyers, and auditors can
               verify any case at any time. Nothing happens off the record.
             </p>
@@ -582,7 +603,7 @@ export default function LandingPage() {
             <div className="ticket-header">
               <span className="ticket-id">#CASE-DE-2847</span>
               <span className="ticket-title">
-                Legal Aid Case &mdash; Jurisdiction DE
+                Legal Aid Case | Jurisdiction DE
               </span>
             </div>
             <div className="ticket-meta">
@@ -695,8 +716,8 @@ export default function LandingPage() {
                 <span className="hb-bullet-icon">{"\u2734"}</span>
                 <span>
                   <strong>Unstructured docket data</strong> is automatically
-                  parsed for required metadata &mdash; jurisdiction, lawyer ID,
-                  case outcome &mdash; with zero human data entry.
+                  parsed for required metadata (jurisdiction, lawyer ID,
+                  case outcome) with zero human data entry.
                 </span>
               </li>
               <li>
@@ -827,7 +848,7 @@ export default function LandingPage() {
       <section className="countries-section" id="countries">
         <h2>Certificate-based legal aid systems.</h2>
         <p className="subtitle">
-          These jurisdictions issue voucher-style legal aid certificates &mdash;
+          These jurisdictions issue voucher-style legal aid certificates,
           statutory entitlements that cross institutional boundaries every time
           a private lawyer uses one. That&rsquo;s the exact verification
           problem Adduce solves.
@@ -863,7 +884,7 @@ export default function LandingPage() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Latham &amp; Watkins &mdash; A Survey of Pro Bono Practices and
+              Latham &amp; Watkins: A Survey of Pro Bono Practices and
               Opportunities (PDF)
             </a>
           </p>
@@ -884,8 +905,8 @@ export default function LandingPage() {
             <h3>Single-artifact anchoring.</h3>
             <p>
               Not asking governments to put their court system on a public
-              chain. Just one artifact: the legal aid entitlement certificate
-              &mdash; the voucher that authorizes and pays a private lawyer.
+              chain. Just one artifact: the legal aid entitlement certificate,
+              the voucher that authorizes and pays a private lawyer.
             </p>
           </div>
           <div className="special-card">
@@ -921,11 +942,11 @@ export default function LandingPage() {
             </p>
           </div>
           <div className="special-card">
-            <h3>EUDI Wallet tailwind.</h3>
+            <h3>Regulatory tailwind.</h3>
             <p>
-              The EU mandates verifiable credentials by 2026. A legal aid
-              entitlement certificate is exactly a QEAA. Adduce is the
-              specialized issuer that plugs into the EUDI ecosystem.
+              The EU mandates digital identity wallets by 2026. Legal aid
+              certificates must go digital. Adduce is already there,
+              with working code on devnet today.
             </p>
           </div>
           <div className="special-card">
@@ -970,10 +991,10 @@ export default function LandingPage() {
             </p>
           </div>
           <div className="not-card">
-            <h3>Not an alternative to EUDI.</h3>
+            <h3>Not a generic identity wallet.</h3>
             <p>
-              Adduce is a specialized QEAA issuer that plugs into the EUDI
-              ecosystem. Building with the regulation, not against it.
+              Purpose-built for one artifact: the legal aid certificate.
+              Not competing with broad identity platforms. Vertical focus.
             </p>
           </div>
           <div className="not-card">
