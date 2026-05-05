@@ -151,6 +151,7 @@ export default function DocsPage() {
         <aside className="docs-sidebar">
           <div className="docs-sidebar-title">Documentation</div>
           <ul className="docs-sidebar-nav">
+            <li><a href="#verify" style={{ color: "var(--accent)", fontWeight: 600 }}>Verify (60s)</a></li>
             <li><a href="#what-is-adduce">What is Adduce</a></li>
             <li><a href="#why-public-chain">Why Public Chain</a></li>
             <li><a href="#architecture">Architecture</a></li>
@@ -182,6 +183,42 @@ export default function DocsPage() {
 
         {/* CONTENT */}
         <div className="docs-content">
+
+          {/* ── 60-SECOND VERIFICATION ── */}
+          <section id="verify" className="docs-section">
+            <div className="callout" style={{ background: "var(--accent-light)", borderLeft: "3px solid var(--accent)", marginBottom: "2rem" }}>
+              <p style={{ marginBottom: "0.5rem" }}><strong>Verify in 60 seconds.</strong> Click any link below to confirm this is real, deployed infrastructure.</p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.5rem" }}>
+                {[
+                  { label: "Program (14 ix)", href: "https://explorer.solana.com/address/3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV?cluster=devnet" },
+                  { label: "SAS Schema", href: "https://explorer.solana.com/address/7uKMGSgup1UZ26MnptCCMCac6rqpe6vBNXET338cDeid?cluster=devnet" },
+                  { label: "Sample Case TX", href: "https://explorer.solana.com/tx/XvybzQRqQ2EbUPW4jPgwBcGp4tc76DxkAhupimMDYdjz6kER5TWL96jCQ2kyM5fCxLArED3YWWAnUzuky74k5LA?cluster=devnet" },
+                  { label: "Encrypted Doc (Arweave)", href: "https://devnet.irys.xyz/2Cyx7gpJgDmivrgDiaCnwsrVCAWqkUMRVWCyDaNAVymn" },
+                  { label: "npm: @adduce/sdk", href: "https://www.npmjs.com/package/@adduce/sdk" },
+                ].map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: "inline-block",
+                      padding: "0.35rem 0.8rem",
+                      fontSize: "0.75rem",
+                      fontFamily: "var(--mono)",
+                      background: "var(--accent)",
+                      color: "#fff",
+                      borderRadius: "6px",
+                      textDecoration: "none",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </section>
 
           {/* ── WHAT IS ADDUCE ── */}
           <section id="what-is-adduce" className="docs-section">

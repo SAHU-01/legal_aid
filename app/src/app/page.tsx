@@ -174,24 +174,22 @@ export default function LandingPage() {
             systems, while Adduce handles the trust layer on a public rail.
           </p>
           <div className="quickstart-links">
-            <a
-              href={GITHUB_URL}
+            <Link
+              href="/docs"
               className="btn-primary"
-              target="_blank"
-              rel="noopener noreferrer"
               style={{ fontSize: "0.85rem", padding: "0.6rem 1.5rem" }}
             >
-              <GitHubIcon />
-              Star on GitHub
-            </a>
+              Read the docs &rarr;
+            </Link>
             <a
-              href={`${GITHUB_URL}#quick-start`}
+              href={GITHUB_URL}
               className="btn-secondary"
               target="_blank"
               rel="noopener noreferrer"
               style={{ fontSize: "0.85rem", padding: "0.6rem 1.5rem" }}
             >
-              Read the docs &rarr;
+              <GitHubIcon />
+              GitHub
             </a>
           </div>
         </div>
@@ -862,7 +860,7 @@ export default function LandingPage() {
         <div className="footer-columns">
           <div className="footer-col">
             <div className="footer-col-title">Product</div>
-            <Link href="/dashboard">Demo</Link>
+            <Link href="/dashboard">Preview</Link>
             <Link href="/docs">Documentation</Link>
             <Link href="/story">Our Story</Link>
           </div>

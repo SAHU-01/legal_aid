@@ -119,12 +119,22 @@
   color: #fff !important;
 }
 
-@media (max-width: 640px) {
-  .shared-nav-pill { padding: 0.5rem 1rem; }
-  .shared-nav-link { font-size: 0.75rem; }
-  .shared-nav-col { gap: 1rem; }
-  .shared-nav-left a { display: none; }
-  .shared-nav-right .shared-nav-disabled { display: none; }
-  .shared-nav-disabled { font-size: 0.75rem; }
-  .shared-nav-brand { margin: 0 0.75rem; padding: 0 0.75rem; }
+@media (max-width: 768px) {
+  .shared-nav-pill { padding: 0.4rem 0.8rem; gap: 0; }
+  .shared-nav-link { font-size: 0.72rem; }
+  .shared-nav-col { gap: 0.6rem; }
+  .shared-nav-disabled { display: none; }
+  .shared-nav-brand { margin: 0 0.5rem; padding: 0 0.5rem; font-size: 0.85rem; }
+  .shared-nav-star { display: none; }
 }
+
+@media (max-width: 480px) {
+  .shared-nav { padding: 0.5rem 0.75rem; }
+  .shared-nav-pill { padding: 0.35rem 0.6rem; }
+  .shared-nav-left a:not(.shared-nav-brand):not([href="/"]) { display: none; }
+  .shared-nav-right a:not([href="/dashboard"]) { display: none; }
+  .shared-nav-brand { margin: 0 0.3rem; padding: 0 0.3rem; font-size: 0.8rem; }
+  .shared-nav-col { gap: 0.4rem; }
+}
+
+/* ───────── DEMO MODE ───────── */

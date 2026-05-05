@@ -1,10 +1,76 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import "../docs/docs.css";
 import Navbar from "../Navbar";
 
 const GITHUB_URL = "https://github.com/SAHU-01/legal_aid";
+
+const KEY_ROWS = [
+  { c: "Privacy model", e: "Trust the admin (access control).", a: "Trust the math (Groth16 ZK proofs)." },
+  { c: "Credential-case binding", e: "Middleware (misconfigurable).", a: "link_credential: atomic, protocol-enforced." },
+  { c: "Revocation", e: "Registry + accumulator. Latency.", a: "Account deletion. Instant. Global." },
+  { c: "Cross-border", e: "Requires consortium per country.", a: "Public chain. Any node. No agreements." },
+  { c: "Deploy cost", e: "Multi-million dollar contracts.", a: "$0.004/credential. Pure OpEx." },
+];
+
+const EXTRA_ROWS = [
+  { c: "Credential storage", e: "Off-chain wallet. Phone lost = gone.", a: "On-chain PDA. Survives server failure." },
+  { c: "Selective disclosure", e: "CL signatures (~500 bytes).", a: "Custom Circom circuit (256 bytes)." },
+  { c: "Verification", e: "Requires Aries agent running.", a: "Single RPC call. Any language." },
+  { c: "Credential liveness", e: "Application-level (may skip).", a: "Re-checked on every instruction." },
+  { c: "Lawyer reassignment", e: "No audit trail.", a: "reassign_lawyer with event." },
+  { c: "Lawyer privacy", e: "Fabric channels.", a: "SHA-256 commitment (hash, not pubkey)." },
+  { c: "Case status", e: "Consultant builds per deployment.", a: "8-status enum. Built in." },
+  { c: "Escalation", e: "Custom chaincode (if built).", a: "add_delegate + timeout. Built in." },
+  { c: "Payment validation", e: "Application-level.", a: "authorized_amount enforced on-chain." },
+  { c: "Custodial", e: "Complex Aries wallet.", a: "citizen_id_hash (one instruction)." },
+  { c: "Infrastructure", e: "Kubernetes + peers + ordering nodes.", a: "Public Solana validators." },
+  { c: "Deploy time", e: "6-18 months.", a: "Hours." },
+];
+
+function ComparisonTable() {
+  const [expanded, setExpanded] = useState(false);
+  const rows = expanded ? [...KEY_ROWS, ...EXTRA_ROWS] : KEY_ROWS;
+
+  return (
+    <>
+      <h3>Enterprise stack vs Adduce</h3>
+      <div className="live-case-table" style={{ marginTop: "1rem" }}>
+        <div className="live-case-row live-case-row-header">
+          <div className="live-case-cell live-case-cell-header">Concern</div>
+          <div className="live-case-cell live-case-cell-header">Enterprise Stack</div>
+          <div className="live-case-cell live-case-cell-header">Adduce</div>
+        </div>
+        {rows.map((row, idx) => (
+          <div key={idx} className="live-case-row">
+            <div className="live-case-cell"><span className="cell-label">{row.c}</span></div>
+            <div className="live-case-cell">{row.e}</div>
+            <div className="live-case-cell" style={{ color: "var(--accent)" }}>{row.a}</div>
+          </div>
+        ))}
+      </div>
+      {!expanded && (
+        <button
+          onClick={() => setExpanded(true)}
+          style={{
+            marginTop: "0.75rem",
+            background: "none",
+            border: "1px solid var(--border)",
+            borderRadius: "6px",
+            padding: "0.4rem 1rem",
+            fontSize: "0.78rem",
+            color: "var(--text-secondary)",
+            cursor: "pointer",
+          }}
+        >
+          Show all 17 comparisons
+        </button>
+      )}
+    </>
+  );
+}
 
 export default function StoryPage() {
   return (
@@ -206,39 +272,7 @@ export default function StoryPage() {
               Here is the architecture comparison that led us to Solana.
             </p>
 
-            <h3>Enterprise stack (Hyperledger) vs Adduce (Solana)</h3>
-            <div className="live-case-table" style={{ marginTop: "1rem" }}>
-              <div className="live-case-row live-case-row-header">
-                <div className="live-case-cell live-case-cell-header">Concern</div>
-                <div className="live-case-cell live-case-cell-header">Enterprise Stack</div>
-                <div className="live-case-cell live-case-cell-header">Adduce</div>
-              </div>
-              {[
-                { c: "Credential storage", e: "Off-chain wallet (holder's phone). Phone lost = credential gone.", a: "On-chain PDA. Survives server failure and phone loss." },
-                { c: "Privacy model", e: "Private Data Collections (access control: trust the admin).", a: "Groth16 ZK proofs (mathematical: trust the math)." },
-                { c: "Selective disclosure", e: "CL signatures (~500 bytes). Elegant but rigid: only range proofs.", a: "Custom Circom circuit (256 bytes). Arbitrary predicates." },
-                { c: "Credential-case binding", e: "Middleware (application-level, misconfigurable).", a: "link_credential: atomic, protocol-enforced, cannot bypass." },
-                { c: "Revocation", e: "Registry + accumulator + non-revocation proofs. Latency exists.", a: "Account deletion. Instant. Global. Zero complexity." },
-                { c: "Cross-border", e: "Requires inter-ministerial consortium per country pair.", a: "Public chain. Any Solana node. No agreements." },
-                { c: "Verification", e: "Requires Indy ledger access + Aries agent running.", a: "Single RPC call. Any language. Any system." },
-                { c: "Credential liveness", e: "Application-level (may or may not re-check at each step).", a: "Re-checked on every anchor_document and close_case. Cannot skip." },
-                { c: "Lawyer reassignment", e: "Application-level (if built). No audit trail.", a: "reassign_lawyer with LawyerReassigned event." },
-                { c: "Lawyer privacy", e: "Fabric channels (access control).", a: "SHA-256 commitment (hash on-chain, not pubkey)." },
-                { c: "Case status model", e: "Custom chaincode (consultant builds per deployment).", a: "8-status enum with validated transitions. Built in." },
-                { c: "Escalation/delegation", e: "Custom chaincode (if built).", a: "add_delegate + case_timeout_days. Built in." },
-                { c: "Payment validation", e: "Application-level (SAP handles).", a: "authorized_amount enforced on-chain. Cannot overpay." },
-                { c: "Custodial (no wallet)", e: "Aries custodial wallet (complex setup).", a: "citizen_id_hash (one field, one instruction)." },
-                { c: "Infrastructure", e: "Kubernetes + Fabric peers + ordering nodes + CA servers.", a: "Public Solana validators. No servers to maintain." },
-                { c: "Deploy cost", e: "Multi-million dollar contracts + ongoing CapEx.", a: "$0.004/credential. Pure OpEx." },
-                { c: "Deploy time", e: "6-18 months (consortium formation).", a: "Hours (anchor deploy)." },
-              ].map((row, idx) => (
-                <div key={idx} className="live-case-row">
-                  <div className="live-case-cell"><span className="cell-label">{row.c}</span></div>
-                  <div className="live-case-cell">{row.e}</div>
-                  <div className="live-case-cell" style={{ color: "var(--accent)" }}>{row.a}</div>
-                </div>
-              ))}
-            </div>
+            <ComparisonTable />
 
             <p style={{ marginTop: "1.5rem", fontSize: "0.82rem", color: "var(--text-muted)", fontStyle: "italic" }}>
               The enterprise stack works. It is proven for health passes and

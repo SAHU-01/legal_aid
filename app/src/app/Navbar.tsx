@@ -29,7 +29,7 @@ export default function Navbar({ activePage }: { activePage?: "home" | "docs" })
     <nav className="shared-nav">
       <div className="shared-nav-pill">
         <div className="shared-nav-col shared-nav-left">
-          <span className="shared-nav-disabled">Blog</span>
+          <Link href="/blog" className="shared-nav-link">Blog</Link>
           <Link
             href="/docs"
             className={`shared-nav-link${activePage === "docs" ? " shared-nav-active" : ""}`}
@@ -52,7 +52,7 @@ export default function Navbar({ activePage }: { activePage?: "home" | "docs" })
             href="/dashboard"
             className="shared-nav-link"
           >
-            Demo
+            Preview
           </Link>
           <a
             href={GITHUB_URL}

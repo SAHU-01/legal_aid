@@ -2017,3 +2017,71 @@
 .landing .comparison-grid {
   text-align: left;
 }
+
+/* ───────── COMPREHENSIVE MOBILE RESPONSIVE ───────── */
+
+@media (max-width: 768px) {
+  /* Hero */
+  .landing .hero { min-height: 70vh; }
+  .landing .hero h1 { font-size: clamp(2.2rem, 10vw, 3.5rem); }
+  .landing .hero-tagline { font-size: clamp(1rem, 4vw, 1.3rem); }
+  .landing .hero-sub { font-size: 0.85rem; padding: 0 1rem; }
+  .landing .hero-buttons { flex-direction: column; align-items: center; gap: 0.75rem; }
+
+  /* Quickstart */
+  .landing .quickstart { grid-template-columns: 1fr; padding: 3rem 1.5rem; gap: 2rem; }
+
+  /* How it works */
+  .landing .how-steps { flex-direction: column; gap: 2rem; }
+  .landing .how-step { flex: none; width: 100%; }
+
+  /* Features grid */
+  .landing .features-grid { grid-template-columns: 1fr; }
+  .landing .features-section { padding: 4rem 1.5rem; }
+
+  /* Jurisdiction */
+  .landing .jurisdiction-layout { grid-template-columns: 1fr; }
+  .landing .jurisdiction-section { padding: 4rem 1.5rem; }
+
+  /* Tracking */
+  .landing .tracking-layout { grid-template-columns: 1fr; }
+  .landing .tracking-section { padding: 4rem 1.5rem; }
+
+  /* Heartbeat */
+  .landing .heartbeat-layout { grid-template-columns: 1fr; }
+  .landing .heartbeat-section { padding: 4rem 1.5rem; }
+
+  /* Cost */
+  .landing .cost-breakdown-layout { grid-template-columns: 1fr; }
+  .landing .cost-section { padding: 4rem 1.5rem; }
+
+  /* Countries */
+  .landing .cert-grid { grid-template-columns: repeat(2, 1fr); }
+  .landing .countries-stat-row { flex-direction: column; gap: 1.5rem; }
+  .landing .countries-section { padding: 4rem 1.5rem; }
+
+  /* Special / Not */
+  .landing .special-grid { grid-template-columns: 1fr; }
+  .landing .not-grid { grid-template-columns: 1fr; }
+  .landing .special-section { padding: 4rem 1.5rem; }
+  .landing .not-section { padding: 4rem 1.5rem; }
+
+  /* Dashboard mockup */
+  .landing .dashboard-mockup { display: none; }
+  .landing .dashboard-section { padding: 3rem 1.5rem; }
+
+  /* CTA */
+  .landing .cta-section { padding: 4rem 1.5rem; }
+
+  /* Footer */
+  .landing .footer-columns { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+  .landing .footer-rich { padding: 0 1rem; }
+}
+
+@media (max-width: 480px) {
+  .landing .hero h1 { font-size: 2rem; }
+  .landing .cert-grid { grid-template-columns: 1fr; }
+  .landing .footer-columns { grid-template-columns: 1fr; }
+  .landing .problem-grid { gap: 1rem; }
+  .landing .features-grid { gap: 1rem; }
+}

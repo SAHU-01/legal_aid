@@ -11,7 +11,7 @@ export default function WhyThisMatters() {
     <div className="border-t border-zinc-800 bg-zinc-900/40">
       <div className="max-w-7xl mx-auto w-full px-6 lg:px-10 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <p className="text-[11px] text-zinc-500">
-          Demo data. All three roles interact with the same on-chain CaseFile.
+          Preview data. All three roles interact with the same on-chain CaseFile.
           Integrate for real via{" "}
           <a href="https://www.npmjs.com/package/@adduce/sdk" target="_blank" rel="noopener noreferrer" className="text-emerald-500/80 hover:text-emerald-400">
             @adduce/sdk

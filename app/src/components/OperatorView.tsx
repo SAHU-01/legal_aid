@@ -95,7 +95,7 @@ export default function OperatorView() {
                 onClick={openReviewModal}
                 className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-emerald-900/20 active:scale-95"
               >
-                Review Application
+                Review Application (SDK required)
               </button>
             </div>
           </div>

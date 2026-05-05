@@ -29,6 +29,23 @@ function DashboardInner() {
     );
   }
 
+  const [demoToast, setDemoToast] = useState(false);
+
+  const interceptDemoClicks = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const btn = target.closest("button");
+    if (!btn) return;
+    // Allow tab/filter buttons (they just switch UI state)
+    const text = btn.textContent?.toLowerCase() || "";
+    const allowList = ["all cases", "in progress", "completed", "closed", "paid", "open", "fill sample", "applicant", "lawyer", "operator"];
+    if (allowList.some((a) => text.includes(a))) return;
+    // Block all other buttons
+    e.preventDefault();
+    e.stopPropagation();
+    setDemoToast(true);
+    setTimeout(() => setDemoToast(false), 2500);
+  };
+
   /* ── Demo mode: role-based views ── */
   return (
     <div className="flex min-h-screen flex-col bg-[#0f0f0f] text-zinc-100">
@@ -43,14 +60,24 @@ function DashboardInner() {
 
       {/* Demo banner */}
       <div className="w-full border-b border-amber-800/30 bg-amber-950/20 px-6 py-2 text-center text-[11px] text-amber-400/80">
-        Demo Mode: Sample data showing how a court, lawyer, and citizen interact with Adduce. No real government data. Integrate for real via{" "}
+        Preview: Sample data showing how a court, lawyer, and citizen interact with Adduce. No real government data. Integrate for real via{" "}
         <a href="https://www.npmjs.com/package/@adduce/sdk" target="_blank" rel="noopener noreferrer" className="underline text-amber-300">
           @adduce/sdk
         </a>
       </div>
 
-      {/* Role-dispatched view */}
-      <main className="flex-1 px-4 py-6 sm:px-6 lg:px-10 max-w-[1400px] mx-auto w-full">
+      {/* Demo toast */}
+      {demoToast && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 rounded-lg border border-amber-700/50 bg-amber-950/95 px-4 py-2 text-xs text-amber-300 shadow-lg backdrop-blur-sm">
+          Preview only. Use <code className="text-amber-200">@adduce/sdk</code> to perform real actions.
+        </div>
+      )}
+
+      {/* Role-dispatched view — intercept action button clicks */}
+      <main
+        className="flex-1 px-4 py-6 sm:px-6 lg:px-10 max-w-[1400px] mx-auto w-full"
+        onClickCapture={interceptDemoClicks}
+      >
         {role === "applicant" && <ApplicantView />}
         {role === "lawyer" && <LawyerView />}
         {role === "operator" && <OperatorView />}
