@@ -13,8 +13,12 @@ const CREDENTIAL_ADDRESS = "4chJRmgzUcbDCgmcToYmNZdMjdNgEK3jktZMo1SUdy9o";
 const SCHEMA_ADDRESS = "7uKMGSgup1UZ26MnptCCMCac6rqpe6vBNXET338cDeid";
 const EXPLORER = "https://explorer.solana.com";
 
-const HELIUS_RPC =
-  process.env.NEXT_PUBLIC_HELIUS_RPC_URL || "https://api.devnet.solana.com";
+const _raw = process.env.NEXT_PUBLIC_HELIUS_RPC_URL || "";
+const HELIUS_RPC = _raw.startsWith("http")
+  ? _raw
+  : _raw.length > 0
+    ? `https://devnet.helius-rpc.com/?api-key=${_raw}`
+    : "https://api.devnet.solana.com";
 
 type CredentialState =
   | { status: "loading" }

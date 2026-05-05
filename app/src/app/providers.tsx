@@ -8,9 +8,12 @@ import {
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import "@solana/wallet-adapter-react-ui/styles.css";
 
-const HELIUS_RPC =
-  process.env.NEXT_PUBLIC_HELIUS_RPC_URL ||
-  "https://api.devnet.solana.com";
+const raw = process.env.NEXT_PUBLIC_HELIUS_RPC_URL || "";
+const HELIUS_RPC = raw.startsWith("http")
+  ? raw
+  : raw.length > 0
+    ? `https://devnet.helius-rpc.com/?api-key=${raw}`
+    : "https://api.devnet.solana.com";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   // Phantom and Solflare are auto-detected via Wallet Standard
