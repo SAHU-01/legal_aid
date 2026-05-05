@@ -2,7 +2,6 @@ import Link from "next/link";
 import "./landing.css";
 import TerminalTabs from "./TerminalTabs";
 import ArchDiagram from "./ArchDiagram";
-import HeartbeatTimeline from "./HeartbeatTimeline";
 import Navbar from "./Navbar";
 
 const GITHUB_URL = "https://github.com/SAHU-01/legal_aid";
@@ -165,9 +164,14 @@ export default function LandingPage() {
             here is the case, and here is the payment.&rdquo; Built on the
             Solana Attestation Service, Adduce is the only credential issuer
             that wires issuance directly to case lifecycle management, ZK
-            selective disclosure, and instant USDC settlement. Not a
-            horizontal identity tool. A vertical application for one
-            specific document that the entire justice system depends on.
+            selective disclosure, and instant USDC settlement. 
+          </p>
+          <p>
+            <strong>It is a vertical application</strong> for one specific 
+            document that the entire justice system depends on. Not a horizontal 
+            identity tool, not a case management system, and not a private 
+            consortium chain. Adduce is a plug-in: courts keep their existing 
+            systems, while Adduce handles the trust layer on a public rail.
           </p>
           <div className="quickstart-links">
             <a
@@ -198,71 +202,54 @@ export default function LandingPage() {
 
       {/* THE PROBLEM */}
       <section className="social-proof">
-        <div className="social-proof-label">The problem</div>
-        <h2>Justice delayed is justice denied.</h2>
+        <div className="social-proof-label">The problem we solve</div>
+        <h2>One paper document decides everything.</h2>
+        <p className="subtitle" style={{ maxWidth: "700px", margin: "0 auto 3rem", color: "var(--text-secondary)", fontWeight: 300 }}>
+          In the European legal aid system, the eligibility certificate (Berechtigungsschein) 
+          is the single paper artifact that crosses institutional boundaries. 
+          Today, this manual reliance creates a systemic failure in the justice system.
+        </p>
         <div className="problem-grid">
           <div className="problem-card">
             <div className="problem-number">6&ndash;12 months</div>
             <div className="problem-label">
-              Average legal aid payment delay in the EU
+              Manual processing delay
             </div>
             <p className="problem-detail">
-              Lawyers routinely wait half a year or more for reimbursement,
-              creating cash-flow crises that force them to stop taking cases.
+              Current systems require months to process paper certificates into
+              lawyer payments, causing cash-flow crises that force 40% of lawyers to stop taking cases.
             </p>
-            <div className="problem-source">
-              <a href="https://commission.europa.eu/strategy-and-policy/policies/justice-and-fundamental-rights/upholding-rule-law/eu-justice-scoreboard_en" target="_blank" rel="noopener noreferrer">
-                Source: EU Justice Scoreboard &amp; national bar surveys
-              </a>
-            </div>
           </div>
           <div className="problem-card">
-            <div className="problem-number">40%</div>
+            <div className="problem-number">Security Gap</div>
             <div className="problem-label">
-              Lawyers who stop taking legal aid cases due to payment delays
+              Forgery & Fraud
             </div>
             <p className="problem-detail">
-              Nearly half of eligible lawyers opt out of legal aid work entirely,
-              shrinking the pool of representation for the most vulnerable
-              citizens.
+              Paper certificates are routinely forged, reused across lawyers,
+              or transferred fraudulently, with verification relying on phone calls.
             </p>
-            <div className="problem-source">
-              <a href="https://www.ccbe.eu/documents/publications/" target="_blank" rel="noopener noreferrer">
-                Source: Council of Bars &amp; Law Societies of Europe (CCBE)
-              </a>
-            </div>
           </div>
           <div className="problem-card">
             <div className="problem-number">2 billion+</div>
             <div className="problem-label">
-              People worldwide who lack access to legal aid
+              Lack access to justice
             </div>
             <p className="problem-detail">
               Over two billion people live outside the protection of the law.
               Modernizing payment infrastructure is the first step to closing the
               justice gap.
             </p>
-            <div className="problem-source">
-              <a href="https://www.undp.org/publications/global-study-legal-aid" target="_blank" rel="noopener noreferrer">
-                Source: UNDP Global Study on Legal Aid (2024)
-              </a>
-            </div>
           </div>
           <div className="problem-card">
-            <div className="problem-number">$0.30 &rarr; $0.004</div>
+            <div className="problem-number">Inflexible</div>
             <div className="problem-label">
-              Cost per document anchor with ZK compression
+              No Instant Revocation
             </div>
             <p className="problem-detail">
-              Standard on-chain storage costs 75x more. Light Protocol&rsquo;s
-              ZK compression makes government-scale document integrity feasible
-              for the first time.
+              Eligibility changes cannot be broadcast instantly. Once a paper 
+              voucher is issued, the state loses control of the entitlement.
             </p>
-            <div className="problem-source">
-              <a href="https://explorer.solana.com/address/3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV?cluster=devnet" target="_blank" rel="noopener noreferrer">
-                Measured on Solana Devnet, May 2025
-              </a>
-            </div>
           </div>
         </div>
       </section>
@@ -278,112 +265,6 @@ export default function LandingPage() {
       </section>
       */}
 
-      {/* DASHBOARD PREVIEW */}
-      <section className="dashboard-section">
-        <h2>Manage cases, not paperwork.</h2>
-        <p className="subtitle">
-          One dashboard. Credential verification, case tracking, instant payment
-          claims.
-        </p>
-
-        <div className="dashboard-mockup">
-          <div className="dashboard-topbar">
-            <div className="dashboard-sidebar-items">
-              <span className="dashboard-sidebar-item active">
-                <span className="dot dot-green" /> Cases
-              </span>
-              <span className="dashboard-sidebar-item">
-                <span className="dot dot-yellow" /> Credentials
-              </span>
-              <span className="dashboard-sidebar-item">
-                <span className="dot dot-red" /> Payments
-              </span>
-            </div>
-            <div className="dashboard-live-badge">Devnet</div>
-          </div>
-          <div className="dashboard-body">
-            <div className="dashboard-nav">
-              <div className="dash-nav-section">
-                <div className="dash-nav-label">Navigation</div>
-                <div className="dash-nav-item active">{"\u229e"} Dashboard</div>
-                <div className="dash-nav-item">{"\u25ce"} My Cases</div>
-                <div className="dash-nav-item">{"\u2b21"} Credentials</div>
-              </div>
-              <div className="dash-nav-section">
-                <div className="dash-nav-label">Actions</div>
-                <div className="dash-nav-item">{"\u2197"} Claim Payment</div>
-                <div className="dash-nav-item">{"\u25c9"} Verify</div>
-              </div>
-              <div className="dash-nav-section">
-                <div className="dash-nav-label">Wallet</div>
-                <div
-                  className="dash-nav-item"
-                  style={{ fontFamily: "var(--mono)", fontSize: "0.7rem" }}
-                >
-                  C35K...7wkU
-                </div>
-              </div>
-            </div>
-            <div className="dashboard-content">
-              <div className="dash-content-header">
-                <div className="dash-content-title">Active Cases</div>
-                <div className="dash-filters">
-                  <button className="dash-filter">{"\u2195"} Sort</button>
-                  <button className="dash-filter">{"\u2298"} Filter</button>
-                </div>
-              </div>
-              <div className="dash-table">
-                <div className="dash-table-header">
-                  <span>Case ID</span>
-                  <span>Status</span>
-                  <span>Jurisdiction</span>
-                  <span>Document Hash</span>
-                  <span>Date</span>
-                </div>
-                <div className="dash-table-row">
-                  <span>E2E-DEMO-1748</span>
-                  <span>
-                    <span className="status-badge status-paid">Paid</span>
-                  </span>
-                  <span>DE</span>
-                  <span className="hash-text">a3b2c1d4...</span>
-                  <span>2025-05-01</span>
-                </div>
-                <div className="dash-table-row">
-                  <span>CASE-DE-2847</span>
-                  <span>
-                    <span className="status-badge status-closed">Closed</span>
-                  </span>
-                  <span>DE</span>
-                  <span className="hash-text">f7e8d9c0...</span>
-                  <span>2025-04-28</span>
-                </div>
-                <div className="dash-table-row">
-                  <span>CASE-FR-9103</span>
-                  <span>
-                    <span className="status-badge status-progress">
-                      In Progress
-                    </span>
-                  </span>
-                  <span>FR</span>
-                  <span className="hash-text">b1c2d3e4...</span>
-                  <span>2025-04-25</span>
-                </div>
-                <div className="dash-table-row">
-                  <span>CASE-BR-4521</span>
-                  <span>
-                    <span className="status-badge status-open">Open</span>
-                  </span>
-                  <span>BR</span>
-                  <span className="hash-text">-</span>
-                  <span>2025-04-22</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* HOW IT WORKS — 3 PILLARS */}
       <section className="how-section">
         <h2>
@@ -394,37 +275,32 @@ export default function LandingPage() {
             <div className="how-step-num">01</div>
             <h3>Issue.</h3>
             <p>
-              The court authority cryptographically signs an on-chain attestation
-              binding the citizen to their eligibility tier, jurisdiction, and
-              expiry. A Poseidon commitment root of all credential fields is
-              anchored alongside it. No personal data ever touches the
-              ledger. The credential survives issuing-server downtime because
-              the proof lives on-chain, not on any single ministry server.
+              The <strong>Court Authority</strong> issues a cryptographic attestation 
+              on Solana via SAS. Citizen-bound and schema-validated, it creates 
+              a commitment root for ZK proofs. Survives server failure, is 
+              revocable by deletion, and supports protocol-level lawyer reassignment.
             </p>
           </div>
           <div className="how-step">
             <div className="how-step-num">02</div>
             <h3>Prove.</h3>
             <p>
-              When the lawyer needs to verify eligibility, the citizen generates
-              a 256-byte Groth16 zero-knowledge proof: &ldquo;my jurisdiction is
-              DE and my credential is not expired&rdquo; without
-              disclosing tier, applicant ID, or exact dates. The on-chain
-              verifier checks the proof via BN254 pairing in a single
-              transaction. The verifier learns only what was proved, nothing
-              more.
+              The <strong>Citizen</strong> generates 256-byte Groth16 ZK proofs: 
+              &ldquo;Jurisdiction is DE, not expired&rdquo; without revealing 
+              private data. On-chain verification via <code>alt_bn128</code> 
+              ensures document integrity. Lawyers prove assignment via 
+              SHA-256 commitments rather than raw public keys.
             </p>
           </div>
           <div className="how-step">
             <div className="how-step-num">03</div>
             <h3>Settle.</h3>
             <p>
-              Case closed. The x402 gateway confirms the ZK proof is valid,
-              the credential is unrevoked (account liveness check), and the
-              case status is closed, then transfers USDC to the lawyer
-              in 400ms. If eligibility changes mid-case, the credential is
-              revoked instantly on-chain and all downstream verification fails
-              automatically.
+              The <strong>Lawyer</strong> triggers credential-gated payment. 
+              USDC flows only when the credential is valid, unrevoked, and 
+              the case is closed. The x402 gateway validates the disbursed 
+              amount against authorized limits, recording payment references 
+              on-chain for audit.
             </p>
           </div>
         </div>
@@ -688,62 +564,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* HEARTBEATS */}
-      <section className="heartbeat-section">
-        <div className="heartbeat-layout">
-          <div className="heartbeat-copy">
-            <div className="heartbeat-label-row">
-              <div className="heartbeat-label">
-                {"\u2699\ufe0f"} Autonomous Heartbeats
-              </div>
-              <div className="heartbeat-coming-soon">Coming Soon</div>
-            </div>
-            <h2>
-              Automate the
-              <br />
-              bureaucracy.
-            </h2>
-            <ul className="heartbeat-bullets">
-              <li>
-                <span className="hb-bullet-icon">{"\u2734"}</span>
-                <span>
-                  <strong>Extraction agents</strong> wake up on a defined
-                  schedule to securely query your legacy SQL court databases for
-                  newly closed cases.
-                </span>
-              </li>
-              <li>
-                <span className="hb-bullet-icon">{"\u2734"}</span>
-                <span>
-                  <strong>Unstructured docket data</strong> is automatically
-                  parsed for required metadata (jurisdiction, lawyer ID,
-                  case outcome) with zero human data entry.
-                </span>
-              </li>
-              <li>
-                <span className="hb-bullet-icon">{"\u2734"}</span>
-                <span>
-                  <strong>Compliance agents</strong> verify the extracted data
-                  against your specific jurisdictional eligibility tiers and
-                  limits.
-                </span>
-              </li>
-              <li>
-                <span className="hb-bullet-icon">{"\u2734"}</span>
-                <span>
-                  <strong>Settlement nodes</strong> format the verified data into
-                  a JSON payload, triggering Solana ZK-compression anchoring and
-                  x402 payment.
-                </span>
-              </li>
-            </ul>
-          </div>
-          <div className="heartbeat-visual">
-            <HeartbeatTimeline />
-          </div>
-        </div>
-      </section>
-
       {/* COST */}
       <section className="cost-section" id="cost">
         <div className="cost-top">
@@ -928,9 +748,9 @@ export default function LandingPage() {
           <div className="special-card">
             <h3>No consortium required.</h3>
             <p>
-              Fabric can&rsquo;t give cross-border verification without an
-              inter-ministerial consortium that doesn&rsquo;t exist and
-              won&rsquo;t. A public chain does this natively.
+              Private chains need bilateral agreements between every
+              participating ministry. A public chain gives cross-border
+              verification natively. Any node, any country.
             </p>
           </div>
           <div className="special-card">
@@ -970,7 +790,7 @@ export default function LandingPage() {
           <div className="not-card">
             <h3>Not a private chain.</h3>
             <p>
-              No consortium setup, no dedicated nodes, no IBM consulting fees.
+              No consortium setup, no dedicated nodes, no enterprise consulting fees.
               One audited program on Solana, shared by all jurisdictions.
             </p>
           </div>

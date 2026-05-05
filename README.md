@@ -1,235 +1,200 @@
-# Adduce — Issue. Prove. Settle.
+# Adduce -- Issue. Prove. Settle.
 
-A plug-in for government legal aid systems that digitizes the eligibility certificate on Solana. The court issues a cryptographic credential. The holder proves eligibility with a zero-knowledge proof. The lawyer settles payment in 400 milliseconds. No personal data exposed. No consortium required. No paper.
+The first credential issuer for legal aid on Solana. Adduce digitizes the eligibility certificate -- the single paper artifact that crosses institutional boundaries every time a lawyer gets paid -- by issuing it as a cryptographically signed on-chain attestation with zero-knowledge selective disclosure and instant settlement.
 
-## Architecture: Three Pillars
-
-The protocol is organized around one core lifecycle: **Issue → Hold → Prove → Settle → Revoke**. Every component serves this lifecycle.
-
-### Credential Issuance & Lifecycle
-
-The Berechtigungsschein (legal aid eligibility certificate) is the single artifact that crosses institutional boundaries. In the legacy system, it's a paper document issued by one authority, presented to another, and verified by phone. In Adduce, it becomes a cryptographically signed on-chain attestation with a full lifecycle:
-
-**1. Issuance.** The court authority (Sozialamt or Agentur für Arbeit) calls the Solana Attestation Service (SAS) to create an on-chain credential. The SAS program writes an immutable PDA containing: the citizen's public key (nonce binding), the credential schema (jurisdiction + eligibility_tier + expiry_date), the issuer's signature, and an expiry timestamp. Simultaneously, a Poseidon commitment root of all 6 credential fields is computed and stored — this enables ZK selective disclosure later. No personal data is written to the ledger; only cryptographic commitments and public keys.
-
-**2. Holding.** The credential lives on-chain as a Solana account owned by the SAS program. Unlike Hyperledger Aries where credentials are stored in a mobile wallet (off-chain), SAS credentials are publicly discoverable but privacy-preserving — the commitment root hides field values behind Poseidon hashes. Crucially, the credential survives issuing-server downtime: because the attestation PDA exists on the Solana ledger, verification works even if the municipal office that issued it goes offline permanently.
-
-**3. Selective Disclosure (ZK Proof).** When the credential holder needs to prove eligibility — e.g., "my jurisdiction is DE and my credential isn't expired" — they generate a 256-byte Groth16 zero-knowledge proof off-chain. The custom Circom circuit proves knowledge of the private fields that hash to the on-chain commitment root, without revealing those fields to the verifier. The on-chain `verify_zk_disclosure` instruction checks the proof using Solana's native BN254 pairing (same curve as Light Protocol and Ethereum ZK rollups). The verifier learns only the proved statement — nothing else.
-
-**4. Revocation.** If a citizen's eligibility changes (e.g., they gain employment), the issuing authority deletes the SAS attestation account. Revocation is instant and global — the credential ceases to exist on-chain. Every downstream instruction (`anchor_document`, `close_case`) re-checks credential liveness before proceeding. There is no window of abuse: the moment the account is deleted, all verification fails.
-
-**Three Actors, One Flow:**
-```
-Court Authority          Citizen                    Lawyer
-      |                     |                         |
-      |-- Issues SAS ------>| (credential on-chain)   |
-      |                     |                         |
-      |-- Opens Case ------>|                         |
-      |                     |                         |
-      |                     |-- ZK proof of --------->| (jurisdiction + not expired)
-      |                     |   eligibility           |
-      |                     |                         |
-      |                     |                         |-- Anchors Document
-      |                     |                         |
-      |-- Closes Case ----->|                         |
-      |                     |                         |
-      |                     |          x402 verifies proof + liveness
-      |                     |                         |<-- USDC Payment
-      |                     |                         |
-      | (if eligibility changes mid-case)             |
-      |-- Revokes credential (deletes PDA) --------->X (all verification fails)
-```
-
-### Supporting Infrastructure
-
-**Case Management (Anchor).** An on-chain program manages the full lifecycle of a legal aid case: opening, credential linking, document submission, closure, and payment confirmation. Every state transition is a Solana transaction — an immutable audit trail. The program enforces role separation: authority opens cases, reviewer links credentials and closes cases, payer marks paid.
-
-**Document Integrity (Light Protocol).** Case documents are hashed and stored using ZK-compressed state via Light Protocol at ~98.8% lower cost than standard on-chain storage. The hash proves document integrity without storing the document itself.
-
-**Payment Gateway (x402).** When a case is closed, the payment endpoint verifies the lawyer's credential (via ZK proof or direct SAS check) before releasing USDC. Payment only flows when: credential is valid AND unrevoked, case is closed, and lawyer matches the case record.
-
-**Automation Agent.** A polling agent bridges legacy systems to the blockchain — scans for closed cases, creates compressed audit logs, executes USDC transfers, and marks cases as paid without human intervention.
-
-### Comparison with Hyperledger Fabric / IBM Blockchain
-
-| Concern | IBM Hyperledger (Bavaria) | Adduce (Solana) |
-|---------|--------------------------|-----------------|
-| **Credential storage** | Off-chain wallet (Aries) | On-chain PDA (SAS) — survives issuer downtime |
-| **Privacy mechanism** | Private Data Collections (access control) | ZK proofs (mathematical guarantee — GDPR by cryptography, not policy) |
-| **Selective disclosure** | CL signatures via Aries agent (~500 bytes) | Groth16 circuit via alt_bn128 (**256 bytes**) |
-| **Revocation** | Registry update + non-revocation proof | Account deletion — instant, global, no proof needed |
-| **Verification** | Requires Indy ledger access + Aries agent | Single Solana RPC call or on-chain instruction |
-| **Cross-border** | Requires inter-ministerial consortium | Native — any Solana node, any jurisdiction |
-| **Infrastructure** | IBM Cloud + Kubernetes + Fabric peers + Ordering nodes | Public Solana validators (no private infrastructure) |
-| **Cost per credential** | $0.10–1.00 (Indy fees + infra) | **$0.001–0.004** (Solana rent) |
-| **Consortium requirement** | Yes (Fabric is permissioned) | No (public chain, permissioned at application layer) |
+**14 instructions. 4 events. 26 error codes. Deployed on Solana Devnet.**
 
 ## Live on Devnet
 
-| Resource | Address |
-|----------|---------|
-| Legal Aid Program | [`3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV`](https://explorer.solana.com/address/3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV?cluster=devnet) |
-| SAS Program | [`22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG`](https://explorer.solana.com/address/22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG?cluster=devnet) |
-| SAS Schema | [`7uKMGSgup1UZ26MnptCCMCac6rqpe6vBNXET338cDeid`](https://explorer.solana.com/address/7uKMGSgup1UZ26MnptCCMCac6rqpe6vBNXET338cDeid?cluster=devnet) |
+| Resource | Address | Verify |
+|----------|---------|--------|
+| Legal Aid Program | `3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV` | [Explorer](https://explorer.solana.com/address/3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV?cluster=devnet) |
+| SAS Program | `22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG` | [Explorer](https://explorer.solana.com/address/22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG?cluster=devnet) |
+| SAS Schema | `7uKMGSgup1UZ26MnptCCMCac6rqpe6vBNXET338cDeid` | [Explorer](https://explorer.solana.com/address/7uKMGSgup1UZ26MnptCCMCac6rqpe6vBNXET338cDeid?cluster=devnet) |
+| Encrypted Document (Arweave) | `2Cyx7gpJgDmivrgDiaCnwsrVCAWqkUMRVWCyDaNAVymn` | [Irys Devnet Gateway](https://devnet.irys.xyz/2Cyx7gpJgDmivrgDiaCnwsrVCAWqkUMRVWCyDaNAVymn) |
+| ZK Circuit | 7,883 constraints, 256-byte proof | [Test proof](circuits/test_proof.js) |
+
+## Three Pillars
+
+**01. Issue.** Court authority signs an on-chain attestation (SAS) binding the citizen to jurisdiction, eligibility tier, and expiry. Poseidon commitment root hashes all fields for ZK. Supports both wallet-based and custodial issuance (citizen without wallet). Credential survives issuing-server failure.
+
+**02. Prove.** Holder generates a 256-byte Groth16 zero-knowledge proof: "jurisdiction is DE and credential is not expired" without revealing tier, identity, or dates. Verified on-chain via Solana's native alt_bn128 pairing in ~200k compute units. Lawyer proves case assignment via SHA-256 commitment (pubkey never on-chain).
+
+**03. Settle.** Case closed + credential unrevoked + disbursed amount <= authorized amount = payment. Supports both on-chain USDC (400ms) and off-chain bank transfer with on-chain payment reference for audit. Government pays per transaction, no servers to maintain.
 
 ## Quick Start
 
-**Prerequisites:** Node 22+, Rust, Solana CLI, Anchor 0.30+
-
 ```bash
-# 1. Clone and install
-git clone <repo-url> && cd legal-aid-plugin
-npm install
-
-# 2. Configure environment
-cp .env.example .env
-# Edit .env — add your Helius API key
-
-# 3. Build and deploy the Anchor program
-anchor build
-anchor deploy --provider.cluster devnet
-
-# 4. Start the frontend
-cd app && npm run dev
-
-# 5. Open http://localhost:3000 and connect Phantom wallet (set to devnet)
+git clone https://github.com/SAHU-01/legal_aid.git && cd legal_aid
+nvm use 22 && npm install
+cp .env.example .env   # add your Helius API key
+anchor build && anchor deploy --provider.cluster devnet
+npm run dev            # start frontend at localhost:3000
 ```
 
-## Run the E2E Demo
-
-The full pipeline script runs every component end-to-end on devnet with no mocks:
+Run the full pipeline (credential issuance through payment, all on devnet):
 
 ```bash
 npx ts-node scripts/e2e-full-pipeline.ts
 ```
 
-This executes: credential issuance, case opening, document anchoring, compressed logging, case closure, USDC payment, and final verification — then outputs a full report with Solana Explorer links for every transaction.
+Run the ZK selective disclosure demo:
+
+```bash
+cd circuits && npm install && ./build.sh
+cd .. && npx ts-node scripts/zk-disclosure-demo.ts
+```
+
+## Program Instructions (14)
+
+### Core Flow
+| Instruction | Signer | What It Does |
+|-------------|--------|-------------|
+| `initialize` | Authority | Creates ProgramConfig (293 bytes) with roles, operations wallet, timeout |
+| `open_case` | Authority | Creates CaseFile (404 bytes) with lawyer_commitment + authorized_amount |
+| `open_case_custodial` | Authority | Same but for citizens without wallets (hashed national ID) |
+| `link_credential` | Reviewer / Delegate | Binds SAS credential to case. 5-point validation. Supports custodial nonce. |
+| `anchor_document` | Lawyer (via salt) | Stores document hash. Lawyer proves identity via SHA-256 commitment. |
+| `close_case` | Reviewer / Delegate | Closes case. Credential liveness re-checked. Timeout escalation. |
+| `mark_paid` | Payer | Records disbursed_amount + payment_reference. Enforces amount <= authorized. |
+
+### Extended
+| Instruction | Signer | What It Does |
+|-------------|--------|-------------|
+| `reassign_lawyer` | Authority / Reviewer | Switch lawyer on active case with audit trail (LawyerReassigned event) |
+| `update_case_status` | Authority / Reviewer | Non-linear: Stayed, Appealed, Withdrawn, Remanded |
+| `reopen_case` | Authority | Move Closed back to InProgress with reason |
+| `verify_zk_disclosure` | Any | Verify 256-byte Groth16 proof on-chain (alt_bn128) |
+| `add_delegate` | Authority | Add delegate reviewer (max 3) |
+| `remove_delegate` | Authority | Remove delegate |
+| `fund_operations` | Authority | Top up operations wallet for transaction fees |
+
+### Case Status (8 states)
+```
+Open -> InProgress -> Closed -> Paid
+                   <-> Stayed (court stay)
+                   <-> Appealed (reversible)
+                   -> Withdrawn (applicant withdraws)
+       Closed      -> Remanded (higher court, returns to InProgress)
+       Closed      -> InProgress (via reopen_case)
+```
+
+## Storage Architecture
+
+Adduce uses a layered storage model. No personal data touches the public ledger.
+
+| Data | Where | Technology | Who Can Read |
+|------|-------|-----------|-------------|
+| Credentials | Solana PDA | SAS attestation | Anyone (fields hidden behind Poseidon commitments) |
+| Case state | Solana PDA | Anchor CaseFile | Anyone (lawyer identity is a SHA-256 hash) |
+| Document hash | Solana PDA | SHA-256 fingerprint | Anyone (one-way, can't reconstruct document) |
+| Audit logs | Solana compressed | Light Protocol + Helius Photon | Helius RPC users (not publicly enumerable) |
+| Encrypted documents | Arweave | Irys upload + X25519+AES-256-GCM | Only assigned lawyer (holds decryption key) |
+| Original case files | Government DMS | Unchanged | Existing access controls |
+| Citizen personal data | Government DB | Never on blockchain | Government staff under GDPR |
+
+### Encrypted Document Storage (Arweave + Irys)
+
+Documents are encrypted end-to-end and stored permanently on Arweave via Irys:
+1. Court encrypts document for the assigned lawyer (X25519 ECDH + AES-256-GCM)
+2. Encrypted blob uploaded to Arweave via Irys (pay-per-upload with SOL)
+3. Plaintext hash anchored on Solana (proves document existed)
+4. Lawyer fetches from Arweave, decrypts with their wallet key
+
+Each user/jurisdiction pays for their own storage via their Solana wallet. Storage is permanent (pay once, stored forever). Encrypted documents are content-addressable (tamper-proof URL). Browse uploads at: `https://explorer.irys.xyz/address/<wallet-pubkey>`
+
+### ZK Compression (Light Protocol)
+
+| Method | Cost per case | At 100K cases/year |
+|--------|--------------|-------------------|
+| Standard PDA | ~$0.30 | ~$30,000/year |
+| ZK Compressed | ~$0.004 | ~$400/year |
+
+98.8% cost reduction. Requires Helius RPC (Photon indexer built in).
 
 ## Tech Stack
 
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
-| Smart Contracts | Anchor 0.32 / Rust | On-chain case lifecycle, credential linking, ZK verification |
-| ZK Circuits | Circom 2.2 / snarkjs / Groth16 | Selective disclosure & predicate proofs (BN254) |
+| Smart Contracts | Anchor 0.32 / Rust | 14 instructions, case lifecycle, ZK verification |
+| ZK Circuits | Circom 2.2 / snarkjs / Groth16 | Selective disclosure + predicate proofs (BN254) |
 | On-Chain Verifier | `sol_alt_bn128_group_op` syscall | Groth16 proof verification (~200k CU) |
-| Identity | Solana Attestation Service (SAS) | Government-issued lawyer credentials |
-| Compression | Light Protocol + Photon Indexer | ZK-compressed document logs at 98.8% cost savings |
+| Identity | Solana Attestation Service (SAS) | Government-issued credentials |
+| Compression | Light Protocol + Photon Indexer | ZK-compressed audit logs (98.8% savings) |
+| Document Storage | Arweave + Irys | Encrypted permanent document storage |
+| Encryption | X25519 + AES-256-GCM (sha2 crate) | Document encryption + lawyer commitment privacy |
 | Payments | x402 Protocol v2 | Credential-gated USDC disbursement |
-| Frontend | Next.js 16 / React 19 / Tailwind 4 | Lawyer dashboard with wallet integration |
-| RPC | Helius | Devnet RPC with built-in Photon indexer |
-| Wallet | Solana Wallet Adapter | Phantom, Solflare, and other Solana wallets |
+| Frontend | Next.js 16 / React 19 / Tailwind 4 | Lawyer dashboard + docs |
+| RPC | Helius | Devnet RPC + Photon indexer |
 
 ## Project Structure
 
 ```
 legal-aid-plugin/
-  programs/legal-aid/         Anchor program (Rust)
-    src/
-      lib.rs                    7 instructions: initialize, open_case, link_credential, anchor_document, close_case, mark_paid, verify_zk_disclosure
-      groth16.rs                On-chain Groth16 verifier (BN254 pairing via alt_bn128 syscall)
-      vk.rs                     Auto-generated verification key (from trusted setup ceremony)
-  circuits/                   ZK Selective Disclosure (Circom + snarkjs)
-    selective_disclosure.circom Custom Groth16 circuit (6 fields, depth-3 Merkle, Poseidon hash)
-    build.sh                    Compile circuit + Powers of Tau + phase 2 setup
-    test_proof.js               Generate & verify test proof locally
-    build/                      Compiled artifacts (WASM, R1CS, zkey, verification key)
-  app/                        Next.js 16 frontend
-    src/app/
-      page.tsx                  Lawyer dashboard
-      api/claim-payment/        x402 payment endpoint with SAS verification
-  scripts/                    Automation and testing
-    lib/
-      privacy.ts                X25519+AES-256-GCM encryption, Merkle selective disclosure
-      zk-prover.ts              Groth16 proof generation (snarkjs), Poseidon commitments, Solana formatting
-      connection.ts             Helius RPC setup
-    zk-disclosure-demo.ts       Full ZK pipeline: credential → proof → verify (replaces commitment-based disclosure)
-    e2e-credential-pipeline.ts  Full 8-step lifecycle: open → credential → link → encrypt → anchor → close → paid
-    selective-verify.ts         Merkle-based disclosure demo + Aries comparison
-    encrypt-and-anchor.ts       X25519+AES-256-GCM document encryption + hash anchoring
-    agent.ts                    Production workflow agent
-  tests/                      Anchor integration tests
-  target/idl/                 Generated IDL and TypeScript types
+  programs/legal-aid/src/
+    lib.rs                  14 instructions, 4 events, 26 error codes
+    groth16.rs              On-chain Groth16 verifier (BN254 pairing via alt_bn128)
+    vk.rs                   Auto-generated verification key (trusted setup ceremony)
+  circuits/
+    selective_disclosure.circom   Groth16 circuit (6 fields, depth-3 Merkle, Poseidon)
+    build.sh                      Compile + Powers of Tau + phase 2 setup
+    test_proof.js                 Generate + verify test proof locally
+  app/src/app/
+    page.tsx                Landing page
+    dashboard/              Lawyer demo dashboard
+    docs/                   Technical documentation (14 instructions, integration guide)
+    api/claim-payment/      x402 payment endpoint with SAS verification
+  scripts/
+    lib/privacy.ts          X25519+AES-256-GCM encryption, Merkle commitments
+    lib/zk-prover.ts        Groth16 proof generation, Poseidon hashing, Solana formatting
+    lib/connection.ts       Helius RPC setup
+    e2e-full-pipeline.ts    10-step lifecycle: open -> credential -> anchor -> close -> pay
+    zk-disclosure-demo.ts   ZK pipeline: credential -> Groth16 proof -> verify
+    encrypt-and-anchor.ts   Document encryption + Arweave upload + hash anchoring
+    upload-to-arweave.ts    Encrypted document upload to Arweave via Irys
+    agent.ts                Automation: polls closed cases, compresses, pays
+    issue-credential.ts     Issue SAS eligibility credential
+    revoke-credential.ts    Revoke credential (account deletion)
+    selective-verify.ts     Merkle-based selective disclosure demo
+    cost-comparison.ts      Standard PDA vs compressed storage costs
 ```
-
-## Cost Efficiency
-
-Using Light Protocol's ZK compression, document storage costs drop from ~1,566,960 lamports per case (standard PDA) to ~16,000 lamports (compressed state) — a 98.8% reduction. At 100,000 cases per year, this saves approximately $22,000 in on-chain storage costs.
 
 ## Scripts
 
-| Script | Purpose |
-|--------|---------|
-| `zk-disclosure-demo.ts` | ZK selective disclosure pipeline: credential → Groth16 proof → on-chain verify |
-| `e2e-full-pipeline.ts` | Complete 10-step end-to-end demo with verification and report generation |
-| `selective-verify.ts` | Merkle-based selective disclosure demo + Hyperledger Aries comparison |
-| `encrypt-and-anchor.ts` | X25519+AES-256-GCM document encryption + Solana hash anchoring |
-| `agent.ts` | Production automation agent — polls for closed cases, compresses, pays, marks paid |
-| `create-test-cases.ts` | Creates sample cases on devnet for agent testing |
-| `create-schema.ts` | Deploys the SAS credential schema to devnet |
-| `issue-credential.ts` | Issues a SAS Berechtigungsschein to a wallet |
-| `verify-credential.ts` | Fetches and verifies a SAS credential on devnet |
-| `revoke-credential.ts` | SAS credential revocation demo |
-| `test-payment-with-credential.ts` | Integration test for SAS + x402 payment flow |
-| `anchor-document-compressed.ts` | Anchors a document hash using Light Protocol compression |
-| `cost-comparison.ts` | Compares standard PDA vs. compressed storage costs |
-| `query-compressed.ts` | Queries and validates compressed state via Photon indexer |
+| Script | What It Does | Status |
+|--------|-------------|--------|
+| `e2e-full-pipeline.ts` | Complete lifecycle with report + Explorer links | Live |
+| `zk-disclosure-demo.ts` | ZK proof generation + local + on-chain verification | Live |
+| `encrypt-and-anchor.ts` | Encrypt doc (AES-256-GCM) + anchor hash on Solana | Live |
+| `upload-to-arweave.ts` | Upload encrypted doc to Arweave via Irys | Live |
+| `agent.ts` | Automation agent: poll, compress, pay, mark paid | Live |
+| `issue-credential.ts` | Issue SAS eligibility credential to wallet | Live |
+| `verify-credential.ts` | Verify SAS credential on devnet | Live |
+| `revoke-credential.ts` | Revoke credential (delete account) | Live |
+| `selective-verify.ts` | Merkle-based selective disclosure demo | Live |
+| `cost-comparison.ts` | Standard vs compressed storage cost analysis | Live |
+| `anchor-document-compressed.ts` | Anchor hash via Light Protocol compression | Live |
+| `query-compressed.ts` | Query compressed state via Photon indexer | Live |
+| `create-schema.ts` | Deploy SAS credential schema to devnet | Live |
 
-## ZK Selective Disclosure
+## Countries with Certificate-Based Legal Aid
 
-The protocol implements true zero-knowledge credential verification using Groth16 proofs, following Light Protocol's verifier pattern on the BN254 curve.
+Adduce is tested with the German jurisdiction but the architecture is jurisdiction-agnostic. The same program serves any country by changing the jurisdiction parameter in `initialize`.
 
-### How It Works
+| Country | Certificate Name |
+|---------|-----------------|
+| Germany | Berechtigungsschein |
+| Netherlands | Toevoeging |
+| France | Aide Juridictionnelle |
+| Italy | Patrocinio a spese dello Stato |
+| Spain | Asistencia Juridica Gratuita |
+| Austria | Verfahrenshilfe |
+| Portugal | Apoio Judiciario |
+| Canada | Legal Aid Certificate |
+| Ireland | Legal Aid Certificate |
 
-```
-Credential Holder                           On-Chain Verifier
-       |                                           |
-       |-- Has: 6 private fields + salts           |
-       |                                           |
-       |   Runs Circom circuit (off-chain)         |
-       |   → Generates 256-byte Groth16 proof      |
-       |                                           |
-       |-- Submits: proof + 7 public inputs ------>|
-       |                                           |
-       |              Verifier checks:             |
-       |              • commitmentRoot matches PDA |
-       |              • predicateSatisfied == 1     |
-       |              • Groth16 pairing valid       |
-       |                                           |
-       |<-- Emits: ZkDisclosureVerified event -----|
-```
-
-### What the Verifier Learns vs. What Stays Private
-
-| Verifier Learns | Stays Private (ZK) |
-|----------------|-------------------|
-| Disclosed field value (e.g., jurisdiction = "DE") | All other field values |
-| Predicate result (e.g., "not expired" = true) | Exact expiry date |
-| Credential issuer hash | Applicant identity |
-| Commitment root matches on-chain state | All salts |
-
-### Comparison with Hyperledger Aries AnonCreds
-
-| Feature | Aries (CL Signatures) | Adduce (Groth16) |
-|---------|----------------------|-----------------|
-| Proof size | ~500 bytes | **256 bytes** |
-| Selective disclosure | Native per-attribute | Circuit-based (Poseidon Merkle) |
-| Predicate proofs | Native range proofs | GreaterThan(64) in circuit |
-| On-chain verification | Not standard | Native via alt_bn128 syscall |
-| Holder anonymity | Full (pseudonyms) | Wallet-linked (appropriate for legal aid) |
-| Infrastructure | Aries agent + DIDComm + Indy ledger | Single Solana RPC call |
-| Cost per verification | Indy ledger fees ($0.10-1.00) | ~$0.0001 (200k CU) |
-
-### Building the Circuit
-
-```bash
-cd circuits
-npm install          # installs circomlib + snarkjs
-./build.sh           # compile → trusted setup → export VK
-node test_proof.js   # generate + verify a test proof
-```
+9 countries. 500M+ citizens covered. One deployment.
 
 ## License
-This project is source-available under a proprietary non-commercial
-license. You may view, fork, and use the code for personal and
-educational purposes. Commercial use requires written permission
-from the author. See [LICENSE](./LICENSE) for details.
+
+This project is source-available under a proprietary non-commercial license. You may view, fork, and use the code for personal and educational purposes. Commercial use requires written permission from the author. See [LICENSE](./LICENSE) for details.
