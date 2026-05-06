@@ -27,12 +27,12 @@ export default function BlogPage() {
             </p>
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "1.5rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "1.5rem", alignItems: "stretch" }}>
             {posts.map((post) => (
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}
-                style={{ textDecoration: "none", color: "inherit" }}
+                style={{ textDecoration: "none", color: "inherit", display: "flex" }}
               >
                 <article style={{
                   border: "1px solid #e5e3df",
@@ -40,14 +40,17 @@ export default function BlogPage() {
                   overflow: "hidden",
                   background: "#fff",
                   transition: "box-shadow 0.2s, transform 0.2s",
+                  display: "flex",
+                  flexDirection: "column" as const,
+                  width: "100%",
                 }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={post.image || "/hero-img.png"}
                     alt={post.title}
-                    style={{ width: "100%", height: "180px", objectFit: "cover", display: "block" }}
+                    style={{ width: "100%", height: "200px", objectFit: "cover", display: "block" }}
                   />
-                  <div style={{ padding: "1.2rem" }}>
+                  <div style={{ padding: "1.2rem", flex: 1, display: "flex", flexDirection: "column" as const }}>
                     <div style={{ display: "flex", gap: "0.75rem", fontSize: "0.72rem", color: "#8a8a8a", marginBottom: "0.5rem" }}>
                       <span>{post.date}</span>
                       <span>{post.readTime}</span>
@@ -55,7 +58,7 @@ export default function BlogPage() {
                     <h2 style={{ fontSize: "1.05rem", fontWeight: 600, lineHeight: 1.3, marginBottom: "0.5rem", color: "#0f0f0f" }}>
                       {post.title}
                     </h2>
-                    <p style={{ fontSize: "0.82rem", color: "#5a5a5a", lineHeight: 1.5, fontWeight: 300 }}>
+                    <p style={{ fontSize: "0.82rem", color: "#5a5a5a", lineHeight: 1.5, fontWeight: 300, flex: 1 }}>
                       {post.excerpt}
                     </p>
                   </div>

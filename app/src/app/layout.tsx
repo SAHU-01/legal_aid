@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     icon: "/adduce_logo.png",
     apple: "/adduce_logo.png",
   },
-  metadataBase: new URL("https://adduce.vercel.app"),
+  metadataBase: new URL("https://adduce.legal"),
 };
 
 export default function RootLayout({

@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "../../Navbar";
 import { posts } from "../posts";
+import BlogContent from "../BlogContent";
 import "../blog.css";
 
 export function generateStaticParams() {
@@ -62,10 +63,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           style={{ width: "100%", borderRadius: "12px", marginBottom: "2rem", maxHeight: "400px", objectFit: "cover" }}
         />
 
-        <div
-          className="blog-content"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+        <BlogContent html={post.content} />
 
         <div style={{ marginTop: "3rem", paddingTop: "2rem", borderTop: "1px solid #e5e3df" }}>
           <Link href="/blog" style={{ fontSize: "0.85rem", color: "#1a6b4a", textDecoration: "none" }}>

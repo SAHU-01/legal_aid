@@ -1,7 +1,7 @@
 import { posts } from "./blog/posts";
 
 export default function sitemap() {
-  const baseUrl = "https://adduce.vercel.app";
+  const baseUrl = "https://adduce.legal";
 
   const blogUrls = posts.map((post) => ({
     url: `${baseUrl}/blog/${post.slug}`,

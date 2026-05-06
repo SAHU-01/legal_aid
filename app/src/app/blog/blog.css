@@ -74,20 +74,27 @@
 }
 
 .blog-content pre {
-  background: #1a1a1a;
-  color: #e0e0e0;
-  padding: 1.2rem;
-  border-radius: 8px;
+  background: #0d1117;
+  color: #c9d1d9;
+  padding: 1.4rem 1.2rem;
+  border-radius: 10px;
   overflow-x: auto;
   margin: 1.5rem 0;
-  font-size: 0.85rem;
-  line-height: 1.5;
+  font-size: 0.82rem;
+  line-height: 1.8;
+  position: relative;
+  border: 1px solid #21262d;
+  tab-size: 2;
+  -moz-tab-size: 2;
 }
 
 .blog-content pre code {
   background: none;
   padding: 0;
   color: inherit;
+  font-size: inherit;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  letter-spacing: -0.02em;
 }
 
 /* ───────── STAT CARDS ───────── */
@@ -178,6 +185,36 @@
 
 .blog-content .source a {
   color: #8a8a8a;
+}
+
+/* ───────── SYNTAX HIGHLIGHTING ───────── */
+
+.blog-content pre .hl-comment { color: #6e7681; font-style: italic; }
+.blog-content pre .hl-string  { color: #a5d6ff; }
+.blog-content pre .hl-keyword { color: #ff7b72; }
+.blog-content pre .hl-type    { color: #ffa657; }
+.blog-content pre .hl-number  { color: #79c0ff; }
+
+/* ───────── COPY BUTTON ───────── */
+
+.blog-content pre .copy-btn {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  font-size: 0.68rem;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.15s;
+}
+
+.blog-content pre .copy-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
 }
 
 /* ───────── RESPONSIVE ───────── */
