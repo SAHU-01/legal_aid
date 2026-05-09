@@ -721,4 +721,229 @@ fn parse_sas_attestation(data: &[u8]) -> Result<(Pubkey, i64, Pubkey)> {
 <p><strong><a href="https://www.npmjs.com/package/@adduce/sdk" target="_blank">View on npm</a></strong> | <strong><a href="https://adduce.legal/docs" target="_blank">Documentation</a></strong> | <strong><a href="https://github.com/SAHU-01/legal_aid" target="_blank">GitHub</a></strong></p>
 `,
   },
+  {
+    slug: "document-storage-architecture",
+    title: "Where Do the Documents Go? Storage Architecture for Government-Grade Legal Aid on Solana",
+    excerpt: "Governments store documents on GCP, AWS, and national clouds. We store encrypted hashes on-chain and ciphertext on Arweave. Here's why — and how to plug into either model.",
+    date: "2026-05-09",
+    readTime: "10 min",
+    image: "/blog-5.png",
+    content: `
+<p><em>For government IT architects, compliance officers, and legal tech teams evaluating where sensitive legal aid documents should live — and who should control them.</em></p>
+
+<p>Every government digitization project hits the same wall: <strong>where do the documents go?</strong> The credential can be on-chain. The payment can be instant. But the case file — the scanned application, the eligibility proof, the court order — that's the artifact that makes compliance officers lose sleep. It contains PII. It falls under GDPR Article 5(1)(c). It's subject to national data residency laws. And it needs to survive for decades.</p>
+
+<p>Adduce doesn't dodge this question. We designed an entire storage architecture around it.</p>
+
+<div class="stat-row">
+  <div class="stat-card">
+    <div class="stat-number">$0.004</div>
+    <div class="stat-label">Per document anchor</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">0 bytes</div>
+    <div class="stat-label">PII stored on-chain</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">256-bit</div>
+    <div class="stat-label">AES-GCM encryption</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">200+ yr</div>
+    <div class="stat-label">Arweave durability</div>
+  </div>
+</div>
+
+<h2>The Rule: No Personal Data Touches the Public Ledger</h2>
+
+<p>This is the foundational constraint. Every storage decision in Adduce derives from one principle: <strong>the blockchain stores proofs, never documents</strong>. The on-chain footprint of a legal aid case contains exactly four things:</p>
+
+<table>
+<tr><th>On-Chain Data</th><th>Type</th><th>Size</th><th>Contains PII?</th></tr>
+<tr><td><code>document_hash</code></td><td>SHA-256</td><td>32 bytes</td><td>No — one-way hash</td></tr>
+<tr><td><code>lawyer_commitment</code></td><td>SHA-256(pubkey || salt)</td><td>32 bytes</td><td>No — salted hash</td></tr>
+<tr><td><code>commitment_root</code></td><td>Poseidon hash</td><td>32 bytes</td><td>No — ZK commitment</td></tr>
+<tr><td><code>citizen_id_hash</code></td><td>SHA-256(national_id)</td><td>32 bytes</td><td>No — irreversible hash</td></tr>
+</table>
+
+<p>The total on-chain footprint of a citizen's identity across the entire case lifecycle is <strong>128 bytes of hashes</strong>. No names. No addresses. No income data. No birthdates. A verifier with unlimited compute cannot extract the original values from these commitments. This isn't a policy — it's a mathematical guarantee.</p>
+
+<h2>The Three Storage Layers</h2>
+
+<p>Adduce splits document storage into three distinct layers, each with a different trust model, durability guarantee, and compliance profile:</p>
+
+<h3>Layer 1: Government Database (Citizen Data)</h3>
+
+<p>Personal data — the applicant's name, income, family status, national ID — <strong>never leaves the government's existing document management system</strong>. This is deliberate. Governments have spent decades building GDPR-compliant DMS infrastructure. They have data residency controls, access logging, retention policies. Adduce doesn't replace any of that. It plugs in alongside it.</p>
+
+<div class="callout">
+<strong>The plug-and-play principle:</strong> Adduce never asks a government to migrate data out of their existing infrastructure. Whether they use SAP DMS, a national cloud (BundesCloud, Nubo), GCP, or AWS GovCloud — the citizen's personal records stay exactly where they are. We only need the <em>output</em>: a yes/no eligibility decision and a jurisdiction code.
+</div>
+
+<h3>Layer 2: Arweave via Irys (Encrypted Documents)</h3>
+
+<p>The case file itself — the scanned certificate, the court order, supporting documents — is encrypted end-to-end and uploaded to Arweave through Irys. The encryption pipeline:</p>
+
+<pre><code>// 1. Derive X25519 keys from Ed25519 wallets
+const lawyerEncKeys = deriveEncryptionKeypair(lawyerKeypair.secretKey);
+
+// 2. ECDH key agreement (court x lawyer)
+//    Shared secret = court_private x lawyer_public
+//    AES key = SHA-256(shared_secret)
+
+// 3. Encrypt with AES-256-GCM
+const envelope = encryptDocument(
+  documentBuffer,
+  lawyerEncKeys.publicKey,   // Only this lawyer can decrypt
+  courtKeypair.secretKey     // Court is the sender
+);
+
+// Envelope contains:
+// {
+//   ciphertext: "...",         AES-256-GCM output
+//   nonce: "...",              12-byte random IV
+//   tag: "...",                16-byte auth tag
+//   senderEncPubkey: "...",    Ephemeral X25519 pubkey
+//   plaintextHash: "...",      SHA-256 of original
+//   ciphertextHash: "..."      SHA-256 of ciphertext
+// }</code></pre>
+
+<p>Key properties of this layer:</p>
+
+<table>
+<tr><th>Property</th><th>Value</th><th>Why It Matters</th></tr>
+<tr><td><strong>Encryption</strong></td><td>X25519 ECDH + AES-256-GCM</td><td>Only the assigned lawyer's wallet can decrypt</td></tr>
+<tr><td><strong>Durability</strong></td><td>200+ years (Arweave guarantee)</td><td>Legal records must survive beyond any single cloud provider's lifespan</td></tr>
+<tr><td><strong>Cost</strong></td><td>$0.004 per upload (pay once)</td><td>No monthly fees, no storage tiers, no egress charges</td></tr>
+<tr><td><strong>Residency</strong></td><td>Decentralized (global nodes)</td><td>No single jurisdiction controls the storage</td></tr>
+<tr><td><strong>Tampering</strong></td><td>Content-addressable (hash = address)</td><td>Impossible to modify without changing the address</td></tr>
+<tr><td><strong>Auth tag</strong></td><td>16-byte GCM authentication</td><td>Detects any bit-level modification of ciphertext</td></tr>
+</table>
+
+<h3>Layer 3: Solana (Hashes + Compressed Audit Logs)</h3>
+
+<p>The on-chain layer stores two things: the document hash (anchored via the <code>anchor_document</code> instruction) and compressed audit logs via Light Protocol.</p>
+
+<pre><code>// Anchor program instruction: anchor_document
+pub fn anchor_document(
+    ctx: Context&lt;AnchorDocument&gt;,
+    _case_id: String,
+    document_hash: [u8; 32],    // SHA-256 of plaintext
+    lawyer_salt: [u8; 32],      // Proves lawyer identity
+) -> Result&lt;()&gt; {
+    // 1. Verify: SHA256(lawyer_pubkey || salt) == case.lawyer_commitment
+    // 2. Verify: case status is Open or InProgress
+    // 3. Verify: SAS attestation still exists (not revoked)
+    // 4. Store: document_hash on CaseFile PDA
+    // 5. Update: status to InProgress
+}</code></pre>
+
+<p>The lawyer must cryptographically prove they are the assigned counsel before they can anchor any document. The salt is never stored — only the commitment hash. This means even if someone reads the on-chain data, they cannot determine which lawyer is assigned to which case without the salt.</p>
+
+<h2>Why Not Just Use GCP or AWS?</h2>
+
+<p>Most government digitization projects default to a hyperscaler. Germany uses BundesCloud (based on OpenStack). France uses Nubo. The EU is pushing GAIA-X. The question Adduce faces is: why not just store everything on GCP and call it a day?</p>
+
+<table>
+<tr><th>Dimension</th><th>GCP / AWS GovCloud</th><th>Adduce (Arweave + Solana)</th></tr>
+<tr><td><strong>Cost model</strong></td><td>$0.02-0.10/doc/month (perpetual)</td><td>$0.004/doc once (permanent)</td></tr>
+<tr><td><strong>Vendor lock-in</strong></td><td>Proprietary APIs, IAM, egress fees</td><td>Open protocols, no vendor</td></tr>
+<tr><td><strong>Cross-border</strong></td><td>Requires bilateral data processing agreements</td><td>Encrypted globally, decryptable locally</td></tr>
+<tr><td><strong>Durability</strong></td><td>11 nines (99.999999999%) — provider-dependent</td><td>Permanent (economic incentive, 200+ years)</td></tr>
+<tr><td><strong>Tampering</strong></td><td>Admin access can modify objects</td><td>Content-addressable, cryptographically immutable</td></tr>
+<tr><td><strong>Audit trail</strong></td><td>CloudTrail logs (proprietary, deletable)</td><td>On-chain transactions (public, permanent)</td></tr>
+<tr><td><strong>Data residency</strong></td><td>Region-specific, must configure</td><td>Encrypted everywhere, plaintext nowhere</td></tr>
+</table>
+
+<p>The critical insight: <strong>GCP stores documents. Adduce stores encrypted proofs.</strong> These are fundamentally different things. A government's GCP bucket contains plaintext documents protected by IAM policies. Adduce's Arweave envelope contains ciphertext that is mathematically useless without the recipient's private key. The trust model is different: GCP trusts the cloud provider's access controls. Adduce trusts the math.</p>
+
+<h2>The Plug-and-Play Model</h2>
+
+<p>Adduce doesn't demand that governments abandon their existing storage. The architecture is designed as a <strong>plug-in layer</strong> that sits alongside whatever the government already uses:</p>
+
+<pre><code>Government Existing Infrastructure
+  SAP DMS / National Cloud / GCP GovCloud
+    Citizen personal data (stays here, GDPR-managed)
+
+Adduce Layer (plugs in)
+  Solana (on-chain)
+    SAS Attestation PDA ($0.004) - credential
+    CaseFile PDA - document_hash + lawyer_commitment
+    Light Protocol - compressed audit logs ($0.0038)
+  Arweave (off-chain, encrypted)
+    Encrypted case documents - AES-256-GCM
+  SDK (@adduce/sdk)
+    npm install - connects to deployed program</code></pre>
+
+<p>If a jurisdiction requires all document storage on a national cloud for data residency compliance, that's fine. Skip Arweave entirely. Store the encrypted envelope on BundesCloud or Nubo instead. The on-chain hash still anchors the document's integrity. The encryption still ensures only the assigned lawyer can read it. The storage backend is swappable — <strong>the cryptographic guarantees are not.</strong></p>
+
+<h2>Access Control: Who Can Decrypt What</h2>
+
+<p>Document access in Adduce is controlled by cryptography, not by access control lists:</p>
+
+<table>
+<tr><th>Actor</th><th>Can Decrypt?</th><th>Why</th></tr>
+<tr><td><strong>Assigned lawyer</strong></td><td>Yes</td><td>Holds the recipient Ed25519 private key</td></tr>
+<tr><td><strong>Court authority</strong></td><td>No (after encryption)</td><td>Used ephemeral key — shared secret discarded</td></tr>
+<tr><td><strong>Arweave node operators</strong></td><td>No</td><td>Only see ciphertext</td></tr>
+<tr><td><strong>Solana validators</strong></td><td>No</td><td>Only see 32-byte hashes</td></tr>
+<tr><td><strong>New lawyer (after reassignment)</strong></td><td>Yes (new envelope)</td><td><code>reassign_lawyer</code> triggers re-encryption for new recipient</td></tr>
+<tr><td><strong>Auditor</strong></td><td>No (verifies hash only)</td><td>Compares on-chain hash against document hash — integrity check without content access</td></tr>
+</table>
+
+<p>When a lawyer is reassigned via the <code>reassign_lawyer</code> instruction, the old lawyer's access is cryptographically revoked — not by deleting a permission, but because the new encrypted envelope is keyed to a different wallet. The old envelope still exists on Arweave, but only the original lawyer can decrypt it. The new lawyer gets a fresh envelope encrypted for their key.</p>
+
+<h2>The Cost Reality at Government Scale</h2>
+
+<p>Storage costs are where the compressed architecture shines. Using Light Protocol's ZK compression, Adduce reduces on-chain storage costs by <strong>98.7%</strong> compared to standard Solana PDAs:</p>
+
+<div class="stat-row">
+  <div class="stat-card">
+    <div class="stat-number">$0.30</div>
+    <div class="stat-label">Standard PDA per case</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">$0.004</div>
+    <div class="stat-label">Compressed per case</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">$30,000</div>
+    <div class="stat-label">Standard at 100K cases/yr</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">$400</div>
+    <div class="stat-label">Compressed at 100K cases/yr</div>
+  </div>
+</div>
+
+<p>Add the Arweave document upload ($0.004) and the SAS credential issuance ($0.004), and the <strong>total cost per legal aid case is under $0.02</strong>. For context, the administrative overhead of processing a single paper legal aid certificate in Germany — printing, mailing, filing, reconciling — costs an estimated <strong>$15-25 per case</strong>. The infrastructure cost of Adduce is a rounding error.</p>
+
+<h2>Government Storage Laws: What Actually Matters</h2>
+
+<p>Three regulatory frameworks shape how governments can store legal documents:</p>
+
+<h3>1. GDPR Article 5(1)(c) — Data Minimization</h3>
+<p>Store only what you need. Adduce stores 128 bytes of irreversible hashes on-chain. Zero PII. The minimization isn't a design choice — it's a cryptographic constraint. You couldn't store personal data on-chain through Adduce even if you wanted to.</p>
+
+<h3>2. eIDAS 2.0 — Digital Identity Wallets (Deadline: December 2026)</h3>
+<p>EU member states must support selective disclosure in digital identity wallets. Adduce's Groth16 ZK proofs already implement this: prove "jurisdiction is DE and credential is not expired" without revealing tier, identity, or exact dates.</p>
+
+<h3>3. National Data Residency Laws</h3>
+<p>Some jurisdictions require that citizen data stays within national borders. Adduce handles this cleanly: citizen data stays in the government's existing DMS (which already complies). The on-chain layer contains no citizen data — only hashes. And if the encrypted documents must also stay national, swap Arweave for the national cloud. The architecture doesn't care where the ciphertext lives — only that the hash matches.</p>
+
+<div class="callout">
+<strong>The compliance position:</strong> Adduce doesn't ask governments to change how they store citizen data. It asks them to add a 32-byte hash to an immutable ledger. That hash proves the document existed, was unmodified, and was issued by an authorized court — without revealing what the document says.
+</div>
+
+<h2>Conclusion: Storage Is Not the Hard Part</h2>
+
+<p>The hard part was never where to put the bytes. Governments have GCP. They have national clouds. They have filing cabinets that have worked for centuries. The hard part is proving that a document is authentic, unmodified, and issued by the right authority — across borders, without trusting a single server, and without exposing the citizen's identity.</p>
+
+<p>That's what the storage architecture solves. Not by replacing what governments already have, but by adding a cryptographic layer that makes their existing documents verifiable, portable, and tamper-proof.</p>
+
+<p><strong>The documents stay where they are. The proofs go on-chain. The math does the rest.</strong></p>
+
+<p><strong><a href="https://www.npmjs.com/package/@adduce/sdk" target="_blank">View on npm</a></strong> | <strong><a href="https://adduce.legal/docs" target="_blank">Documentation</a></strong> | <strong><a href="https://github.com/SAHU-01/legal_aid" target="_blank">GitHub</a></strong></p>
+`,
+  },
 ];

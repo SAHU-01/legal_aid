@@ -28,7 +28,7 @@ export default function BlogPage() {
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "1.5rem", alignItems: "stretch" }}>
-            {posts.map((post) => (
+            {[...posts].sort((a, b) => b.date.localeCompare(a.date)).map((post) => (
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}

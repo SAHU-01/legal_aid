@@ -882,6 +882,11 @@ export default function LandingPage() {
             <a href={PRO_BONO_SURVEY_URL} target="_blank" rel="noopener noreferrer">Pro Bono Survey</a>
             <a href={`${GITHUB_URL}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer">License</a>
           </div>
+          <div className="footer-col">
+            <div className="footer-col-title">Connect</div>
+            <a href="https://x.com/adducelegal" target="_blank" rel="noopener noreferrer">Twitter/X</a>
+            <a href="mailto:core@adduce.legal">core@adduce.legal</a>
+          </div>
         </div>
         <div className="footer-bottom">
           <p>&copy; 2026 Adduce. Issue. Prove. Settle.</p>

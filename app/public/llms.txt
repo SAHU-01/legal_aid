@@ -33,9 +33,9 @@ Adduce digitizes the legal aid eligibility certificate — the single paper arti
 
 ## Links
 
-- Website: https://adduce.vercel.app
+- Website: https://adduce.legal
 - GitHub: https://github.com/SAHU-01/legal_aid
 - npm: https://www.npmjs.com/package/@adduce/sdk
 - Solana Explorer: https://explorer.solana.com/address/3f1yBTY6xb6ESdzzb9LxAozv7uVsj9Y9AMEpnAwKJRNV?cluster=devnet
-- Documentation: https://adduce.vercel.app/docs
-- Blog: https://adduce.vercel.app/blog
+- Documentation: https://adduce.legal/docs
+- Blog: https://adduce.legal/blog

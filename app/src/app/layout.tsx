@@ -68,11 +68,11 @@ export default function RootLayout({
               "applicationCategory": "GovernmentApplication",
               "operatingSystem": "Web",
               "description": "The first credential issuer for legal aid on Solana. Digitizing eligibility certificates with ZK proofs, encrypted document storage, and instant settlement for 500M+ citizens across 9 countries.",
-              "url": "https://adduce.vercel.app",
+              "url": "https://adduce.legal",
               "author": {
                 "@type": "Organization",
                 "name": "Adduce",
-                "url": "https://adduce.vercel.app"
+                "url": "https://adduce.legal"
               },
               "offers": {
                 "@type": "Offer",
