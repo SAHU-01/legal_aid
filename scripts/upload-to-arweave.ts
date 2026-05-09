@@ -1,18 +1,19 @@
 /**
- * Encrypted Document Upload to Arweave via Irys — Adduce Privacy Layer
+ * Document Integrity Proof Anchoring via Arweave/Irys — Adduce Privacy Layer
  *
- * Complete off-chain storage pipeline:
+ * Corrected architecture:
  *   1. Encrypt document (X25519 + AES-256-GCM)
- *   2. Upload encrypted blob to Arweave via Irys (pay with SOL)
- *   3. Get permanent Arweave URL (content-addressable)
- *   4. Anchor plaintext hash + Arweave URL on Solana
- *   5. Lawyer fetches encrypted doc from Arweave, decrypts with wallet
+ *   2. Store encrypted envelope on government-certified infrastructure (NOT Arweave)
+ *   3. Upload ONLY integrity proof (hashes + timestamps) to Arweave via Irys
+ *   4. Anchor plaintext hash + Arweave proof URL on Solana
  *
- * This replaces Fabric's Private Data Collections with:
- *   - Arweave for permanent, decentralized, censorship-resistant storage
- *   - X25519+AES-256-GCM for per-document encryption
- *   - Solana for hash anchoring + integrity verification
- *   - Minimal infrastructure: no peers, no sideDBs, no channels
+ * Why NOT upload encrypted documents to Arweave:
+ *   - GDPR Article 17: Arweave is permanent, cannot comply with right to erasure
+ *   - Harvest-now-decrypt-later: X25519 is not quantum-resistant
+ *   - Procurement: Arweave has no BSI C5 / SecNumCloud certification
+ *
+ * Arweave's role: permanent proof-of-existence (hashes only)
+ * Document storage: government infrastructure (deletable per retention policy)
  */
 
 import "dotenv/config";
@@ -89,9 +90,21 @@ async function main() {
   console.log("   Encryption: X25519-ECDH + AES-256-GCM");
   console.log();
 
-  // ── Step 2: Upload to Arweave via Irys ────────────────────────────
+  // ── Step 2: Store encrypted envelope on government infrastructure ──
 
-  console.log("2. UPLOADING TO ARWEAVE VIA IRYS");
+  console.log("2. STORING ENCRYPTED DOCUMENT (GOVERNMENT INFRASTRUCTURE)");
+  const outDir = path.join(__dirname, "output", "gov-storage");
+  fs.mkdirSync(outDir, { recursive: true });
+  const envelopePath = path.join(outDir, `${CASE_ID}-envelope.json`);
+  fs.writeFileSync(envelopePath, JSON.stringify(envelope, null, 2));
+  console.log("   Stored at:", envelopePath);
+  console.log("   Note: In production, this goes to BundesCloud / GovCloud / national DMS");
+  console.log("   Encrypted envelope is DELETABLE per retention policy.\n");
+
+  // ── Step 3: Upload PROOF ONLY to Arweave via Irys ─────────────────
+
+  console.log("3. ANCHORING INTEGRITY PROOF ON ARWEAVE VIA IRYS");
+  console.log("   Uploading ONLY hashes — NOT the encrypted document");
   console.log("   Payment: SOL (from operator wallet)");
 
   // Initialize Irys with Solana devnet
@@ -105,11 +118,20 @@ async function main() {
   const irysBalance = await irys.getBalance();
   console.log("   Irys balance:", irys.utils.fromAtomic(irysBalance).toString(), "SOL");
 
-  // Fund if needed
-  const envelopeJson = JSON.stringify(envelope);
-  const uploadSize = Buffer.byteLength(envelopeJson);
+  // Build proof payload — hashes only, no document content
+  const proofPayload = JSON.stringify({
+    protocol: "adduce-v1",
+    type: "integrity_proof",
+    case_id: CASE_ID,
+    plaintext_hash: envelope.plaintextHash,
+    ciphertext_hash: envelope.ciphertextHash,
+    encryption: "x25519-aes256gcm",
+    timestamp: Math.floor(Date.now() / 1000),
+  });
+
+  const uploadSize = Buffer.byteLength(proofPayload);
   const price = await irys.getPrice(uploadSize);
-  console.log("   Upload size: ", uploadSize, "bytes");
+  console.log("   Proof size:  ", uploadSize, "bytes");
   console.log("   Cost:        ", irys.utils.fromAtomic(price).toString(), "SOL");
 
   if (irysBalance < price) {
@@ -119,42 +141,40 @@ async function main() {
     console.log("   Fund tx:", fundTx.id);
   }
 
-  // Upload encrypted envelope
-  console.log("   Uploading encrypted document...");
+  // Upload proof only — no encrypted document, no PII
+  console.log("   Uploading integrity proof (hashes only)...");
   const tags = [
     { name: "Content-Type", value: "application/json" },
     { name: "App-Name", value: "Adduce" },
     { name: "App-Version", value: "1.0" },
+    { name: "Type", value: "integrity-proof" },
     { name: "Case-ID", value: CASE_ID },
     { name: "Plaintext-Hash", value: envelope.plaintextHash },
-    { name: "Encryption", value: "x25519-aes256gcm" },
-    { name: "Recipient", value: lawyerKeypair.publicKey.toBase58() },
   ];
 
-  const receipt = await irys.upload(envelopeJson, { tags });
+  const receipt = await irys.upload(proofPayload, { tags });
   const arweaveUrl = `https://gateway.irys.xyz/${receipt.id}`;
 
   console.log("   Arweave TX ID:", receipt.id);
   console.log("   Arweave URL:  ", arweaveUrl);
-  console.log("   Status: Permanently stored on Arweave.\n");
+  console.log("   Content: Hashes + timestamp ONLY (no encrypted document)");
+  console.log("   Status: Permanent proof-of-existence anchored.\n");
 
-  // ── Step 3: Anchor on Solana ──────────────────────────────────────
+  // ── Step 4: Anchor on Solana ──────────────────────────────────────
 
-  console.log("3. ANCHORING ON SOLANA");
+  console.log("4. ANCHORING ON SOLANA");
   const rpc = createRpc(HELIUS_RPC_URL, HELIUS_RPC_URL, HELIUS_RPC_URL);
 
   const MEMO_PROGRAM_ID = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr");
 
   const anchorPayload = {
     protocol: "adduce-v1",
-    type: "encrypted_document_arweave",
+    type: "integrity_proof_anchor",
     case_id: CASE_ID,
     plaintext_hash: envelope.plaintextHash,
     ciphertext_hash: envelope.ciphertextHash,
-    arweave_tx: receipt.id,
-    arweave_url: arweaveUrl,
-    recipient: lawyerKeypair.publicKey.toBase58(),
-    encryption: "x25519-aes256gcm",
+    arweave_proof_tx: receipt.id,
+    arweave_proof_url: arweaveUrl,
     timestamp: Math.floor(Date.now() / 1000),
   };
 
@@ -176,54 +196,61 @@ async function main() {
   console.log("   Explorer:    https://explorer.solana.com/tx/" + sig + "?cluster=devnet");
   console.log("   On-chain: plaintext hash + Arweave URL anchored.\n");
 
-  // ── Step 4: Verify retrieval + decryption ─────────────────────────
+  // ── Step 5: Verify decryption from gov storage + proof from Arweave
 
-  console.log("4. VERIFYING RETRIEVAL + DECRYPTION");
-  console.log("   Fetching encrypted document from Arweave...");
+  console.log("5. VERIFYING DECRYPTION (GOV STORAGE) + PROOF (ARWEAVE)");
 
-  const response = await fetch(arweaveUrl);
-  const fetchedEnvelope = await response.json();
+  // Lawyer retrieves encrypted document from government infrastructure
+  console.log("   Reading encrypted document from government storage...");
+  const storedEnvelope = JSON.parse(fs.readFileSync(envelopePath, "utf-8"));
+  console.log("   Source:", envelopePath);
 
-  console.log("   Fetched from:", arweaveUrl);
-  console.log("   Ciphertext hash matches:", fetchedEnvelope.ciphertextHash === envelope.ciphertextHash ? "PASS" : "FAIL");
-
-  const decrypted = decryptDocument(fetchedEnvelope, lawyerKeypair.secretKey);
+  const decrypted = decryptDocument(storedEnvelope, lawyerKeypair.secretKey);
   const matches = decrypted.toString("utf-8") === SAMPLE_DOCUMENT;
 
   console.log("   Decryption:      ", matches ? "SUCCESS" : "FAILED");
   console.log("   Integrity check: ", matches ? "PASSED" : "FAILED");
+
+  // Verify proof from Arweave matches document hash
+  console.log("   Fetching integrity proof from Arweave...");
+  const response = await fetch(arweaveUrl);
+  const proof = await response.json();
+  const proofMatches = proof.plaintext_hash === envelope.plaintextHash;
+  console.log("   Arweave proof hash matches document: ", proofMatches ? "PASS" : "FAIL");
   console.log("   Document preview:");
   console.log("   " + decrypted.toString("utf-8").split("\n").slice(0, 3).join("\n   "));
   console.log("   ...\n");
 
   // ── Summary ───────────────────────────────────────────────────────
 
-  console.log("5. STORAGE ARCHITECTURE");
-  console.log("   ┌────────────────────────┬──────────────────────┬──────────────────────┐");
-  console.log("   │ Layer                  │ Fabric PDC           │ Adduce/Solana         │");
-  console.log("   ├────────────────────────┼──────────────────────┼──────────────────────┤");
-  console.log("   │ Encryption             │ Channel TLS          │ X25519+AES-256-GCM   │");
-  console.log("   │ Storage                │ Peer sideDB (local)  │ Arweave (permanent)  │");
-  console.log("   │ Availability           │ Peer must be online  │ Always (decentralized)│");
-  console.log("   │ Durability             │ Peer backup policy   │ Permanent (200+ yrs) │");
-  console.log("   │ Cost                   │ Infrastructure       │ One-time upload fee  │");
-  console.log("   │ Integrity anchor       │ Hash on ledger       │ Hash on Solana       │");
-  console.log("   │ Cross-jurisdiction     │ Same channel only    │ Any Arweave gateway  │");
-  console.log("   └────────────────────────┴──────────────────────┴──────────────────────┘\n");
+  console.log("6. CORRECTED STORAGE ARCHITECTURE");
+  console.log("   ┌────────────────────────┬──────────────────────────────────────────┐");
+  console.log("   │ Component              │ Where + Why                              │");
+  console.log("   ├────────────────────────┼──────────────────────────────────────────┤");
+  console.log("   │ Encrypted documents    │ Gov infrastructure (deletable, certified)│");
+  console.log("   │ Integrity proofs       │ Arweave via Irys (permanent, $0.004)    │");
+  console.log("   │ Document hashes        │ Solana (on-chain, tamper-proof)          │");
+  console.log("   │ Audit logs             │ Light Protocol (compressed, permanent)   │");
+  console.log("   │ Credentials            │ SAS attestation PDA (revocable)          │");
+  console.log("   ├────────────────────────┼──────────────────────────────────────────┤");
+  console.log("   │ NOT on Arweave         │ Encrypted docs, PII, ciphertext blobs   │");
+  console.log("   │ NOT on Solana          │ Personal data, document content          │");
+  console.log("   └────────────────────────┴──────────────────────────────────────────┘\n");
 
   // Save report
   const report = {
     case_id: CASE_ID,
     encryption: { algorithm: "X25519-ECDH + AES-256-GCM", plaintextHash: envelope.plaintextHash },
-    arweave: { txId: receipt.id, url: arweaveUrl, sizeBytes: uploadSize },
+    govStorage: { path: envelopePath, deletable: true },
+    arweaveProof: { txId: receipt.id, url: arweaveUrl, type: "integrity_proof", sizeBytes: uploadSize },
     solana: { txSignature: String(sig), explorer: `https://explorer.solana.com/tx/${sig}?cluster=devnet` },
-    verification: { retrievalSuccess: true, decryptionSuccess: matches, integrityPassed: matches },
+    verification: { decryptionSuccess: matches, integrityPassed: matches, proofMatches },
     timestamp: new Date().toISOString(),
   };
 
-  const outDir = path.join(__dirname, "output");
-  fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(path.join(outDir, "arweave-upload-report.json"), JSON.stringify(report, null, 2));
+  const reportDir = path.join(__dirname, "output");
+  fs.mkdirSync(reportDir, { recursive: true });
+  fs.writeFileSync(path.join(reportDir, "arweave-upload-report.json"), JSON.stringify(report, null, 2));
   console.log("Report saved: scripts/output/arweave-upload-report.json");
   console.log("\nDone.");
 }

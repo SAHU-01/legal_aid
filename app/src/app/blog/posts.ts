@@ -724,7 +724,7 @@ fn parse_sas_attestation(data: &[u8]) -> Result<(Pubkey, i64, Pubkey)> {
   {
     slug: "document-storage-architecture",
     title: "Where Do the Documents Go? Storage Architecture for Government-Grade Legal Aid on Solana",
-    excerpt: "Governments store documents on GCP, AWS, and national clouds. We store encrypted hashes on-chain and ciphertext on Arweave. Here's why — and how to plug into either model.",
+    excerpt: "Governments store documents on certified national infrastructure. We anchor integrity proofs on Arweave and Solana. Here's why encrypted documents belong on government servers — and why permanent proofs belong on-chain.",
     date: "2026-05-09",
     readTime: "10 min",
     image: "/blog-5.png",
@@ -750,7 +750,7 @@ fn parse_sas_attestation(data: &[u8]) -> Result<(Pubkey, i64, Pubkey)> {
   </div>
   <div class="stat-card">
     <div class="stat-number">200+ yr</div>
-    <div class="stat-label">Arweave durability</div>
+    <div class="stat-label">Proof durability (Arweave)</div>
   </div>
 </div>
 
@@ -780,9 +780,20 @@ fn parse_sas_attestation(data: &[u8]) -> Result<(Pubkey, i64, Pubkey)> {
 <strong>The plug-and-play principle:</strong> Adduce never asks a government to migrate data out of their existing infrastructure. Whether they use SAP DMS, a national cloud (BundesCloud, Nubo), GCP, or AWS GovCloud — the citizen's personal records stay exactly where they are. We only need the <em>output</em>: a yes/no eligibility decision and a jurisdiction code.
 </div>
 
-<h3>Layer 2: Arweave via Irys (Encrypted Documents)</h3>
+<h3>Layer 2: Government-Certified Infrastructure (Encrypted Documents)</h3>
 
-<p>The case file itself — the scanned certificate, the court order, supporting documents — is encrypted end-to-end and uploaded to Arweave through Irys. The encryption pipeline:</p>
+<p>The case file itself — the scanned certificate, the court order, supporting documents — is encrypted end-to-end and stored on <strong>government-certified infrastructure</strong>. Not Arweave. Not a public decentralized network. The encrypted documents live on whatever certified storage the jurisdiction already operates: BundesCloud (Germany), Nubo (France), AWS GovCloud, or a ministry's own DMS.</p>
+
+<p>Why? Because storing encrypted case documents permanently on a decentralized network fails in three critical ways for government deployments:</p>
+
+<div class="callout">
+<strong>Why NOT Arweave for encrypted documents:</strong><br/>
+<strong>1. Right to Erasure (GDPR Article 17):</strong> Arweave is permanent. If a court orders deletion, you cannot comply. Many EU Data Protection Authorities consider encrypted personal data still personal data — because the decryption key exists somewhere.<br/>
+<strong>2. Harvest Now, Decrypt Later:</strong> X25519 key exchange is not quantum-resistant. Encrypted case files stored permanently become readable if quantum computing breaks ECDH in 15-20 years. Government documents have 30-75 year retention requirements.<br/>
+<strong>3. Procurement Certification:</strong> EU governments require BSI C5 (Germany), SecNumCloud (France), or equivalent certifications. Arweave has none. A procurement officer rejects this on page 1.
+</div>
+
+<p>The encryption pipeline remains the same — the only difference is where the encrypted envelope is stored:</p>
 
 <pre><code>// 1. Derive X25519 keys from Ed25519 wallets
 const lawyerEncKeys = deriveEncryptionKeypair(lawyerKeypair.secretKey);
@@ -798,27 +809,43 @@ const envelope = encryptDocument(
   courtKeypair.secretKey     // Court is the sender
 );
 
-// Envelope contains:
-// {
-//   ciphertext: "...",         AES-256-GCM output
-//   nonce: "...",              12-byte random IV
-//   tag: "...",                16-byte auth tag
-//   senderEncPubkey: "...",    Ephemeral X25519 pubkey
-//   plaintextHash: "...",      SHA-256 of original
-//   ciphertextHash: "..."      SHA-256 of ciphertext
-// }</code></pre>
+// 4. Store encrypted envelope on government infrastructure
+//    NOT on Arweave — on BundesCloud, Nubo, GovCloud, etc.
+//    The storage backend is swappable. The encryption is not.
 
-<p>Key properties of this layer:</p>
+// 5. Anchor integrity proof on Arweave via Irys
+//    Only the HASH goes to Arweave — not the document
+const proofReceipt = await irys.upload(JSON.stringify({
+  plaintext_hash: envelope.plaintextHash,
+  ciphertext_hash: envelope.ciphertextHash,
+  timestamp: Date.now(),
+}), { tags });</code></pre>
+
+<p>Key properties of encrypted document storage:</p>
 
 <table>
 <tr><th>Property</th><th>Value</th><th>Why It Matters</th></tr>
 <tr><td><strong>Encryption</strong></td><td>X25519 ECDH + AES-256-GCM</td><td>Only the assigned lawyer's wallet can decrypt</td></tr>
-<tr><td><strong>Durability</strong></td><td>200+ years (Arweave guarantee)</td><td>Legal records must survive beyond any single cloud provider's lifespan</td></tr>
-<tr><td><strong>Cost</strong></td><td>$0.004 per upload (pay once)</td><td>No monthly fees, no storage tiers, no egress charges</td></tr>
-<tr><td><strong>Residency</strong></td><td>Decentralized (global nodes)</td><td>No single jurisdiction controls the storage</td></tr>
-<tr><td><strong>Tampering</strong></td><td>Content-addressable (hash = address)</td><td>Impossible to modify without changing the address</td></tr>
+<tr><td><strong>Storage location</strong></td><td>Government-certified infrastructure</td><td>Meets BSI C5, SecNumCloud, FedRAMP requirements</td></tr>
+<tr><td><strong>Deletable</strong></td><td>Yes — per retention policy</td><td>GDPR Article 17 compliance: can destroy after case lifecycle</td></tr>
+<tr><td><strong>Data residency</strong></td><td>National (government-controlled)</td><td>Documents stay within jurisdictional borders</td></tr>
 <tr><td><strong>Auth tag</strong></td><td>16-byte GCM authentication</td><td>Detects any bit-level modification of ciphertext</td></tr>
+<tr><td><strong>Cost</strong></td><td>Government existing infrastructure</td><td>No additional storage vendor required</td></tr>
 </table>
+
+<h3>Layer 2b: Arweave via Irys (Integrity Proofs Only)</h3>
+
+<p>Arweave's role is narrower and more powerful than document storage: it anchors <strong>permanent integrity proofs</strong>. Only the document hash, ciphertext hash, and timestamp go to Arweave — never the document itself. This proof survives permanently, even after the encrypted document is destroyed per retention policy. Twenty years later, an auditor can verify that a document existed, was unmodified at the time of anchoring, and was issued by an authorized court — without needing the document itself.</p>
+
+<table>
+<tr><th>What goes to Arweave</th><th>What does NOT go to Arweave</th></tr>
+<tr><td>SHA-256 plaintext hash (32 bytes)</td><td>Encrypted document blob</td></tr>
+<tr><td>SHA-256 ciphertext hash (32 bytes)</td><td>Encryption keys or key material</td></tr>
+<tr><td>Timestamp</td><td>Case metadata or PII</td></tr>
+<tr><td>Case ID reference</td><td>Lawyer identity or wallet address</td></tr>
+</table>
+
+<p>Cost: <strong>$0.004 per proof anchor</strong>. Pay once. Permanent. Tamper-proof. Content-addressable. No monthly fees. This is what Arweave was built for — not encrypted PII storage, but immutable proof-of-existence.</p>
 
 <h3>Layer 3: Solana (Hashes + Compressed Audit Logs)</h3>
 
@@ -845,17 +872,17 @@ pub fn anchor_document(
 <p>Most government digitization projects default to a hyperscaler. Germany uses BundesCloud (based on OpenStack). France uses Nubo. The EU is pushing GAIA-X. The question Adduce faces is: why not just store everything on GCP and call it a day?</p>
 
 <table>
-<tr><th>Dimension</th><th>GCP / AWS GovCloud</th><th>Adduce (Arweave + Solana)</th></tr>
-<tr><td><strong>Cost model</strong></td><td>$0.02-0.10/doc/month (perpetual)</td><td>$0.004/doc once (permanent)</td></tr>
-<tr><td><strong>Vendor lock-in</strong></td><td>Proprietary APIs, IAM, egress fees</td><td>Open protocols, no vendor</td></tr>
-<tr><td><strong>Cross-border</strong></td><td>Requires bilateral data processing agreements</td><td>Encrypted globally, decryptable locally</td></tr>
-<tr><td><strong>Durability</strong></td><td>11 nines (99.999999999%) — provider-dependent</td><td>Permanent (economic incentive, 200+ years)</td></tr>
-<tr><td><strong>Tampering</strong></td><td>Admin access can modify objects</td><td>Content-addressable, cryptographically immutable</td></tr>
-<tr><td><strong>Audit trail</strong></td><td>CloudTrail logs (proprietary, deletable)</td><td>On-chain transactions (public, permanent)</td></tr>
-<tr><td><strong>Data residency</strong></td><td>Region-specific, must configure</td><td>Encrypted everywhere, plaintext nowhere</td></tr>
+<tr><th>Dimension</th><th>GCP / AWS GovCloud Alone</th><th>GovCloud + Adduce Layer</th></tr>
+<tr><td><strong>Document storage</strong></td><td>Plaintext in cloud bucket, protected by IAM</td><td>Encrypted on same infrastructure, hash-anchored on Solana</td></tr>
+<tr><td><strong>Integrity proof</strong></td><td>CloudTrail logs (proprietary, deletable by admin)</td><td>On-chain hash + Arweave anchor (permanent, tamper-proof)</td></tr>
+<tr><td><strong>Cross-border verification</strong></td><td>Requires bilateral data processing agreements</td><td>Verify hash on-chain from any jurisdiction, zero data transfer</td></tr>
+<tr><td><strong>Tampering detection</strong></td><td>Admin access can modify objects silently</td><td>Any modification breaks the on-chain hash — instantly detectable</td></tr>
+<tr><td><strong>Deletion compliance</strong></td><td>Deletable per retention policy</td><td>Documents deletable, proofs permanent (by design)</td></tr>
+<tr><td><strong>Audit after destruction</strong></td><td>Impossible once deleted</td><td>On-chain proof survives — verify integrity even after document destroyed</td></tr>
+<tr><td><strong>Proof cost</strong></td><td>Included in cloud bill</td><td>$0.004 per anchor (one-time, permanent)</td></tr>
 </table>
 
-<p>The critical insight: <strong>GCP stores documents. Adduce stores encrypted proofs.</strong> These are fundamentally different things. A government's GCP bucket contains plaintext documents protected by IAM policies. Adduce's Arweave envelope contains ciphertext that is mathematically useless without the recipient's private key. The trust model is different: GCP trusts the cloud provider's access controls. Adduce trusts the math.</p>
+<p>The critical insight: <strong>Adduce doesn't replace government cloud storage — it makes it auditable.</strong> The documents stay on GovCloud, BundesCloud, or whatever certified infrastructure the jurisdiction uses. Adduce adds a cryptographic integrity layer: a 32-byte hash on Solana and a permanent proof on Arweave. The document can be deleted per retention policy. The proof that it once existed, was authentic, and was unmodified — that survives forever.</p>
 
 <h2>The Plug-and-Play Model</h2>
 
@@ -864,18 +891,47 @@ pub fn anchor_document(
 <pre><code>Government Existing Infrastructure
   SAP DMS / National Cloud / GCP GovCloud
     Citizen personal data (stays here, GDPR-managed)
+    Encrypted case documents (stays here, deletable per retention)
 
 Adduce Layer (plugs in)
   Solana (on-chain)
     SAS Attestation PDA ($0.004) - credential
     CaseFile PDA - document_hash + lawyer_commitment
     Light Protocol - compressed audit logs ($0.0038)
-  Arweave (off-chain, encrypted)
-    Encrypted case documents - AES-256-GCM
+  Arweave via Irys (proof layer)
+    Integrity proofs only - hashes + timestamps ($0.004)
+    NO encrypted documents, NO PII, NO ciphertext
   SDK (@adduce/sdk)
     npm install - connects to deployed program</code></pre>
 
-<p>If a jurisdiction requires all document storage on a national cloud for data residency compliance, that's fine. Skip Arweave entirely. Store the encrypted envelope on BundesCloud or Nubo instead. The on-chain hash still anchors the document's integrity. The encryption still ensures only the assigned lawyer can read it. The storage backend is swappable — <strong>the cryptographic guarantees are not.</strong></p>
+<p>The storage backend for encrypted documents is whatever the government already uses. Adduce never touches it directly. The SDK takes a document hash as input — it doesn't care whether the document lives on BundesCloud, Nubo, GovCloud, or a ministry's local NAS. The storage backend is swappable. <strong>The cryptographic proof layer is not.</strong></p>
+
+<h2>The Case Lifecycle: What Happens to Documents</h2>
+
+<p>Government documents have a lifecycle. They aren't permanent — they have legally mandated retention periods, after which they <strong>must be destroyed</strong>. The storage architecture must respect this:</p>
+
+<pre><code>DURING CASE PROCEEDINGS
+  Encrypted documents  -->  Government-certified storage
+  Document hashes      -->  Solana (CaseFile PDA)
+  Integrity proofs     -->  Arweave via Irys (permanent)
+  Audit logs           -->  Light Protocol compressed (permanent)
+  Credential           -->  SAS attestation PDA
+
+AFTER CASE CONCLUSION
+  Final record + full on-chain audit log  -->  Government archive
+  Encrypted working copies                -->  Deleted from interim storage
+  On-chain hashes                         -->  Permanent (proof of integrity survives)
+  SAS attestation                         -->  Deleted (revocation)
+  Arweave proofs                          -->  Permanent (proof-of-existence survives)
+
+AFTER RETENTION PERIOD EXPIRES
+  Government archive copies               -->  Destroyed per schedule
+  On-chain hashes + Arweave proofs        -->  Still permanent
+  Result: "This document existed, was authentic, and was
+  issued by this court on this date" — provable forever,
+  even after the document itself no longer exists</code></pre>
+
+<p>This is the correct model. Documents are temporary. Proofs are permanent. A government auditor can verify 20 years later that a legal aid certificate was issued, was unmodified, and was authorized by the right court — without needing the certificate itself. The hash proves it. The Arweave anchor timestamps it. The Solana transaction log shows every state change. The document is gone, but the truth survives.</p>
 
 <h2>Access Control: Who Can Decrypt What</h2>
 
@@ -885,13 +941,14 @@ Adduce Layer (plugs in)
 <tr><th>Actor</th><th>Can Decrypt?</th><th>Why</th></tr>
 <tr><td><strong>Assigned lawyer</strong></td><td>Yes</td><td>Holds the recipient Ed25519 private key</td></tr>
 <tr><td><strong>Court authority</strong></td><td>No (after encryption)</td><td>Used ephemeral key — shared secret discarded</td></tr>
-<tr><td><strong>Arweave node operators</strong></td><td>No</td><td>Only see ciphertext</td></tr>
+<tr><td><strong>Cloud storage admin</strong></td><td>No</td><td>Only sees ciphertext on government infrastructure</td></tr>
+<tr><td><strong>Arweave node operators</strong></td><td>N/A</td><td>Only hold proof hashes — no encrypted documents</td></tr>
 <tr><td><strong>Solana validators</strong></td><td>No</td><td>Only see 32-byte hashes</td></tr>
 <tr><td><strong>New lawyer (after reassignment)</strong></td><td>Yes (new envelope)</td><td><code>reassign_lawyer</code> triggers re-encryption for new recipient</td></tr>
 <tr><td><strong>Auditor</strong></td><td>No (verifies hash only)</td><td>Compares on-chain hash against document hash — integrity check without content access</td></tr>
 </table>
 
-<p>When a lawyer is reassigned via the <code>reassign_lawyer</code> instruction, the old lawyer's access is cryptographically revoked — not by deleting a permission, but because the new encrypted envelope is keyed to a different wallet. The old envelope still exists on Arweave, but only the original lawyer can decrypt it. The new lawyer gets a fresh envelope encrypted for their key.</p>
+<p>When a lawyer is reassigned via the <code>reassign_lawyer</code> instruction, the old lawyer's access is cryptographically revoked — not by deleting a permission, but because the new encrypted envelope on government storage is re-encrypted for the new lawyer's wallet. The old envelope is deleted. The new lawyer gets a fresh envelope encrypted for their key. The on-chain hash remains unchanged because the underlying document hasn't changed — only the encryption wrapper.</p>
 
 <h2>The Cost Reality at Government Scale</h2>
 
@@ -916,7 +973,7 @@ Adduce Layer (plugs in)
   </div>
 </div>
 
-<p>Add the Arweave document upload ($0.004) and the SAS credential issuance ($0.004), and the <strong>total cost per legal aid case is under $0.02</strong>. For context, the administrative overhead of processing a single paper legal aid certificate in Germany — printing, mailing, filing, reconciling — costs an estimated <strong>$15-25 per case</strong>. The infrastructure cost of Adduce is a rounding error.</p>
+<p>Add the Arweave proof anchor ($0.004) and the SAS credential issuance ($0.004), and the <strong>total Adduce cost per legal aid case is under $0.02</strong> — not counting government storage, which already exists and is already paid for. For context, the administrative overhead of processing a single paper legal aid certificate in Germany — printing, mailing, filing, reconciling — costs an estimated <strong>$15-25 per case</strong>. The Adduce infrastructure cost is a rounding error on top of what governments already spend.</p>
 
 <h2>Government Storage Laws: What Actually Matters</h2>
 
@@ -935,13 +992,15 @@ Adduce Layer (plugs in)
 <strong>The compliance position:</strong> Adduce doesn't ask governments to change how they store citizen data. It asks them to add a 32-byte hash to an immutable ledger. That hash proves the document existed, was unmodified, and was issued by an authorized court — without revealing what the document says.
 </div>
 
-<h2>Conclusion: Storage Is Not the Hard Part</h2>
+<h2>Conclusion: Documents Are Temporary. Proofs Are Permanent.</h2>
 
-<p>The hard part was never where to put the bytes. Governments have GCP. They have national clouds. They have filing cabinets that have worked for centuries. The hard part is proving that a document is authentic, unmodified, and issued by the right authority — across borders, without trusting a single server, and without exposing the citizen's identity.</p>
+<p>The hard part was never where to put the bytes. Governments have GCP. They have national clouds. They have filing cabinets that have worked for centuries. The hard part is proving that a document is authentic, unmodified, and issued by the right authority — across borders, without trusting a single server, and without exposing the citizen's identity. And doing this in a way that survives even after the document itself is destroyed per retention policy.</p>
 
-<p>That's what the storage architecture solves. Not by replacing what governments already have, but by adding a cryptographic layer that makes their existing documents verifiable, portable, and tamper-proof.</p>
+<p>That's what the storage architecture solves. Not by replacing what governments already have, but by adding a cryptographic proof layer that makes their existing documents verifiable, portable, and tamper-proof — and that outlives the documents themselves.</p>
 
-<p><strong>The documents stay where they are. The proofs go on-chain. The math does the rest.</strong></p>
+<p>Encrypted documents belong on government-certified infrastructure — deletable, auditable, compliant. Integrity proofs belong on Arweave and Solana — permanent, tamper-proof, borderless.</p>
+
+<p><strong>The documents stay where governments put them. The proofs go on-chain. The documents can be destroyed. The truth survives.</strong></p>
 
 <p><strong><a href="https://www.npmjs.com/package/@adduce/sdk" target="_blank">View on npm</a></strong> | <strong><a href="https://adduce.legal/docs" target="_blank">Documentation</a></strong> | <strong><a href="https://github.com/SAHU-01/legal_aid" target="_blank">GitHub</a></strong></p>
 `,

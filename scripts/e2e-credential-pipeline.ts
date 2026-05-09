@@ -8,7 +8,7 @@
  *   2. Issue SAS credential (Solana Attestation Service)
  *   3. Link credential to case on-chain (new link_credential instruction)
  *   4. Create selective disclosure commitments (Merkle tree)
- *   5. Encrypt document + upload to Arweave via Irys
+ *   5. Encrypt document + store on gov infra + anchor proof on Arweave
  *   6. Anchor document hash on case (credential-gated)
  *   7. Close case
  *   8. Disburse payment (mark_paid)
@@ -275,10 +275,10 @@ async function main() {
   results.linkCredential = { tx: linkSig, merkleRoot, fieldCount: commitments.length };
 
   // ════════════════════════════════════════════════════════════════════
-  // STEP 4: Encrypt Document + Upload to Arweave
+  // STEP 4: Encrypt Document + Store on Gov Infrastructure + Proof to Arweave
   // ════════════════════════════════════════════════════════════════════
 
-  console.log("━━━ STEP 4: ENCRYPT + UPLOAD TO ARWEAVE ━━━");
+  console.log("━━━ STEP 4: ENCRYPT + GOV STORAGE + ARWEAVE PROOF ━━━");
 
   const docBuffer = Buffer.from(SAMPLE_DOC, "utf-8");
   const lawyerEncKeys = deriveEncryptionKeypair(lawyerKeypair.secretKey);
@@ -287,10 +287,25 @@ async function main() {
   console.log("  Plaintext hash:", envelope.plaintextHash.slice(0, 24) + "...");
   console.log("  Encryption: X25519-ECDH + AES-256-GCM");
 
-  // Upload to Arweave
+  // Store encrypted envelope on government infrastructure (local filesystem for demo)
+  const govStorageDir = path.join(__dirname, "output", "gov-storage");
+  fs.mkdirSync(govStorageDir, { recursive: true });
+  const envelopePath = path.join(govStorageDir, `${caseId}-envelope.json`);
+  fs.writeFileSync(envelopePath, JSON.stringify(envelope, null, 2));
+  console.log("  Encrypted doc stored:", envelopePath);
+  console.log("  Note: Production = BundesCloud / GovCloud / national DMS (deletable)");
+
+  // Upload PROOF ONLY to Arweave (hashes + timestamp, no document content)
   const irys = await Uploader(Solana).withWallet(Buffer.from(payer.secretKey)).withRpc(HELIUS_RPC_URL).devnet();
-  const envelopeJson = JSON.stringify(envelope);
-  const uploadSize = Buffer.byteLength(envelopeJson);
+  const proofPayload = JSON.stringify({
+    protocol: "adduce-v1",
+    type: "integrity_proof",
+    case_id: caseId,
+    plaintext_hash: envelope.plaintextHash,
+    ciphertext_hash: envelope.ciphertextHash,
+    timestamp: Math.floor(Date.now() / 1000),
+  });
+  const uploadSize = Buffer.byteLength(proofPayload);
   const price = await irys.getPrice(uploadSize);
   const irysBalance = await irys.getBalance();
   if (irysBalance < price) {
@@ -298,20 +313,22 @@ async function main() {
     await irys.fund(price);
   }
 
-  const receipt = await irys.upload(envelopeJson, {
+  const receipt = await irys.upload(proofPayload, {
     tags: [
       { name: "Content-Type", value: "application/json" },
       { name: "App-Name", value: "Adduce" },
+      { name: "Type", value: "integrity-proof" },
       { name: "Case-ID", value: caseId },
       { name: "Plaintext-Hash", value: envelope.plaintextHash },
     ],
   });
   const arweaveUrl = `https://gateway.irys.xyz/${receipt.id}`;
 
-  console.log("  Arweave TX:", receipt.id);
-  console.log("  Arweave URL:", arweaveUrl);
-  console.log("  Status: Permanently stored\n");
-  results.arweave = { txId: receipt.id, url: arweaveUrl };
+  console.log("  Arweave proof TX:", receipt.id);
+  console.log("  Arweave proof URL:", arweaveUrl);
+  console.log("  Content: Hashes + timestamp ONLY (no encrypted document)");
+  console.log("  Status: Permanent proof-of-existence anchored\n");
+  results.arweave = { txId: receipt.id, url: arweaveUrl, type: "integrity_proof" };
 
   // ════════════════════════════════════════════════════════════════════
   // STEP 5: Anchor Document Hash (Credential-Gated!)
@@ -334,12 +351,12 @@ async function main() {
   console.log("  Status: InProgress (credential verified on-chain!)\n");
   results.anchorDoc = { tx: anchorSig, hash: docHash.toString("hex") };
 
-  // Also anchor Arweave link via memo
+  // Anchor Arweave proof link via memo
   const rpc = createRpc(HELIUS_RPC_URL, HELIUS_RPC_URL, HELIUS_RPC_URL);
   const MEMO_PROGRAM_ID = new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr");
   const memoPayload = {
-    protocol: "adduce-v1", type: "document_arweave_link",
-    case_id: caseId, arweave_url: arweaveUrl, plaintext_hash: envelope.plaintextHash,
+    protocol: "adduce-v1", type: "integrity_proof_anchor",
+    case_id: caseId, arweave_proof_url: arweaveUrl, plaintext_hash: envelope.plaintextHash,
   };
   const memoIx = {
     programId: MEMO_PROGRAM_ID,
